@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <title>Zoho</title>
+</head>
+<body>
+
+<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-success">Time Sheet </label>
+
+</div>
+
+    <table class="table table-bordered table-sm">
+        <thead class="thead-dark">
+            <tr>
+                <th>project</th>
+                <th>Task</th>
+                <th>Last Modified Date</th>
+                <th>Bill Status</th>
+                <th>Owner Name</th>
+                <th>hours</th>
+                <th>total_minutes</th>
+                <th>hours_display</th>
+               {% comment %} <td>Owners</td>{% endcomment %}
+                <th>notes</th>
+                <th>created_date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if tasks %}
+             {% for t in tasks %}
+            <tr>
+                <td>{{t.project.name}}</td>
+                <td>{{t.task.task_name}}</td>
+                <td>{{t.last_modified_date}}</td>
+                <td>{{t.bill_status}}</td>
+                <td>{{t.owner_name}}</td>
+                <td>{{t.hours}}</td>
+                <td>{{t.total_minutes}}</td>
+                <td>{{t.hours_display}}</td>
+                <td>{{t.notes}}</td>
+                <td>{{t.created_date}}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+        <tr>
+        <td colspan="10"style="text-align: center">NO Data Found</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+<hr>
+<script>
+    $(".shipment_sold").click(function(){
+    //  alert("Invalid Shipment Number");
+        var task_id=$(this).attr("task_id");
+
+        $("#" + task_id ).toggle();
+    });
+</script>
+</body>
+</html>

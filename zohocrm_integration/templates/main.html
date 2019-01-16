@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <title>Zoho</title>
+</head>
+<body>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <td>Project Name</td>
+                <td>Created Date</td>
+                <td>End Date</td>
+                <td>Tasks</td>
+                <td>Milestone</td>
+                <td>Timesheet</td>
+                <td>Status</td>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in projects %}
+            <tr>
+                <td>{{d.name}}</td>
+                <td>{{d.created_date}}</td>
+                <td>{{d.end_date}}</td>
+                <td><a href="/task/{{d.project_id}}/">View Tasks</a>
+                    {% comment %}<button class="btn btn-primary shipment_sold" project_id="{{d.project_id}}" id="project_id{{d.project_id}}">Details</button>{% endcomment %}
+                </td>
+                <td><a href="/milestones/{{d.project_id}}/">View Milestones</a></td>
+                <td><a href="/time_sheet_project/{{d.project_id}}/">View Timesheet</a></td>
+
+                <td>{{d.status}}</td>
+
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>

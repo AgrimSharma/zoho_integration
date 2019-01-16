@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <title>Zoho</title>
+</head>
+<body>
+    <table class="table table-bordered table-sm ">
+        <thead class="thead-dark">
+            <tr>
+                <td>Description</td>
+                <td>Task ID</td>
+                <td>Milestone ID</td>
+                <td>Start Date</td>
+                <td>End Date</td>
+                <td>Status</td>
+                <td>Subtasks</td>
+                <td>Task Name</td>
+                <td>Timesheet</td>
+                <td>Owners</td>
+                <td>Created Person</td>
+                <td>Created Time</td>
+                <td>Completed</td>
+                <td>Percent Complete</td>
+                <td>Completed Time</td>
+            </tr>
+        </thead>
+        <tbody>
+             {% for t in tasks %}
+            <tr>
+                <td>{% if t.description == None or t.description == "" %} No Description {% else %}{{t.description}}{% endif %}</td>
+                <td>{{t.task_id}}</td>
+                <td>{{t.milestone_id}}</td>
+                <td>{{t.start_date}}</td>
+                <td>{{t.end_date}}</td>
+                <td>{% if t.status == 'Closed' %} <label class="text-success">{{t.status}}</label>
+                    {% elif t.status == 'Open' %} <label class="text-warning">{{t.status}}</label>
+                    {% else %} <label class="text-danger">{{t.status}}</label>
+                    {% endif %}
+                </td>
+                <td>{{t.subtasks}}</td>
+                <td>{{t.task_name}}</td>
+                <td><a href="/time_sheet/{{t.task_id}}">Timesheet</a> </td>
+                <td><button class="btn btn-primary shipment_sold" task_id="{{t.task_id}}" id="task_id{{t.task_id}}">Owner</button>
+                    <div class="col-md-12 collapse" id="{{t.task_id}}" style="display:none;" >
+                            <table class="table table-bordered table-sm">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <td>ID</td>
+                                        <td>Name</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for owner in t.owners %}
+                                        <tr>
+                                            <td> {{owner.id}}</td>
+                                            <td>{{owner.name}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                    </div>
+                </td>
+                <td>{{t.created_person}}</td>
+                <td>{{t.created_time}}</td>
+                <td>{{t.completed}}</td>
+                <td>{{t.percent_complete}}</td>
+                <td>{{t.completed_time}}</td>
+
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+<script>
+    $(".shipment_sold").click(function(){
+    //  alert("Invalid Shipment Number");
+        var task_id=$(this).attr("task_id");
+
+        $("#" + task_id ).toggle();
+    });
+</script>
+</body>
+</html>
