@@ -22,8 +22,8 @@
                 <th>Last Modified Date</th>
                 <th>Bill Status</th>
                 <th>Owner Name</th>
-                <th>hours</th>
-                <th>total_minutes</th>
+                <th>Work Hours</th>
+                {% comment %}<th>total_minutes</th>{% endcomment %}
                 <th>hours_display</th>
                {% comment %} <td>Owners</td>{% endcomment %}
                 <th>notes</th>
@@ -39,9 +39,9 @@
                 <td>{{t.last_modified_date}}</td>
                 <td>{{t.bill_status}}</td>
                 <td>{{t.owner_name}}</td>
-                <td>{{t.hours}}</td>
-                <td>{{t.total_minutes}}</td>
+                <td>{{t.task.work}}</td>
                 <td>{{t.hours_display}}</td>
+                {% comment %}<td>{{t.hours_display}}</td>{% endcomment %}
                 <td>{{t.notes}}</td>
                 <td>{{t.created_date}}</td>
             </tr>
