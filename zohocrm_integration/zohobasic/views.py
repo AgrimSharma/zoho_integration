@@ -70,16 +70,15 @@ def callback(request):
     response = requests.request("POST", url, headers=headers,
                                 params=querystring)
     vals = response.json()
-
     vals['code'] = code
-    access = Tokens.objects.get(id=1)
+    access = Tokens.objects.latest("id")
     access.access_token = vals['access_token']
     access.refresh_token = vals['refresh_token']
     access.created_at = datetime.datetime.now()
     access.code = code
-    refresh = token_refresh(access.refresh_token)
-    access.access_token = refresh
-    access.created_at = datetime.datetime.now()
+    # refresh = token_refresh(access.refresh_token)
+    # access.access_token = refresh
+    # access.created_at = datetime.datetime.now()
     access.save()
 
     portals = portals_data(access.access_token)
@@ -87,9 +86,9 @@ def callback(request):
     port = portals.get('portals',"")
     if port:
         projects = all_projects()
-        tasks = all_projects_task()
-        milestone = all_projects_milestone()
-        timesheet= all_project_time_sheet()
+        # tasks = all_projects_task()
+        # milestone = all_projects_milestone()
+        # timesheet= all_project_time_sheet()
         # return HttpResponse(json.dumps(dict(projects=projects, tokens=vals)))
         return render(request, "main.html", {"projects":projects})
         # return HttpResponse(json.dumps(dict(message="Success")))
@@ -125,6 +124,11 @@ def refresh_token(request):
                                 params=querystring)
 
     return HttpResponse(json.dumps(response.json()))
+
+
+def time_sheet_projects_tasks(request, project_id):
+    tasks = time_sheet_projects_task(project_id)
+    return render(request, "time_sheet.html", dict(tasks=tasks))
 
 
 def projects(request):
@@ -167,7 +171,19 @@ def milestone_data(request, project_id):
 
 
 def task_project(request, project_id):
-    tasks = project_task(project_id)
-    return HttpResponse(tasks)
+    project = Projects.objects.get(id=project_id)
 
+    current_task, past_task, future_task = project_task_list(project_id)
+    date_today = datetime.datetime.now().date()
+    milestone = Milestone.objects.filter(project=project)
+    if milestone:
+        milestone = milestone
+    else:
+        milestone = milestone_project_id(project_id)
 
+    return render(request, "tasks/tasks.html", {
+        "current_task": current_task,
+        "past_task": past_task,
+        "future_task": future_task,
+        "milestone": milestone,
+        "date_today": date_today})

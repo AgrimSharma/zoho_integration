@@ -64,9 +64,6 @@ def milestone_project_id(project_id):
         }
 
         portals = requests.request("GET", url, headers=headers)
-        import pdb;
-        pdb.set_trace()
-
         if portals.status_code == 204:
             response = []
         else:

@@ -28,11 +28,11 @@
                 <td>{{d.name}}</td>
                 <td>{{d.created_date}}</td>
                 <td>{{d.end_date}}</td>
-                <td><a href="/task/{{d.project_id}}/">View Tasks</a>
+                <td><a href="/task/{{d.id}}/">View Tasks</a>
                     {% comment %}<button class="btn btn-primary shipment_sold" project_id="{{d.project_id}}" id="project_id{{d.project_id}}">Details</button>{% endcomment %}
                 </td>
-                <td><a href="/milestones/{{d.project_id}}/">View Milestones</a></td>
-                <td><a href="/time_sheet_project/{{d.project_id}}/">View Timesheet</a></td>
+                <td><a href="/milestone/{{d.id}}/">View Milestones</a></td>
+                <td><a href="/time_sheet/{{d.id}}/">View Time Sheet</a></td>
 
                 <td>{{d.status}}</td>
 

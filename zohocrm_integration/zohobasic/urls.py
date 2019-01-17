@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^task/(?P<project_id>\w+)', task_project),
     url(r'^detail/(?P<project_id>\w+)', task_list),
     url(r'^time_sheet_task/(?P<task_id>\w+)', time_sheet_task),
+    url(r'^time_sheet/(?P<project_id>\w+)', time_sheet_projects_tasks),
     url(r'^milestone/(?P<project_id>\w+)', milestone_data),
     url(r'^project_detail/(?P<project_id>\w+)', project_detail),
 
