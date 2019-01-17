@@ -73,7 +73,7 @@ def callback(request):
     vals['code'] = code
     access = Tokens.objects.latest("id")
     access.access_token = vals['access_token']
-    access.refresh_token = vals['refresh_token']
+    # access.refresh_token = vals['refresh_token']
     access.created_at = datetime.datetime.now()
     access.code = code
     # refresh = token_refresh(access.refresh_token)
