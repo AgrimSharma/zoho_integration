@@ -14,29 +14,29 @@ def all_projects():
 
     projects = requests.request("GET", url, headers=headers)
     response = []
-    # try:
-    projects = projects.json()
-    if projects:
-        projects = projects['projects']
-    # except Exception:
-    #     projects = Projects.objects.all()
-    #     result = []
-    #     for detail_project in projects:
-    #         data = dict(name=detail_project.name,
-    #                     id=detail_project.id,
-    #                     end_date=detail_project.end_date_format,
-    #                     bugs_count=dict(
-    #                         open=detail_project.task_count_open,
-    #                         closed=detail_project.task_count_close),
-    #                     milestone_count=dict(
-    #                         closed=detail_project.milestone_count_open,
-    #                         opne=detail_project.milestone_count_close),
-    #                     start_date=detail_project.start_date_format,
-    #                     status=detail_project.status,
-    #                     created_date=detail_project.created_date_format,
-    #                     project_id=detail_project.project_id)
-    #         result.append(data)
-    #     return result
+    try:
+        projects = projects.json()
+        if projects:
+            projects = projects['projects']
+    except Exception:
+        projects = Projects.objects.all()
+        result = []
+        for detail_project in projects:
+            data = dict(name=detail_project.name,
+                        id=detail_project.id,
+                        end_date=detail_project.end_date_format,
+                        bugs_count=dict(
+                            open=detail_project.task_count_open,
+                            closed=detail_project.task_count_close),
+                        milestone_count=dict(
+                            closed=detail_project.milestone_count_open,
+                            opne=detail_project.milestone_count_close),
+                        start_date=detail_project.start_date_format,
+                        status=detail_project.status,
+                        created_date=detail_project.created_date_format,
+                        project_id=detail_project.project_id)
+            result.append(data)
+        return result
 
     for p in projects:
         try:
