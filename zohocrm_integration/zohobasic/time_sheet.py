@@ -59,8 +59,10 @@ def time_sheet_projects(task_id):
     }
     response = requests.request("GET", url, headers=headers)
 
-    if response.status_code == 204:
-        response = []
+    if response.status_code in [204, 401] :
+        time_sheet = TimeSheet.objects.filter(task=task)
+        return time_sheet
+
     else:
         response = response.json()
         response = response['timelogs']['tasklogs']
@@ -101,7 +103,7 @@ def time_sheet_projects_task(project_id):
         }
         response = requests.request("GET", url, headers=headers)
 
-        if response.status_code == 204:
+        if response.status_code == 204 or response.status_code == 401:
             response = []
         else:
             response = response.json()
