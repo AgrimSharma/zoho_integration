@@ -64,7 +64,7 @@ def milestone_project_id(project_id):
         }
 
         portals = requests.request("GET", url, headers=headers)
-        if portals.status_code == 204:
+        if portals.status_code == 204 or portals.status_code == 401:
             response = []
         else:
             data = portals.json()
