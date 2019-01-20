@@ -126,7 +126,6 @@ def project_task(project_id):
             status=task.status
         )
         response.append(resp)
-        print response
     return response
 
 
@@ -134,9 +133,6 @@ def all_projects_task():
     token = Tokens.objects.latest("id")
     project = Projects.objects.all()
     access_token = token.access_token
-    # url = "https://projectsapi.zoho.com/restapi/portal/{portal_id}/" \
-    #       "projects/{project_id}/tasks/".format(project_id=project_id,
-    #                                             portal_id=settings.PORTAL_ID)
     result = []
 
     for p in project:
@@ -158,8 +154,7 @@ def all_projects_task():
 
             try:
                 # details = d.get('details',"")
-                own = ZohoUsers.obejcts.filter(tasks=task)
-                print own
+                own = ZohoUsers.objects.filter(tasks=task)
                 owner = [dict(name=o.username, id=o.user_id) for o in own]
 
             except Exception:
@@ -231,7 +226,6 @@ def all_projects_task():
             task.end_date=datetime.datetime.strptime(end_date, "%m-%d-%Y") if end_date else None
             task.start_date=datetime.datetime.strptime(start_date, "%m-%d-%Y") if start_date else None
 
-
             task.save()
             resp = dict(
                 end_date=task.end_date,
@@ -253,3 +247,15 @@ def all_projects_task():
             )
             result.append(resp)
     return result
+
+
+def project_open_tasks(project_id):
+    project = Projects.objects.get(id=project_id)
+    tasks = project.tasks_set.filter(status__icontains="Open")
+    return tasks
+
+
+def project_close_tasks(project_id):
+    project = Projects.objects.get(id=project_id)
+    tasks = project.tasks_set.filter(status__icontains="Closed")
+    return tasks

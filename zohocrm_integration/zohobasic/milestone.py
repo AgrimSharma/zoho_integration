@@ -15,7 +15,11 @@ def all_projects_milestone():
         }
 
         response = requests.request("GET", url, headers=headers)
-        data = response.json()
+        if response.status_code == 204:
+            return []
+        else:
+            data = response.json()
+
         if data:
             data = data['milestones']
         for d in data:
@@ -96,3 +100,15 @@ def milestone_project_id(project_id):
                 task.save()
             response = Milestone.objects.filter(project=project)
         return response
+
+
+def project_close_milestone(project_id):
+    project = Projects.objects.get(id=project_id)
+    milestone = project.milestone_set.filter(status='completed')
+    return milestone
+
+
+def project_open_milestone(project_id):
+    project = Projects.objects.get(id=project_id)
+    milestone = project.milestone_set.filter(status='notcompleted')
+    return milestone

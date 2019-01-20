@@ -25,7 +25,10 @@ urlpatterns = [
     url(r'^time_sheet/(?P<project_id>\w+)', time_sheet_projects_tasks),
     url(r'^milestone/(?P<project_id>\w+)', milestone_data),
     url(r'^project_detail/(?P<project_id>\w+)', project_detail),
-
+    url(r'^open_task/(?P<project_id>\w+)', open_tasks),
+    url(r'^close_task/(?P<project_id>\w+)', close_tasks),
+    url(r'^open_milestone/(?P<project_id>\w+)', open_milestone),
+    url(r'^close_milestone/(?P<project_id>\w+)', close_milestone),
     url(r'^auth_request/', auth_request),
     url(r'^', projects),
 

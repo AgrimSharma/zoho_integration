@@ -187,3 +187,51 @@ def task_project(request, project_id):
         "future_task": future_task,
         "milestone": milestone,
         "date_today": date_today})
+
+
+def open_tasks(request, project_id):
+    tasks = project_open_tasks(project_id)
+    project = Projects.objects.get(id=project_id)
+
+    date_today = datetime.datetime.now().date()
+
+    return render(request, "tasks/project_tasks.html", {
+        "date_today": date_today,
+        "current_task": tasks,
+        "name": "Open Task {}".format(project.name)})
+
+
+def close_tasks(request, project_id):
+    project = Projects.objects.get(id=project_id)
+    tasks = project_close_tasks(project_id)
+
+    date_today = datetime.datetime.now().date()
+
+    return render(request, "tasks/project_tasks.html", {
+        "date_today": date_today,
+        "current_task": tasks,
+        "name": "Close Task {}".format(project.name)})
+
+
+def open_milestone(request, project_id):
+    tasks = project_open_milestone(project_id)
+    project = Projects.objects.get(id=project_id)
+
+    date_today = datetime.datetime.now().date()
+
+    return render(request, "tasks/project_milestone.html", {
+        "date_today": date_today,
+        "milestone": tasks,
+        "name": "Open Milestone {}".format(project.name)})
+
+
+def close_milestone(request, project_id):
+    project = Projects.objects.get(id=project_id)
+    tasks = project_close_milestone(project_id)
+
+    date_today = datetime.datetime.now().date()
+
+    return render(request, "tasks/project_milestone.html", {
+        "date_today": date_today,
+        "milestone": tasks,
+        "name": "Close Milestone {}".format(project.name)})

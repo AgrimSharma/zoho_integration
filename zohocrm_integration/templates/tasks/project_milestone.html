@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <title>Zoho</title>
+</head>
+<body>
+
+<hr>
+<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-success">{{ name }}</label></div>
+     <table class="table table-bordered table-sm">
+        <thead class="thead-dark">
+            <tr>
+                <th>project</th>
+                <th>owner_name</th>
+                <th>name</th>
+                <th>status</th>
+                <th>end_date</th>
+                <th>sequence</th>
+                <th>start_date</th>
+                <th>flag</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if milestone %}
+             {% for t in milestone %}
+            <tr>
+                <td>{{t.project.name}}</td>
+                <td>{{t.owner_name}}</td>
+                <td>{{t.name}}</td>
+                <td>{%  if t.status == 'notcompleted' and date_today < t.end_date %} <label class="text-warning">{{t.status}}</label>
+                {%  elif t.status == 'notcompleted' %}<label class="text-danger">{{t.status}}</label>
+                                {% else %} <label class="text-success">{{t.status}}</label>
+                {%  endif %}
+                </td>
+                <td>{{t.end_date}}</td>
+                <td>{{t.sequence}}</td>
+                <td>{{t.start_date}}</td>
+                <td>{{t.flag}}</td>
+
+            </tr>
+            {% endfor %}
+        {% else %}
+        <tr>
+        <td colspan="10"style="text-align: center">No Data Found</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+<script>
+    $(".shipment_sold").click(function(){
+    //  alert("Invalid Shipment Number");
+        var task_id=$(this).attr("task_id");
+
+        $("#" + task_id ).toggle();
+    });
+</script>
+</body>
+</html>
