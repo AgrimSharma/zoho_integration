@@ -35,10 +35,9 @@
   </div>
 </nav>
 
-<div style="padding-top: 10px; ">
-    <div class="col-md-12" style="text-align: center;padding-top: 70px;"> <label class="text-success"><strong>Current Task {{ name }}</strong></label>
+<div style="padding-top: 70px; ">
+    <div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-success"><strong>Current Task {{ name }}</strong></label>
 
-</div>
 
     <table class="table table-bordered table-sm">
         <thead class="thead-dark">
@@ -91,6 +90,7 @@
         {% endif %}
         </tbody>
     </table>
+    </div>
 
 <hr>
     <div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-danger"><strong>Past Task {{ name }}</strong></label>
@@ -147,7 +147,7 @@
         {% endif %}
         </tbody>
     </table>
-
+    </div>
 <hr>
     <div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-warning"><strong>Future Task {{ name }}</strong></label>
      <table class="table table-bordered table-sm">
@@ -200,7 +200,7 @@
         {% endif %}
         </tbody>
     </table>
-
+    </div>
 
 <hr>
     <div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-success"><strong>Milestone {{ name }}</strong></label>
@@ -245,7 +245,7 @@
         {% endif %}
         </tbody>
     </table>
-</div>
+    </div></div>
 <script>
     $(".shipment_sold").click(function(){
     //  alert("Invalid Shipment Number");
