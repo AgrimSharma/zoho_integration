@@ -17,9 +17,7 @@ def all_project_time_sheet():
         }
         response = requests.request("GET", url, headers=headers)
 
-        if response.status_code == 204:
-            response = []
-        else:
+        try:
             response = response.json()
             response = response['timelogs']['tasklogs']
             for r in response:
@@ -44,6 +42,8 @@ def all_project_time_sheet():
                                                      r['created_date'], "%m-%d-%Y")
                                                  )
                 sheet.save()
+        except Exception:
+            pass
     time_sheet = TimeSheet.objects.filter(task=p)
     return time_sheet
 
