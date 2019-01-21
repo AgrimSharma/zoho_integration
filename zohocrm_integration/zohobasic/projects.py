@@ -2,7 +2,7 @@ import requests
 from .models import *
 from django.conf import settings
 import datetime
-
+from .task_list import *
 
 def all_projects():
 
@@ -120,6 +120,8 @@ def all_projects():
 
 def project_detail_view(project_id):
     pro = Projects.objects.get(id=project_id)
+    current_task, future_date_one_week, future_date_two_week, future_date_three_week= project_task_list_week(project_id)
+
     data = dict(name=pro.name,
                 id=pro.id,
                 end_date=pro.end_date_format,
@@ -130,7 +132,12 @@ def project_detail_view(project_id):
                 start_date=pro.start_date_format,
                 status=pro.status,
                 created_date=pro.created_date_format,
-                project_id=pro.project_id)
+                project_id=pro.project_id,
+                current_task=len(current_task),
+                future_date_one_week=len(future_date_one_week),
+                future_date_two_week=len(future_date_two_week),
+                future_date_three_week=len(future_date_three_week)
+                )
     return data
 
 

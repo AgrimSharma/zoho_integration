@@ -63,8 +63,8 @@
              {% for t in current_task %}
             <tr>
                 <td>{% if t.description == None or t.description == "" %} No Description {% else %}{{t.description}}{% endif %}</td>
-                <td><a href="https://projects.zoho.com/portal/indigoconsulting#taskdetail/{{ t.project.project_id }}/{{ t.tasklist_id }}/{{ t.task_id }}
-">{{t.task_id}}</a> </td>
+                <td><a href="https://projects.zoho.com/portal/indigoconsulting#taskdetail/{{ t.project.project_id }}/{{ t.tasklist_id }}/{{ t.task_id }}">Task Detail</a> </td>
+
                 <td>{{t.milestone_id}}</td>
                 <td>{{t.start_date}}</td>
                 <td>{{t.end_date}}</td>
@@ -120,8 +120,8 @@
              {% for t in past_task %}
             <tr>
                 <td>{% if t.description == None or t.description == "" %} No Description {% else %}{{t.description}}{% endif %}</td>
-                <td><a href="https://projects.zoho.com/portal/indigoconsulting#taskdetail/{{ t.project.project_id }}/{{ t.tasklist_id }}/{{ t.task_id }}
-">{{t.task_id}}</a> </td>
+                <td><a href="https://projects.zoho.com/portal/indigoconsulting#taskdetail/{{ t.project.project_id }}/{{ t.tasklist_id }}/{{ t.task_id }}">Task Detail</a> </td>
+
                 <td>{{t.milestone_id}}</td>
                 <td>{{t.start_date}}</td>
                 <td>{{t.end_date}}</td>

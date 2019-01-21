@@ -151,6 +151,7 @@ def project_detail(request, project_id):
     user = request.user
     if user.is_authenticated():
         project = project_detail_view(project_id)
+
         return render(request, "project_detail.html", {"project": project})
     else:
         return redirect("/")
