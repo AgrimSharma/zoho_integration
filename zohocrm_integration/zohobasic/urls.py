@@ -19,17 +19,22 @@ from .views import *
 
 urlpatterns = [
     url(r'^callback/', callback),
-    url(r'^task/(?P<project_id>\w+)', task_project),
     url(r'^detail/(?P<project_id>\w+)', task_list),
     url(r'^time_sheet_task/(?P<task_id>\w+)', time_sheet_task),
     url(r'^time_sheet/(?P<project_id>\w+)', time_sheet_projects_tasks),
-    url(r'^milestone/(?P<project_id>\w+)', milestone_data),
     url(r'^project_detail/(?P<project_id>\w+)', project_detail),
     url(r'^open_task/(?P<project_id>\w+)', open_tasks),
     url(r'^close_task/(?P<project_id>\w+)', close_tasks),
     url(r'^open_milestone/(?P<project_id>\w+)', open_milestone),
     url(r'^close_milestone/(?P<project_id>\w+)', close_milestone),
+
+    # URL for auth request
+    url(r'^task/(?P<project_id>\w+)', task_project),
+    url(r'^milestone/(?P<project_id>\w+)', milestone_data),
     url(r'^auth_request/', auth_request),
-    url(r'^', projects),
+    url(r'^projects/', projects, name="projects"),
+    url(r'^login_user/', login_user, name='login_user'),
+    url(r'^register_user/', register_user, name='register'),
+    url(r'^', home),
 
 ]

@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
+
+from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.conf import settings
 import datetime
 import pytz
+from django.views.decorators.csrf import csrf_exempt
+
 from task_list import *
 from projects import all_projects, project_detail_view
 from tasks import *
 from milestone import *
 from time_sheet import *
+from django.contrib.auth.models import User
+
 
 utc=pytz.UTC
 
@@ -86,9 +92,9 @@ def callback(request):
     port = portals.get('portals',"")
     if port:
         projects = all_projects()
-        # tasks = all_projects_task()
-        # milestone = all_projects_milestone()
-        # timesheet= all_project_time_sheet()
+        tasks = all_projects_task()
+        milestone = all_projects_milestone()
+        timesheet= all_project_time_sheet()
         # return HttpResponse(json.dumps(dict(projects=projects, tokens=vals)))
         return render(request, "main.html", {"projects":projects})
         # return HttpResponse(json.dumps(dict(message="Success")))
@@ -132,42 +138,65 @@ def time_sheet_projects_tasks(request, project_id):
 
 
 def projects(request):
-    project = Projects.objects.all().order_by("name")
-    return render(request, "projects.html", {"project": project})
+    user = request.user
+    try:
+        user = User.objects.get(username=user.username)
+        project = Projects.objects.all().order_by("name")
+        return render(request, "projects.html", {"project": project})
+    except Exception:
+        return redirect("/")
 
 
 def project_detail(request, project_id):
-    project = project_detail_view(project_id)
-    return render(request, "project_detail.html", {"project": project})
+    user = request.user
+    if user.is_authenticated():
+        project = project_detail_view(project_id)
+        return render(request, "project_detail.html", {"project": project})
+    else:
+        return redirect("/")
 
 
 def time_sheet_task(request, task_id):
-    tasks = time_sheet_projects(task_id)
-    return render(request, "time_sheet.html", dict(tasks=tasks))
+    user = request.user
+    if user.is_authenticated():
+        tasks,task_name = time_sheet_projects(task_id)
+        return render(request, "time_sheet.html", dict(tasks=tasks,
+                                                       task_name=task_name))
     # return HttpResponse(json.dumps(tasks))
+    else:
+        return redirect("/")
 
 
 def task_list(request, project_id):
-    project = Projects.objects.get(id=project_id)
-    milestone = Milestone.objects.filter(project=project)
-    if milestone:
-        milestone = milestone
-    else:
-        milestone = milestone_project_id(project_id)
-    current_task,past_task,future_task = project_task_list(project_id)
-    date_today = datetime.datetime.now().date()
+    user = request.user
+    if user.is_authenticated():
+        project = Projects.objects.get(id=project_id)
+        milestone = Milestone.objects.filter(project=project)
+        if milestone:
+            milestone = milestone
+        else:
+            milestone = milestone_project_id(project_id)
+        current_task,past_task,future_task = project_task_list(project_id)
+        date_today = datetime.datetime.now().date()
 
-    return render(request, "tasks.html", {
-                                        "current_task": current_task,
-                                        "past_task": past_task,
-                                        "future_task": future_task,
-                                        "milestone":milestone,
-                                         "date_today": date_today})
+        return render(request, "tasks.html", {
+                                            "current_task": current_task,
+                                            "past_task": past_task,
+                                            "future_task": future_task,
+                                            "milestone":milestone,
+                                             "date_today": date_today,
+                                            "name": project.name})
+    else:
+        return redirect("/")
 
 
 def milestone_data(request, project_id):
-    mile_stone = milestone_project_id(project_id)
-    return render(request, "mile_stone.html", dict(mile_stone=mile_stone))
+    user = request.user
+    if user.is_authenticated():
+        mile_stone = milestone_project_id(project_id)
+        return render(request, "mile_stone.html", dict(mile_stone=mile_stone))
+    else:
+        return redirect("/")
 
 
 def task_project(request, project_id):
@@ -190,48 +219,103 @@ def task_project(request, project_id):
 
 
 def open_tasks(request, project_id):
-    tasks = project_open_tasks(project_id)
-    project = Projects.objects.get(id=project_id)
+    user = request.user
+    if user.is_authenticated():
+        tasks = project_open_tasks(project_id)
+        project = Projects.objects.get(id=project_id)
 
-    date_today = datetime.datetime.now().date()
+        date_today = datetime.datetime.now().date()
 
-    return render(request, "tasks/project_tasks.html", {
-        "date_today": date_today,
-        "current_task": tasks,
-        "name": "Open Task {}".format(project.name)})
+        return render(request, "tasks/project_tasks.html", {
+            "date_today": date_today,
+            "current_task": tasks,
+            "name": "Open Task {}".format(project.name)})
+    else:
+        return redirect("/")
 
 
 def close_tasks(request, project_id):
-    project = Projects.objects.get(id=project_id)
-    tasks = project_close_tasks(project_id)
+    user = request.user
+    if user.is_authenticated():
+        project = Projects.objects.get(id=project_id)
+        tasks = project_close_tasks(project_id)
 
-    date_today = datetime.datetime.now().date()
+        date_today = datetime.datetime.now().date()
 
-    return render(request, "tasks/project_tasks.html", {
-        "date_today": date_today,
-        "current_task": tasks,
-        "name": "Close Task {}".format(project.name)})
+        return render(request, "tasks/project_tasks.html", {
+            "date_today": date_today,
+            "current_task": tasks,
+            "name": "Close Task {}".format(project.name)})
+    else:
+        return redirect("/")
 
 
 def open_milestone(request, project_id):
-    tasks = project_open_milestone(project_id)
-    project = Projects.objects.get(id=project_id)
+    user = request.user
+    if user.is_authenticated():
+        tasks = project_open_milestone(project_id)
+        project = Projects.objects.get(id=project_id)
 
-    date_today = datetime.datetime.now().date()
+        date_today = datetime.datetime.now().date()
 
-    return render(request, "tasks/project_milestone.html", {
-        "date_today": date_today,
-        "milestone": tasks,
-        "name": "Open Milestone {}".format(project.name)})
+        return render(request, "tasks/project_milestone.html", {
+            "date_today": date_today,
+            "milestone": tasks,
+            "name": "Open Milestone {}".format(project.name)})
+    else:
+        return redirect("/")
 
 
 def close_milestone(request, project_id):
-    project = Projects.objects.get(id=project_id)
-    tasks = project_close_milestone(project_id)
+    user = request.user
+    if user.is_authenticated():
+        project = Projects.objects.get(id=project_id)
+        tasks = project_close_milestone(project_id)
 
-    date_today = datetime.datetime.now().date()
+        date_today = datetime.datetime.now().date()
 
-    return render(request, "tasks/project_milestone.html", {
-        "date_today": date_today,
-        "milestone": tasks,
-        "name": "Close Milestone {}".format(project.name)})
+        return render(request, "tasks/project_milestone.html", {
+            "date_today": date_today,
+            "milestone": tasks,
+            "name": "Close Milestone {}".format(project.name)})
+    else:
+        return redirect("/")
+
+
+@csrf_exempt
+def register_user(request):
+    if request.method == 'POST':
+        user_name = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get('password')
+        try:
+            urs = User.objects.get(email=email)
+            response = dict(message='fail')
+        except Exception:
+            User.objects.create_user(username=user_name,
+                                     password=password)
+            urs = User.objects.get(username=user_name)
+            urs.email = email
+            urs.save()
+            response = dict(message='success')
+
+        return HttpResponse(json.dumps(response))
+
+
+@csrf_exempt
+def login_user(request):
+    if request.method == 'POST':
+        user_name = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(username=user_name, password=password)
+        if user:
+            login(request, user)
+            response = dict(message='success')
+        else:
+            response = dict(message='fail')
+        return HttpResponse(json.dumps(response))
+
+
+def home(request):
+    return render(request, "home.html")
+

@@ -49,85 +49,86 @@ def all_project_time_sheet():
 
 
 def time_sheet_projects(task_id):
-    token = Tokens.objects.latest("id")
-    access_token = token.access_token
+    # token = Tokens.objects.latest("id")
+    # access_token = token.access_token
     task = Tasks.objects.get(id=task_id)
-
-    url = task.timesheet_url
-    headers = {
-        'authorization': "Bearer {}".format(access_token),
-    }
-    response = requests.request("GET", url, headers=headers)
-
-    if response.status_code in [204, 401] :
-        time_sheet = TimeSheet.objects.filter(task=task)
-        return time_sheet
-
-    else:
-        response = response.json()
-        response = response['timelogs']['tasklogs']
-        for r in response:
-            try:
-                sheet = TimeSheet.objects.get(task=task, project=task.project,time_sheet_id=r['id_string'])
-            except Exception:
-
-                sheet = TimeSheet.objects.create(task=task, project=task.project,
-                                                 time_sheet_id=r['id_string'])
-                sheet.save()
-
-            tasks = TimeSheet.objects.get(task=task, project=task.project,time_sheet_id=r['id_string'])
-            tasks.bill_status = r['bill_status']
-            tasks.last_modified_date = datetime.datetime.strptime(
-                r['last_modified_date'], "%m-%d-%Y")
-            tasks.owner_name = r['owner_name']
-            tasks.hours = r['hours']
-            tasks.total_minutes = r['total_minutes']
-            tasks.hours_display = r['hours_display']
-            tasks.notes = r['notes']
-            tasks.created_date = datetime.datetime.strptime(r['created_date'],
-                                                      "%m-%d-%Y")
-            tasks.save()
-        time_sheet = TimeSheet.objects.filter(task=task)
-        return time_sheet
+    #
+    # url = task.timesheet_url
+    # headers = {
+    #     'authorization': "Bearer {}".format(access_token),
+    # }
+    # response = requests.request("GET", url, headers=headers)
+    #
+    # if response.status_code in [204, 401] :
+    #     time_sheet = TimeSheet.objects.filter(task=task)
+    #     return time_sheet
+    #
+    # else:
+    #     response = response.json()
+    #     response = response['timelogs']['tasklogs']
+    #     for r in response:
+    #         try:
+    #             sheet = TimeSheet.objects.get(task=task, project=task.project,time_sheet_id=r['id_string'])
+    #         except Exception:
+    #
+    #             sheet = TimeSheet.objects.create(task=task, project=task.project,
+    #                                              time_sheet_id=r['id_string'])
+    #             sheet.save()
+    #
+    #         tasks = TimeSheet.objects.get(task=task, project=task.project,time_sheet_id=r['id_string'])
+    #         tasks.bill_status = r['bill_status']
+    #         tasks.last_modified_date = datetime.datetime.strptime(
+    #             r['last_modified_date'], "%m-%d-%Y")
+    #         tasks.owner_name = r['owner_name']
+    #         tasks.hours = r['hours']
+    #         tasks.total_minutes = r['total_minutes']
+    #         tasks.hours_display = r['hours_display']
+    #         tasks.notes = r['notes']
+    #         tasks.created_date = datetime.datetime.strptime(r['created_date'],
+    #                                                   "%m-%d-%Y")
+    #         tasks.save()
+    time_sheet = TimeSheet.objects.filter(task=task)
+    task_name = task.task_name
+    return time_sheet, task_name
 
 
 def time_sheet_projects_task(project_id):
-    token = Tokens.objects.latest("id")
-    access_token = token.access_token
+    # token = Tokens.objects.latest("id")
+    # access_token = token.access_token
     project = Projects.objects.get(id=project_id)
     task = project.tasks_set.all()
-    for t in task:
-        url = t.timesheet_url
-        headers = {
-            'authorization': "Bearer {}".format(access_token),
-        }
-        response = requests.request("GET", url, headers=headers)
-
-        if response.status_code == 204 or response.status_code == 401:
-            response = []
-        else:
-            response = response.json()
-            response = response['timelogs']['tasklogs']
-            for r in response:
-                try:
-                    sheet = TimeSheet.objects.get(task=t, project=t.project,time_sheet_id=r['id_string'])
-                except Exception:
-
-                    sheet = TimeSheet.objects.create(task=t, project=t.project,
-                                                     time_sheet_id=r['id_string'])
-                    sheet.save()
-
-                tasks = TimeSheet.objects.get(task=t, project=t.project,time_sheet_id=r['id_string'])
-                tasks.bill_status = r['bill_status']
-                tasks.last_modified_date = datetime.datetime.strptime(
-                    r['last_modified_date'], "%m-%d-%Y")
-                tasks.owner_name = r['owner_name']
-                tasks.hours = r['hours']
-                tasks.total_minutes = r['total_minutes']
-                tasks.hours_display = r['hours_display']
-                tasks.notes = r['notes']
-                tasks.created_date = datetime.datetime.strptime(r['created_date'],
-                                                          "%m-%d-%Y")
-                tasks.save()
+    # for t in task:
+    #     url = t.timesheet_url
+    #     headers = {
+    #         'authorization': "Bearer {}".format(access_token),
+    #     }
+    #     response = requests.request("GET", url, headers=headers)
+    #
+    #     if response.status_code == 204 or response.status_code == 401:
+    #         response = []
+    #     else:
+    #         response = response.json()
+    #         response = response['timelogs']['tasklogs']
+    #         for r in response:
+    #             try:
+    #                 sheet = TimeSheet.objects.get(task=t, project=t.project,time_sheet_id=r['id_string'])
+    #             except Exception:
+    #
+    #                 sheet = TimeSheet.objects.create(task=t, project=t.project,
+    #                                                  time_sheet_id=r['id_string'])
+    #                 sheet.save()
+    #
+    #             tasks = TimeSheet.objects.get(task=t, project=t.project,time_sheet_id=r['id_string'])
+    #             tasks.bill_status = r['bill_status']
+    #             tasks.last_modified_date = datetime.datetime.strptime(
+    #                 r['last_modified_date'], "%m-%d-%Y")
+    #             tasks.owner_name = r['owner_name']
+    #             tasks.hours = r['hours']
+    #             tasks.total_minutes = r['total_minutes']
+    #             tasks.hours_display = r['hours_display']
+    #             tasks.notes = r['notes']
+    #             tasks.created_date = datetime.datetime.strptime(r['created_date'],
+    #                                                       "%m-%d-%Y")
+    #             tasks.save()
     time_sheet = TimeSheet.objects.filter(task=task)
     return time_sheet

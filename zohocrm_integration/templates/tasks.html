@@ -9,8 +9,34 @@
     <title>Zoho</title>
 </head>
 <body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Zoho Dashboard</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-success">Current Task</label>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{%  url 'projects' %}">Home <span class="sr-only">(current)</span></a>
+      </li>
+        <li>
+        <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    </li>
+    </ul>
+      <div style="display: flex">
+          <a class="text-success" href="#">Welcome {{ request.user|upper }}</a>
+          <a class="text-danger" href="/logout_user/" style="padding-left: 10px;">Logout</a>
+        </div>
+
+  </div>
+</nav>
+
+<div style="padding: 10px 10px 10px">
+    <div class="col-md-12" style="text-align: center;padding-top: 70px;"> <label class="text-success"><strong>Current Task {{ name }}</strong></label>
 
 </div>
 
@@ -67,7 +93,7 @@
     </table>
 
 <hr>
-<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-danger">Past Task</label></div>
+    <div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-danger"><strong>Past Task {{ name }}</strong></label>
 
 
     <table class="table table-bordered table-sm">
@@ -123,7 +149,7 @@
     </table>
 
 <hr>
-<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-warning">Future Task</label></div>
+    <div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-warning"><strong>Future Task {{ name }}</strong></label>
      <table class="table table-bordered table-sm">
         <thead class="thead-dark">
             <tr>
@@ -177,7 +203,7 @@
 
 
 <hr>
-<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-success">Milestone</label></div>
+    <div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-success"><strong>Milestone {{ name }}</strong></label>
      <table class="table table-bordered table-sm">
         <thead class="thead-dark">
             <tr>
@@ -198,7 +224,13 @@
                 <td>{{t.project.name}}</td>
                 <td>{{t.owner_name}}</td>
                 <td>{{t.name}}</td>
-                <td>{{t.status}}</td>
+                <td>{%  if t.status == 'notcompleted' and t.end_date < date_today %}
+                    <label class="text-danger"> {{t.status}}</label>
+                    {% else %}
+                    <label class="text-success"> {{t.status}}</label>
+
+                {% endif %}</td>
+
                 <td>{{t.end_date}}</td>
                 <td>{{t.sequence}}</td>
                 <td>{{t.start_date}}</td>
@@ -213,7 +245,7 @@
         {% endif %}
         </tbody>
     </table>
-
+</div>
 <script>
     $(".shipment_sold").click(function(){
     //  alert("Invalid Shipment Number");

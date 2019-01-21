@@ -25,10 +25,6 @@ def all_projects():
             pros = Projects.objects.create(
                 project_id=p.get('id', ""),
                 name=p.get('name', ""))
-            pros.save()
-        print p['name'],"====>", p.get('task_count',"").get('open', 0), "====>", p.get('task_count',"").get('close')
-        print p['name'],"====>", p.get('milestone_count',"").get('open', 0), "====>", p.get('milestone_count',"").get('close')
-
         pro = Projects.objects.get(project_id=p['id'])
         try:
             start_time = p.get('start_date', "")
@@ -120,8 +116,6 @@ def all_projects():
     #                     project_id=detail_project.project_id)
     #         result.append(data)
     #     return result
-
-
 
 
 def project_detail_view(project_id):
