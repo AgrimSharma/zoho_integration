@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import json
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.conf import settings
@@ -314,6 +314,11 @@ def login_user(request):
         else:
             response = dict(message='fail')
         return HttpResponse(json.dumps(response))
+
+
+def logout_user(request):
+    logout(request)
+    return redirect("/")
 
 
 def home(request):

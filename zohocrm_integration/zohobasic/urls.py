@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^auth_request/', auth_request),
     url(r'^projects/', projects, name="projects"),
     url(r'^login_user/', login_user, name='login_user'),
+    url(r'^logout_user/', logout_user, name='logout_user'),
     url(r'^register_user/', register_user, name='register'),
     url(r'^', home),
 
