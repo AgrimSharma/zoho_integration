@@ -95,6 +95,7 @@ def callback(request):
         tasks = all_projects_task()
         milestone = all_projects_milestone()
         timesheet= all_project_time_sheet()
+        projects = Projects.objects.all()
         # return HttpResponse(json.dumps(dict(projects=projects, tokens=vals)))
         return render(request, "main.html", {"projects":projects})
         # return HttpResponse(json.dumps(dict(message="Success")))
