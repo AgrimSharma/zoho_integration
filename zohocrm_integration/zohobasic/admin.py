@@ -25,15 +25,30 @@ class TaskAdmin(admin.ModelAdmin):
     def projects(self,obj):
         return obj.project.name
 
-    list_display = ['projects', "task_id", "start_date", "end_date"]
+    list_display = ['projects', "task_id", "milestone_id", "start_date", "end_date"]
+    search_fields = ['project__name',"milestone_id"]
 
 
 class TimeSheetAdmin(admin.ModelAdmin):
-    pass
+    raw_id_fields = ['project']
+
+    def projects(self, obj):
+        return obj.project.name
+
+    def tasks(self, obj):
+        return obj.task.task_name
+    list_display = ['projects', "tasks", "owner_name", "total_minutes"]
+    search_fields = ['project__name']
 
 
 class MilestoneAdmin(admin.ModelAdmin):
-    pass
+    raw_id_fields = ['project']
+
+    def projects(self, obj):
+        return obj.project.name
+
+    list_display = ['projects', "name", "start_date", "end_date"]
+    search_fields = ['project__name']
 
 
 admin.site.register(Tokens, TokenAdmin)

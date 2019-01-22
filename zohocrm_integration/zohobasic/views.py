@@ -348,6 +348,7 @@ def project_list(request, name):
     else:
         return redirect("/")
 
+
 def logout_user(request):
     logout(request)
     return redirect("/")

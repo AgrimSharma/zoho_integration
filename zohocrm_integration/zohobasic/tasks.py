@@ -1,3 +1,7 @@
+import json
+
+from django.http import HttpResponse
+
 from .models import *
 import requests
 import datetime
@@ -142,9 +146,9 @@ def all_projects_task():
         }
 
         response = requests.request("GET", url, headers=headers)
-        data = response.json()
         # if data:
         try:
+            data = response.json()
             data = data['tasks']
             for d in data:
                 try:
@@ -257,7 +261,7 @@ def all_projects_task():
                 )
                 result.append(resp)
         except Exception:
-            pass
+            return HttpResponse(json.dumps(dict(error='all_projects_task')))
 
     return result
 

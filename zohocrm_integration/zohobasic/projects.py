@@ -1,8 +1,13 @@
+import json
+
 import requests
+from django.http import HttpResponse
+
 from .models import *
 from django.conf import settings
 import datetime
 from .task_list import *
+
 
 def all_projects():
 
@@ -15,9 +20,11 @@ def all_projects():
 
     projects = requests.request("GET", url, headers=headers)
     response = []
-    # try:
-    projects = projects.json()
-    projects = projects['projects']
+    try:
+        projects = projects.json()
+        projects = projects['projects']
+    except Exception:
+        return HttpResponse(json.dumps(dict(error='all_projects')))
     for p in projects:
         try:
             pro = Projects.objects.get(project_id=p['id'])

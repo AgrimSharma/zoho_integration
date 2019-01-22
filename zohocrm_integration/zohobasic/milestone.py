@@ -1,3 +1,7 @@
+import json
+
+from django.http import HttpResponse
+
 from .models import *
 import requests
 import datetime
@@ -15,10 +19,10 @@ def all_projects_milestone():
         }
 
         response = requests.request("GET", url, headers=headers)
-        if response.status_code == 204:
-            return []
-        else:
+        try:
             data = response.json()
+        except Exception:
+            return HttpResponse(json.dumps(dict(error='all_projects_milestone')))
 
         if data:
             data = data['milestones']

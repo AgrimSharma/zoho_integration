@@ -102,6 +102,7 @@
     <table class="table table-bordered table-sm">
         <thead class="thead-dark">
             <tr>
+                <th>SNo</th>
                 <th>Description</th>
                 <th>Task ID</th>
                 <th>Milestone ID</th>
@@ -122,6 +123,8 @@
         {% if past_task %}
              {% for t in past_task %}
             <tr>
+                            <td>{{forloop.counter}}</td>
+
                 <td>{% if t.description == None or t.description == "" %} No Description {% else %}{{t.description}}{% endif %}</td>
                 <td><a href="https://projects.zoho.com/portal/indigoconsulting#taskdetail/{{ t.project.project_id }}/{{ t.tasklist_id }}/{{ t.task_id }}">Task Detail</a> </td>
 
@@ -156,6 +159,7 @@
      <table class="table table-bordered table-sm">
         <thead class="thead-dark">
             <tr>
+                <th>SNo</th>
                 <th>Description</th>
                 <th>Task ID</th>
                 <th>Milestone ID</th>
@@ -176,6 +180,8 @@
         {% if future_task %}
              {% for t in future_task %}
             <tr>
+                                        <td>{{forloop.counter}}</td>
+
                 <td>{% if t.description == None or t.description == "" %} No Description {% else %}{{t.description}}{% endif %}</td>
                 <td><a href="https://projects.zoho.com/portal/indigoconsulting#taskdetail/{{ t.project.project_id }}/{{ t.tasklist_id }}/{{ t.task_id }}">Task Detail</a> </td>
                 <td>{{t.milestone_id}}</td>
@@ -210,6 +216,7 @@
      <table class="table table-bordered table-sm">
         <thead class="thead-dark">
             <tr>
+                <th>SNo</th>
                 <th>project</th>
                 <th>owner_name</th>
                 <th>name</th>
@@ -223,7 +230,8 @@
         <tbody>
         {% if milestone %}
              {% for t in milestone %}
-            <tr>
+            <tr>                            <td>{{forloop.counter}}</td>
+
                 <td>{{t.project.name}}</td>
                 <td>{{t.owner_name}}</td>
                 <td>{{t.name}}</td>

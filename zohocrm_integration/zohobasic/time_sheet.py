@@ -1,4 +1,8 @@
+import json
+
 import requests
+from django.http import HttpResponse
+
 from .models import *
 import datetime
 from django.conf import settings
@@ -42,10 +46,12 @@ def all_project_time_sheet():
                                                      r['created_date'], "%m-%d-%Y")
                                                  )
                 sheet.save()
+
         except Exception:
-            pass
-    time_sheet = TimeSheet.objects.filter(task=p)
-    return time_sheet
+            return HttpResponse(json.dumps(dict(error='all_project_time_sheet')))
+
+        time_sheet = TimeSheet.objects.filter(task=p)
+        return time_sheet
 
 
 def time_sheet_projects(task_id):

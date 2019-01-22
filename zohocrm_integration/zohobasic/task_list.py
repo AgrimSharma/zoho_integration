@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from .models import *
 import requests
 import datetime
@@ -42,16 +44,15 @@ def project_task_list(project_id):
         days=6 - week_day)
     past_date = begin_date - datetime.timedelta(days=7)
     future_date = end_date + datetime.timedelta(days=7)
-    current_task = Tasks.objects.filter(project=project,
-                                        end_date__gte=begin_date,
-                                        end_date__lte=end_date)
-    past_task = Tasks.objects.filter(project=project,
-                                     end_date__gte=past_date,
-                                     end_date__lt=begin_date)
-    future_task = Tasks.objects.filter(project=project,
-                                       end_date__gte=end_date,
-                                       end_date__lte=future_date)
-
+    cq = Q(project=project,end_date__gte=begin_date,end_date__lte=end_date) or Q(project=project,start_date__gte=begin_date,start_date__lte=end_date)
+    # pq = Q(project=project,end_date__lt=begin_date)
+    # pq = Q(project=project,start_date__lte=begin_date)
+    pq =  Q(project=project, status="Closed")
+    fq = Q(project=project,end_date__gte=end_date) or Q(project=project,start_date__gte=end_date)
+    current_task = Tasks.objects.filter(cq)
+    past_task = Tasks.objects.filter(pq)
+    future_task = Tasks.objects.filter(fq)
+    print len(past_task)
     return current_task,past_task, future_task
 
 
