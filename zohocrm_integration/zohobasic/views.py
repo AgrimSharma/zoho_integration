@@ -86,11 +86,9 @@ def callback(request):
         # refresh = token_refresh(access.refresh_token)
         # access.access_token = refresh
         # access.created_at = datetime.datetime.now()
-        portals = portals_data(access.access_token)
-
         access.save()
-        port = portals.get('portals', "")
-
+        port = settings.PORTAL_ID
+        
     except Exception:
 
         port = settings.PORTAL_ID
