@@ -43,6 +43,7 @@
     <table class="table table-bordered table-sm">
         <thead class="thead-dark">
             <tr>
+                <th>SNo</th>
                 <th>project</th>
                 <th>owner_name</th>
                 <th>name</th>
@@ -57,6 +58,7 @@
         {% if mile_stone %}
              {% for t in mile_stone %}
             <tr>
+                <td>{{forloop.counter}}</td>
                 <td>{{t.project.name}}</td>
                 <td>{{t.owner_name}}</td>
                 <td>{{t.name}}</td>

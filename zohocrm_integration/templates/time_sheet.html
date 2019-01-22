@@ -41,6 +41,8 @@
     <table class="table table-bordered table-sm">
         <thead class="thead-dark">
             <tr>
+
+                <th>Sno</th>
                 <th>project</th>
                 <th>Task</th>
                 <th>Last Modified Date</th>
@@ -58,6 +60,7 @@
         {% if tasks %}
              {% for t in tasks %}
             <tr>
+                <td>{{forloop.counter}}</td>
                 <td>{{t.project.name}}</td>
                 <td>{{t.task.task_name}}</td>
                 <td>{{t.last_modified_date}}</td>

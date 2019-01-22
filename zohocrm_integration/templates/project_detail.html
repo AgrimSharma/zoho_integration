@@ -42,6 +42,7 @@
     <table class="table">
         <thead class="thead-dark">
             <tr>
+                <th>SNo</th>
                 <th>Project Name</th>
                 <th>Start Date</th>
                 <th>End Date</th>
@@ -62,6 +63,8 @@
         </thead>
         <tbody>
             <tr>
+                            <td>{{forloop.counter}}</td>
+
                 <td><a href="/detail/{{project.id}}">{{project.name}}</a></td>
                 <td>{{project.start_date}}</td>
                 <td>{{project.end_date}}</td>

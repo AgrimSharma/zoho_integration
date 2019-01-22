@@ -39,6 +39,7 @@
     <table class="table">
         <thead class="thead-dark">
             <tr>
+                <th>SNo</th>
                 <th>Project Name</th>
                 <th>Created Date</th>
                 <th>End Date</th>
@@ -52,6 +53,7 @@
         <tbody>
             {% for d in projects %}
             <tr>
+                <td>{{forloop.counter}}</td>
                 <td>{{d.name}}</td>
                 <td>{{d.created_date}}</td>
                 <td>{{d.end_date}}</td>
