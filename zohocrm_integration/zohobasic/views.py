@@ -75,27 +75,34 @@ def callback(request):
 
     response = requests.request("POST", url, headers=headers,
                                 params=querystring)
-    vals = response.json()
-    vals['code'] = code
-    access = Tokens.objects.latest("id")
-    access.access_token = vals['access_token']
-    # access.refresh_token = vals['refresh_token']
-    access.created_at = datetime.datetime.now()
-    access.code = code
-    # refresh = token_refresh(access.refresh_token)
-    # access.access_token = refresh
-    # access.created_at = datetime.datetime.now()
-    access.save()
+    try:
+        vals = response.json()
+        vals['code'] = code
+        access = Tokens.objects.latest("id")
+        access.access_token = vals['access_token']
+        # access.refresh_token = vals['refresh_token']
+        access.created_at = datetime.datetime.now()
+        access.code = code
+        # refresh = token_refresh(access.refresh_token)
+        # access.access_token = refresh
+        # access.created_at = datetime.datetime.now()
+        portals = portals_data(access.access_token)
 
-    portals = portals_data(access.access_token)
+        access.save()
+        port = portals.get('portals', "")
 
-    port = portals.get('portals',"")
+    except Exception:
+
+        port = settings.PORTAL_ID
+
+
+
     if port:
         projects = all_projects()
         tasks = all_projects_task()
         milestone = all_projects_milestone()
         timesheet= all_project_time_sheet()
-        projects = Projects.objects.all()
+        # projects = Projects.objects.all()
         # return HttpResponse(json.dumps(dict(projects=projects, tokens=vals)))
         return render(request, "main.html", {"projects":projects})
         # return HttpResponse(json.dumps(dict(message="Success")))
