@@ -11,7 +11,7 @@ import pytz
 from django.views.decorators.csrf import csrf_exempt
 
 from task_list import *
-from projects import all_projects, project_detail_view
+from projects import *
 from tasks import *
 from milestone import *
 from time_sheet import *
@@ -322,6 +322,31 @@ def login_user(request):
             response = dict(message='fail')
         return HttpResponse(json.dumps(response))
 
+
+def client_list(request):
+    user = request.user
+    if user.is_authenticated():
+        hdfc_close = Projects.objects.filter(name__icontains='hdfc', status='closed')
+        hdfc_open = Projects.objects.filter(name__icontains='hdfc', status='active')
+        indus_open = Projects.objects.filter(name__icontains='indusind', status='active')
+        indus_closed = Projects.objects.filter(name__icontains='indusind', status='closed')
+        project = [dict(name="HDFC BANK", search='hdfc', open=len(hdfc_open), closed=len(hdfc_close)),
+                   dict(name="Indusind BANK", search='indusind', open=len(indus_open),
+                        closed=len(indus_closed))]
+
+        return render(request, "clients.html", {
+            "project": project})
+    else:
+        return redirect("/")
+
+
+def project_list(request, name):
+    user = request.user
+    if user.is_authenticated():
+        project = project_list_view(name)
+        return render(request, "project_list.html", {"projects": project})
+    else:
+        return redirect("/")
 
 def logout_user(request):
     logout(request)

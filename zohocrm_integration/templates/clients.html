@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <title>Zoho</title>
+</head>
+<body>
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Zoho Dashboard</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{%  url 'projects' %}">Home <span class="sr-only">(current)</span></a>
+      </li>
+        <li>
+        <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    </li>
+    </ul>
+      <div style="display: flex">
+          <a class="text-success" href="#">Welcome {{ request.user|upper }}</a>
+          <a class="text-danger" href="/logout_user/" style="padding-left: 10px;">Logout</a>
+        </div>
+
+  </div>
+</nav>
+
+<div style="padding-top: 60px">
+<div class="col-md-12" style="text-align: center;padding-top: 20px;">
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th style="text-align: center">SNo.</th>
+                <th style="text-align: center">Client Name</th>
+                <th style="text-align: center">Open Projects</th>
+                <th style="text-align: center">Closed Projects</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in project %}
+            <tr>
+                <td style="text-align: center">{{forloop.counter}} </td>
+
+                <td style="text-align: center"><a href="/project_list/{{p.search}}">{{p.name}}</a> </td>
+                <td style="text-align: center">{{p.open}}</td>
+                <td style="text-align: center">{{p.closed}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+</body>
+</html>

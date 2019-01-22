@@ -27,11 +27,13 @@ urlpatterns = [
     url(r'^close_task/(?P<project_id>\w+)', close_tasks),
     url(r'^open_milestone/(?P<project_id>\w+)', open_milestone),
     url(r'^close_milestone/(?P<project_id>\w+)', close_milestone),
+    url(r'^project_list/(?P<name>\w+)', project_list),
 
     # URL for auth request
     url(r'^task/(?P<project_id>\w+)', task_project),
     url(r'^milestone/(?P<project_id>\w+)', milestone_data),
     url(r'^auth_request/', auth_request),
+    url(r'^clients/', client_list),
     url(r'^projects/', projects, name="projects"),
     url(r'^login_user/', login_user, name='login_user'),
     url(r'^logout_user/', logout_user, name='logout_user'),

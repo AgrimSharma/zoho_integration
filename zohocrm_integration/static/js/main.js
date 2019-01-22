@@ -14,7 +14,7 @@ $(".sign_in").click(function () {
         success: function(resp) {
           var data = JSON.parse(resp);
           if (data.message === 'success') {
-              window.location.href = "/projects/";
+              window.location.href = "/clients/";
           } else {
               alert("Please try again")
           }
