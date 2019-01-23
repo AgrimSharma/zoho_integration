@@ -153,7 +153,10 @@ def project_list_view(name):
     response = []
     for pro in projects:
         current_task, future_date_one_week, future_date_two_week, future_date_three_week= project_task_list_week(pro.id)
-
+        try:
+            percent = pro.task_count_close / pro.task_count_close + pro.task_count_open * 100
+        except Exception:
+            percent = 0
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
@@ -168,8 +171,8 @@ def project_list_view(name):
                     current_task=len(current_task),
                     future_date_one_week=len(future_date_one_week),
                     future_date_two_week=len(future_date_two_week),
-                    future_date_three_week=len(future_date_three_week)
+                    future_date_three_week=len(future_date_three_week),
+                    percent=percent
                     )
         response.append(data)
     return response
-

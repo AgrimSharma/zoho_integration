@@ -324,14 +324,16 @@ def login_user(request):
 def client_list(request):
     user = request.user
     if user.is_authenticated():
-
         hdfc_close = Projects.objects.filter(name__icontains='hdfc', status='closed', owner_name=user.username)
         hdfc_open = Projects.objects.filter(name__icontains='hdfc', status='active')
         indus_open = Projects.objects.filter(name__icontains='indusind', status='active')
         indus_closed = Projects.objects.filter(name__icontains='indusind', status='closed')
-        project = [dict(name="HDFC BANK", search='hdfc', open=len(hdfc_open), closed=len(hdfc_close)),
+        hdfc_percent = len(hdfc_close) / len(hdfc_open) + len(hdfc_close) * 100
+        indus_percent = len(indus_closed) / len(indus_open) + len(indus_closed) * 100
+
+        project = [dict(name="HDFC BANK", search='hdfc', open=len(hdfc_open), closed=len(hdfc_close), percent=hdfc_percent),
                    dict(name="Indusind BANK", search='indusind', open=len(indus_open),
-                        closed=len(indus_closed))]
+                        closed=len(indus_closed), percent=indus_percent)]
 
         return render(request, "clients.html", {
             "project": project})

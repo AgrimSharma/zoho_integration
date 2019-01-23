@@ -30,7 +30,7 @@ class TaskAdmin(admin.ModelAdmin):
 
 
 class TimeSheetAdmin(admin.ModelAdmin):
-    raw_id_fields = ['project', "tasks"]
+    raw_id_fields = ['project']
 
     def projects(self, obj):
         return obj.project.name
