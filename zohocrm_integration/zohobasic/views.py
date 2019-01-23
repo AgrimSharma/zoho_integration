@@ -92,10 +92,9 @@ def callback(request):
     except Exception:
 
         port = settings.PORTAL_ID
-    user = request.user
 
-    if port and user.is_authenticated():
-        projects = all_projects(user)
+    if port:
+        projects = all_projects()
         tasks = all_projects_task()
         milestone = all_projects_milestone()
         timesheet= all_project_time_sheet()
