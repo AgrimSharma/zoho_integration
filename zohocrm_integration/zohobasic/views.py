@@ -92,19 +92,18 @@ def callback(request):
     except Exception:
 
         port = settings.PORTAL_ID
+    user = request.user
 
-
-
-    if port:
-        projects = all_projects()
+    if port and user.is_authenticated():
+        projects = all_projects(user)
         tasks = all_projects_task()
         milestone = all_projects_milestone()
         timesheet= all_project_time_sheet()
         # projects = Projects.objects.all()
         # return HttpResponse(json.dumps(dict(projects=projects, tokens=vals)))
-        return render(request, "main.html", {"projects":projects})
+        # return render(request, "main.html", {"projects":projects})
         # return HttpResponse(json.dumps(dict(message="Success")))
-
+        return redirect("/projects/")
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
 
@@ -326,7 +325,8 @@ def login_user(request):
 def client_list(request):
     user = request.user
     if user.is_authenticated():
-        hdfc_close = Projects.objects.filter(name__icontains='hdfc', status='closed')
+
+        hdfc_close = Projects.objects.filter(name__icontains='hdfc', status='closed', owner_name=user.username)
         hdfc_open = Projects.objects.filter(name__icontains='hdfc', status='active')
         indus_open = Projects.objects.filter(name__icontains='indusind', status='active')
         indus_closed = Projects.objects.filter(name__icontains='indusind', status='closed')
