@@ -137,7 +137,6 @@ def all_projects_task():
     token = Tokens.objects.latest("id")
     project = Projects.objects.all()
     access_token = token.access_token
-    result = []
 
     for p in project:
         url = p.task_url
@@ -147,7 +146,9 @@ def all_projects_task():
 
         response = requests.request("GET", url, headers=headers)
         # if data:
-        try:
+        if response.status_code in [204, 400, 401, 404]:
+            pass
+        else:
             data = response.json()
             data = data['tasks']
             for d in data:
@@ -241,29 +242,7 @@ def all_projects_task():
                                                              "%m-%d-%Y") if start_date else None
 
                 task.save()
-                resp = dict(
-                    end_date=task.end_date,
-                    milestone_id=task.milestone_id,
-                    duration=task.duration,
-                    task_id=task.task_id,
-                    start_date=start_date,
-                    subtasks=task.subtasks,
-                    task_name=task.task_name,
-                    description=task.description,
-                    timesheet=task.timesheet_url,
-                    owners=owner,
-                    created_person=task.created_person,
-                    created_time=task.created_time,
-                    completed=task.completed,
-                    percent_complete=task.percent_complete + "%",
-                    completed_time=task.completed_time,
-                    status=task.status
-                )
-                result.append(resp)
-        except Exception:
-            return HttpResponse(json.dumps(dict(error='all_projects_task')))
-
-    return result
+    return "Success"
 
 
 def project_open_tasks(project_id):

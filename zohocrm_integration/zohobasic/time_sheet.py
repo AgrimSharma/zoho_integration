@@ -21,7 +21,9 @@ def all_project_time_sheet():
         }
         response = requests.request("GET", url, headers=headers)
 
-        try:
+        if response.status_code in [204, 400, 401, 404]:
+            pass
+        else:
             response = response.json()
             response = response['timelogs']['tasklogs']
             for r in response:
@@ -46,10 +48,6 @@ def all_project_time_sheet():
                                                      r['created_date'], "%m-%d-%Y")
                                                  )
                 sheet.save()
-
-        except Exception:
-            return HttpResponse(json.dumps(dict(error='all_project_time_sheet')))
-
     return "s"
 
 
