@@ -33,7 +33,7 @@ urlpatterns = [
     url(r'^task/(?P<project_id>\w+)', task_project),
     url(r'^milestone/(?P<project_id>\w+)', milestone_data),
     url(r'^auth_request/', auth_request),
-    url(r'^clients/', client_list),
+    url(r'^clients/', client_list,name="clients"),
     url(r'^projects/', projects, name="projects"),
     url(r'^login_user/', login_user, name='login_user'),
     url(r'^logout_user/', logout_user, name='logout_user'),
