@@ -26,7 +26,7 @@ class TaskAdmin(admin.ModelAdmin):
         return obj.project.name
 
     list_display = ['projects', "task_id", "milestone_id", "start_date", "end_date"]
-    search_fields = ['project__name',"milestone_id"]
+    search_fields = ['project__name',"milestone_id", "task_id"]
 
 
 class TimeSheetAdmin(admin.ModelAdmin):
