@@ -9,14 +9,13 @@ from django.conf import settings
 import datetime
 import pytz
 from django.views.decorators.csrf import csrf_exempt
-
+from resource_utils import *
 from task_list import *
 from projects import *
 from tasks import *
 from milestone import *
 from time_sheet import *
 from django.contrib.auth.models import User
-
 
 utc=pytz.UTC
 
@@ -341,6 +340,16 @@ def client_list(request):
         return redirect("/")
 
 
+def resource_utilisation(request):
+    user = request.user
+    if user.is_authenticated():
+        project = resource_utilisation_all()
+        return HttpResponse(json.dumps(dict(users=project)))
+        # return render(request, "project_list.html", {"projects": project})
+    else:
+        return redirect("/")
+
+
 def project_list(request, name):
     user = request.user
     if user.is_authenticated():
@@ -353,6 +362,162 @@ def project_list(request, name):
 def logout_user(request):
     logout(request)
     return redirect("/")
+
+
+def projects_pull(request):
+    code = request.GET.get("code", "")
+    url = "https://accounts.zoho.com/oauth/v2/token"
+
+    querystring = {
+        "code": code,
+        "redirect_uri": settings.REDIRECT_URL,
+        "client_id": settings.CLIENT_ID,
+        "client_secret": settings.CLIENT_SECRET,
+        "grant_type": "authorization_code"}
+
+    headers = {
+        'cache-control': "no-cache",
+        'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
+    }
+
+    response = requests.request("POST", url, headers=headers,
+                                params=querystring)
+    try:
+        vals = response.json()
+        vals['code'] = code
+        access = Tokens.objects.latest("id")
+        access.access_token = vals['access_token']
+        access.created_at = datetime.datetime.now()
+        access.code = code
+        access.save()
+        port = settings.PORTAL_ID
+
+    except Exception:
+
+        port = settings.PORTAL_ID
+
+    if port:
+        projects = all_projects()
+        return redirect("/projects/")
+    else:
+        return HttpResponse(json.dumps(dict(error="Auth error")))
+
+
+def tasks_pull(request):
+    code = request.GET.get("code", "")
+    url = "https://accounts.zoho.com/oauth/v2/token"
+
+    querystring = {
+        "code": code,
+        "redirect_uri": settings.REDIRECT_URL,
+        "client_id": settings.CLIENT_ID,
+        "client_secret": settings.CLIENT_SECRET,
+        "grant_type": "authorization_code"}
+
+    headers = {
+        'cache-control': "no-cache",
+        'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
+    }
+
+    response = requests.request("POST", url, headers=headers,
+                                params=querystring)
+    try:
+        vals = response.json()
+        vals['code'] = code
+        access = Tokens.objects.latest("id")
+        access.access_token = vals['access_token']
+        access.created_at = datetime.datetime.now()
+        access.code = code
+        access.save()
+        port = settings.PORTAL_ID
+
+    except Exception:
+
+        port = settings.PORTAL_ID
+
+    if port:
+        tasks = all_projects_task()
+        return redirect("/projects/")
+    else:
+        return HttpResponse(json.dumps(dict(error="Auth error")))
+
+
+def milestone_pull(request):
+    code = request.GET.get("code", "")
+    url = "https://accounts.zoho.com/oauth/v2/token"
+
+    querystring = {
+        "code": code,
+        "redirect_uri": settings.REDIRECT_URL,
+        "client_id": settings.CLIENT_ID,
+        "client_secret": settings.CLIENT_SECRET,
+        "grant_type": "authorization_code"}
+
+    headers = {
+        'cache-control': "no-cache",
+        'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
+    }
+
+    response = requests.request("POST", url, headers=headers,
+                                params=querystring)
+    try:
+        vals = response.json()
+        vals['code'] = code
+        access = Tokens.objects.latest("id")
+        access.access_token = vals['access_token']
+        access.created_at = datetime.datetime.now()
+        access.code = code
+        access.save()
+        port = settings.PORTAL_ID
+
+    except Exception:
+
+        port = settings.PORTAL_ID
+
+    if port:
+        milestone = all_projects_milestone()
+        return redirect("/projects/")
+    else:
+        return HttpResponse(json.dumps(dict(error="Auth error")))
+
+
+def time_sheet_pull(request):
+    code = request.GET.get("code", "")
+    url = "https://accounts.zoho.com/oauth/v2/token"
+
+    querystring = {
+        "code": code,
+        "redirect_uri": settings.REDIRECT_URL,
+        "client_id": settings.CLIENT_ID,
+        "client_secret": settings.CLIENT_SECRET,
+        "grant_type": "authorization_code"}
+
+    headers = {
+        'cache-control': "no-cache",
+        'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
+    }
+
+    response = requests.request("POST", url, headers=headers,
+                                params=querystring)
+    try:
+        vals = response.json()
+        vals['code'] = code
+        access = Tokens.objects.latest("id")
+        access.access_token = vals['access_token']
+        access.created_at = datetime.datetime.now()
+        access.code = code
+        access.save()
+        port = settings.PORTAL_ID
+
+    except Exception:
+
+        port = settings.PORTAL_ID
+
+    if port:
+        timesheet = all_project_time_sheet()
+        return redirect("/projects/")
+    else:
+        return HttpResponse(json.dumps(dict(error="Auth error")))
 
 
 def home(request):
