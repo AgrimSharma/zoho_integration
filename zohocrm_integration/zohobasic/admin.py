@@ -38,7 +38,7 @@ class TimeSheetAdmin(admin.ModelAdmin):
     def tasks(self, obj):
         return obj.task.task_name
     list_display = ['projects', "tasks", "owner_name", "total_minutes"]
-    search_fields = ['project__name']
+    search_fields = ['project__name', "owner_name"]
 
 
 class MilestoneAdmin(admin.ModelAdmin):

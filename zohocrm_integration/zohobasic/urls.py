@@ -34,10 +34,15 @@ urlpatterns = [
     url(r'^milestone/(?P<project_id>\w+)', milestone_data),
     url(r'^auth_request/', auth_request),
     url(r'^clients/', client_list,name="clients"),
+    url(r'^users/', resource_utilisation,name="users"),
     url(r'^projects/', projects, name="projects"),
     url(r'^login_user/', login_user, name='login_user'),
     url(r'^logout_user/', logout_user, name='logout_user'),
     url(r'^register_user/', register_user, name='register'),
+    url(r'^projects_pull/', projects_pull, name='projects_pull'),
+    url(r'^time_sheet_pull/', time_sheet_pull, name='time_sheet_pull'),
+    url(r'^tasks_pull/', tasks_pull, name='tasks_pull'),
+    url(r'^milestone_pull/', milestone_pull, name='milestone_pull'),
     url(r'^', home),
 
 ]
