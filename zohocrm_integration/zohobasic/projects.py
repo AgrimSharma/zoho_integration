@@ -87,43 +87,6 @@ def all_projects():
             pro.save()
     return "success"
 
-        # detail_project = Projects.objects.get(project_id=p['id'])
-
-        # data = dict(name=detail_project.name,
-        #             id=detail_project.id,
-        #             end_date=detail_project.end_date_format,
-        #             bugs_count=dict(
-        #                 open=detail_project.task_count_open,
-        #                 closed=detail_project.task_count_close),
-        #             milestone_count=dict(
-        #                 closed=detail_project.milestone_count_open,
-        #                 opne=detail_project.milestone_count_close),
-        #             start_date=detail_project.start_date_format,
-        #             status=detail_project.status,
-        #             created_date=detail_project.created_date_format,
-        #             project_id=detail_project.project_id)
-        # response.append(data)
-
-    # except Exception:
-    #     projects = Projects.objects.all()
-    #     result = []
-    #     for detail_project in projects:
-    #         data = dict(name=detail_project.name,
-    #                     id=detail_project.id,
-    #                     end_date=detail_project.end_date_format,
-    #                     bugs_count=dict(
-    #                         open=detail_project.task_count_open,
-    #                         closed=detail_project.task_count_close),
-    #                     milestone_count=dict(
-    #                         closed=detail_project.milestone_count_open,
-    #                         opne=detail_project.milestone_count_close),
-    #                     start_date=detail_project.start_date_format,
-    #                     status=detail_project.status,
-    #                     created_date=detail_project.created_date_format,
-    #                     project_id=detail_project.project_id)
-    #         result.append(data)
-    #     return result
-
 
 def project_detail_view(project_id):
     pro = Projects.objects.get(id=project_id)

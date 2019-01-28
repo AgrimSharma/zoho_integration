@@ -11,9 +11,6 @@ def project_task(project_id):
     token = Tokens.objects.latest("id")
     project = Projects.objects.get(project_id=project_id)
     access_token = token.access_token
-    # url = "https://projectsapi.zoho.com/restapi/portal/{portal_id}/" \
-    #       "projects/{project_id}/tasks/".format(project_id=project_id,
-    #                                             portal_id=settings.PORTAL_ID)
     url = project.task_url
     headers = {
         'authorization': "Bearer {}".format(access_token),

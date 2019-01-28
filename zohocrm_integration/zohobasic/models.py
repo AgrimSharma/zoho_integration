@@ -137,7 +137,7 @@ class ZohoUsers(models.Model):
 class TimeSheet(models.Model):
     project = models.ForeignKey(to=Projects, on_delete=models.CASCADE)
     task = models.ForeignKey(to=Tasks, on_delete=models.CASCADE)
-    last_modified_date = models.CharField(max_length=100, null=True, blank=True)
+    last_modified_date = models.DateField(null=True, blank=True)
     bill_status = models.CharField(max_length=100, null=True, blank=True)
     time_sheet_id = models.CharField(max_length=100, null=True, blank=True)
     owner_name = models.CharField(max_length=100, null=True, blank=True)
