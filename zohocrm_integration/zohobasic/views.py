@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import json
-
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.conf import settings
-import datetime
 import pytz
 from django.views.decorators.csrf import csrf_exempt
 from resource_utils import *
-from task_list import *
 from projects import *
 from tasks import *
 from milestone import *
