@@ -144,7 +144,8 @@ def projects_grantt(request):
     # user = request.user
     # try:
     #     user = User.objects.get(username=user.username)
-    project = Projects.objects.filter(start_date_format__year__gte=datetime.datetime.now().year - 1).order_by("name")
+    project = Projects.objects.filter(start_date_format__year__gte=
+                                      datetime.datetime.now().year - 1).order_by("name")
     response = []
     for p in project:
         import re
@@ -182,28 +183,35 @@ def projects_grantt(request):
                 start_date = datetime.datetime.strftime(t.start_date,
                                                         "%Y-%m-%d")
             except Exception:
-                import random
-                # start_date = datetime.datetime.strftime(datetime.datetime.now(),"%Y-%m-%d")
-                days = datetime.datetime.now() - datetime.timedelta(days=random.randrange(1,30), weeks=random.randrange(1,10))
-                start_date = datetime.datetime.strftime(days, "%Y-%m-%d")
-
+                start_date = datetime.datetime.strftime(p.start_date_format, "%Y-%m-%d")
+            current = datetime.datetime.now()
+            ends = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+            if ends >= current and t.status in ["Open", "In Progress"]:
+                color = "#ffbf00"
+            elif ends <= current and t.status in ["Open", "In Progress"]:
+                color = "#008000"
+            else:
+                color = "#FF0000"
             task_data.append(dict(task=t.task_name,
                                   start=start_date,
-                                  end=end_date
+                                  end=end_date,
+                                  color=color
                                   ))
+        remove_numbers = re.sub("[^a-zA-Z0-9]+"," ", p.name.strip())
+        remove_hypen = re.sub("[0-9]{1,}"," ", remove_numbers)
+        if len(tasks) > 0:
 
-
-        response.append(dict(name=str(re.sub("[0-9]{1,}|[^\x00-\x7F]+|-|_", " ", p.name.strip())),
-                             start_date_month =start_date_month,
-                             start_date_year=start_date_year,
-                             start_date_date=start_date_date,
-                             end_date_month=end_date_month,
-                             end_date_year=end_date_year,
-                             end_date_date=end_date_date,
-                             project_id=p.project_id,
-                             status=p.status,
-                             percent=percent * 100,
-                             tasks=task_data))
+            response.append(dict(name=remove_hypen,
+                                 start_date_month=start_date_month,
+                                 start_date_year=start_date_year,
+                                 start_date_date=start_date_date,
+                                 end_date_month=end_date_month,
+                                 end_date_year=end_date_year,
+                                 end_date_date=end_date_date,
+                                 project_id=p.project_id,
+                                 status=p.status,
+                                 percent=percent * 100,
+                                 tasks=task_data))
 
     return HttpResponse(json.dumps(dict(data=response)))
     # except Exception:
