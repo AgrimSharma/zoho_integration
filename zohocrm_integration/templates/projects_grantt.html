@@ -1,0 +1,277 @@
+{%  comment %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <title>Zoho</title>
+</head>
+<body>
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Zoho Dashboard</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{%  url 'clients' %}">Home <span class="sr-only">(current)</span></a>
+      </li>
+        <li>
+        <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    </li>
+    </ul>
+      <div style="display: flex">
+          <a class="text-success" href="#">Welcome {{ request.user|upper }}</a>
+          <a class="text-danger" href="/logout_user/" style="padding-left: 10px;">Logout</a>
+        </div>
+
+  </div>
+</nav>
+
+<div style="padding-top: 60px">
+<div class="col-md-12" style="text-align: center;padding-top: 20px;">
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th style="text-align: center">SNo.</th>
+                <th style="text-align: center">Project Name</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in project %}
+            <tr>
+                <td style="text-align: center">{{forloop.counter}} </td>
+
+                <td style="text-align: center"><a href="/project_detail/{{p.id}}">{{p.name}}</a> </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+</body>
+</html>{%  endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        #chartdiv {
+  width: 100%;
+  height: 720px;
+}
+    </style>
+    <title>Zoho</title>
+</head>
+<body>
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Zoho Dashboard</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{%  url 'clients' %}">Home <span class="sr-only">(current)</span></a>
+      </li>
+        <li>
+        <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    </li>
+    </ul>
+      <div style="display: flex">
+          <a class="text-success" href="#">Welcome {{ request.user|upper }}</a>
+          <a class="text-danger" href="/logout_user/" style="padding-left: 10px;">Logout</a>
+        </div>
+
+  </div>
+</nav>
+<div style="padding-top: 100px;"></div>
+
+<div id="chartdiv"></div>
+
+<div style="padding-top: 60px">
+{%  comment %}<div class="col-md-12" style="text-align: center;padding-top: 20px;">
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th style="text-align: center">SNo.</th>
+                <th style="text-align: center">Project Name</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in project %}
+            <tr>
+                <td style="text-align: center">{{forloop.counter}} </td>
+
+                <td style="text-align: center"><a href="/project_detail/{{p.id}}">{{p.name}}</a> </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>{%  endcomment %}
+</div>
+
+<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+<script src="https://www.amcharts.com/lib/3/serial.js"></script>
+<script src="https://www.amcharts.com/lib/3/gantt.js"></script>
+<script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+<script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+{#<script type="text/javascript">#}
+{#     $.ajax({#}
+{#        type: "GET",#}
+{#        url: "/projects_grantt/",#}
+{#        data: {},#}
+{#        success: function(resp) {#}
+{#          var data = JSON.parse(resp);#}
+{#          var projects = data.data;#}
+{#          google.charts.load('current', {'packages':['gantt']});#}
+{#          google.charts.setOnLoadCallback(drawChart);#}
+{#          function drawChart() {#}
+{#              var data = new google.visualization.DataTable();#}
+{#          data.addColumn('string', 'Project ID');#}
+{#          data.addColumn('string', 'Project Name');#}
+{#          data.addColumn('string', 'Status');#}
+{#          data.addColumn('date', 'Start Date');#}
+{#          data.addColumn('date', 'End Date');#}
+{#          data.addColumn('number', 'Duration');#}
+{#          data.addColumn('number', 'Percent Complete');#}
+{#          data.addColumn('string', 'Dependencies');#}
+{##}
+{#          for(var i=0;i < projects.length; i++){#}
+{#              data.addRows([#}
+{#                  [projects[i].project_id, projects[i].name, projects[i].status,#}
+{#                  new Date(projects[i].start_date_year, projects[i].start_date_month, projects[i].start_date_date),#}
+{#                  new Date(projects[i].end_date_year, projects[i].end_date_month, projects[i].end_date_date),#}
+{#                  null, projects[i].percent, null]#}
+{#              ])#}
+{#             }#}
+{#          var options = {#}
+{#            height: 720,#}
+{#            gantt: {#}
+{#              trackHeight: 30#}
+{#            },#}
+{##}
+{#          };#}
+{##}
+{#          var chart = new google.visualization.Gantt(document.getElementById('chart_div'));#}
+{##}
+{#          chart.draw(data, options);#}
+{#        }#}
+{##}
+{#                }#}
+{##}
+{#      });#}
+{##}
+{##}
+{#  </script>#}
+<script>
+    var data_provider = new Array();
+
+    $.ajax({
+        type: "GET",
+        url: "/projects_grantt/",
+        data: {},
+        success: function (resp) {
+            var data = JSON.parse(resp);
+            var projects = data.data;
+            for(var i=0;i < projects.length; i++){
+                var segments =  new Array();
+
+                var project = projects[i];
+                var category = project.name;
+                    {#{#}
+                    {#        "start": project.start_date_year + "-" + project.start_date_month + "-" + project.start_date_date,#}
+                    {#        "end": project.end_date_year + "-" + project.end_date_month + "-" + project.end_date_date,#}
+                    {#        "color": '#' + parseInt(Math.random() * 0xffffff).toString(16),#}
+                    {#        "task": "Gathering requirements"#}
+                    {#    }];#}
+                for(var j =0; j < project.tasks.length; j++){
+                    var tasks = project.tasks[j];
+                    segments.push({
+                        "start": tasks.start,
+                        "end": tasks.end,
+                        "task": tasks.task,
+                        "color": '#' + parseInt(Math.random() * 0xffffff).toString(16),
+                        "completion": project.percent
+,                    })
+                }
+            data_provider.push({
+                "category": category,
+                "segments": segments
+            })
+                console.log(data_provider)
+
+            }
+
+            var chart = AmCharts.makeChart("chartdiv", {
+                "type": "gantt",
+                "theme": "light",
+                "marginRight": 70,
+                "period": "DD",
+                "dataDateFormat": "YYYY-MM-DD",
+                "columnWidth": 0.5,
+                "valueAxis": {
+                    "type": "date"
+                },
+                "brightnessStep": 7,
+                "graph": {
+                    "fillAlphas": 1,
+                    "lineAlpha": 1,
+                    "lineColor": "#fff",
+                    "fillAlphas": 0.85,
+                    "balloonText": "<b>[[task]]</b>:[[completion]]<br />[[open]] -- [[value]]"
+                },
+                "rotate": true,
+                "categoryField": "category",
+                "segmentsField": "segments",
+                "colorField": "color",
+                "startDateField": "start",
+                "endDateField": "end",
+                "dataProvider": data_provider,
+                "valueScrollbar": {
+                    "autoGridCount": true
+                },
+                "chartCursor": {
+                    "cursorColor": "#55bb76",
+                    "valueBalloonsEnabled": false,
+                    "cursorAlpha": 0,
+                    "valueLineAlpha": 0.5,
+                    "valueLineBalloonEnabled": true,
+                    "valueLineEnabled": true,
+                    "zoomable": false,
+                    "valueZoomable": true
+                },
+
+                "export": {
+                    "enabled": true
+                }
+            });
+
+        },
+    });
+
+
+</script>
+</body>
+</html>

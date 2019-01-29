@@ -140,6 +140,76 @@ def projects(request):
         return redirect("/")
 
 
+def projects_grantt(request):
+    # user = request.user
+    # try:
+    #     user = User.objects.get(username=user.username)
+    project = Projects.objects.filter(start_date_format__year__gte=datetime.datetime.now().year - 1).order_by("name")
+    response = []
+    for p in project:
+        import re
+        try:
+            datetime.datetime.strftime(p.start_date_format, "%m-%d-%Y")
+            start_date_month = p.start_date_format.month
+            start_date_year = p.start_date_format.year
+            start_date_date = p.start_date_format.day
+        except Exception:
+            start_date_month = datetime.datetime.now().month
+            start_date_year = datetime.datetime.now().year
+            start_date_date = datetime.datetime.now().day
+        try:
+            datetime.datetime.strftime(p.end_date_format, "%m-%d-%Y")
+            end_date_month = p.end_date_format.month
+            end_date_year = p.end_date_format.year
+            end_date_date = p.end_date_format.day
+        except Exception:
+            end_date_month = datetime.datetime.now().month
+            end_date_year = datetime.datetime.now().year
+            end_date_date = datetime.datetime.now().day
+        try:
+            percent = p.task_count_close / (
+                        p.task_count_close + p.task_count_open)
+        except Exception:
+            percent = 0
+        tasks = p.tasks_set.all()
+        task_data = []
+        for t in tasks:
+            try:
+                end_date = datetime.datetime.strftime(t.end_date, "%Y-%m-%d")
+            except Exception:
+                end_date = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d")
+            try:
+                start_date = datetime.datetime.strftime(t.start_date,
+                                                        "%Y-%m-%d")
+            except Exception:
+                import random
+                # start_date = datetime.datetime.strftime(datetime.datetime.now(),"%Y-%m-%d")
+                days = datetime.datetime.now() - datetime.timedelta(days=random.randrange(1,30), weeks=random.randrange(1,10))
+                start_date = datetime.datetime.strftime(days, "%Y-%m-%d")
+
+            task_data.append(dict(task=t.task_name,
+                                  start=start_date,
+                                  end=end_date
+                                  ))
+
+
+        response.append(dict(name=str(re.sub("[0-9]{1,}|[^\x00-\x7F]+|-|_", " ", p.name.strip())),
+                             start_date_month =start_date_month,
+                             start_date_year=start_date_year,
+                             start_date_date=start_date_date,
+                             end_date_month=end_date_month,
+                             end_date_year=end_date_year,
+                             end_date_date=end_date_date,
+                             project_id=p.project_id,
+                             status=p.status,
+                             percent=percent * 100,
+                             tasks=task_data))
+
+    return HttpResponse(json.dumps(dict(data=response)))
+    # except Exception:
+    #     return redirect("/")
+
+
 def project_detail(request, project_id):
     user = request.user
     if user.is_authenticated():
@@ -469,6 +539,10 @@ def milestone_pull(request):
         return redirect("/projects/")
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
+
+
+def projects_grant(request):
+    return render(request, "projects_grantt.html")
 
 
 def time_sheet_pull(request):
