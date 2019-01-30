@@ -21,9 +21,10 @@
         <a class="nav-link" href="{%  url 'clients' %}">Home <span class="sr-only">(current)</span></a>
       </li>
         <li class="nav-item ">
+
                 <a class="nav-link" href="{%  url 'grant_view' %}">Project Gantt</a>
               </li>
-         <li class="nav-item ">
+        <li class="nav-item ">
 
                 <a class="nav-link" href="{%  url 'resource_utilization' %}">Project Gantt</a>
               </li>
@@ -43,59 +44,39 @@
 </nav>
 
 <div style="padding-top: 20px">
-<div class="col-md-12" style="text-align: center;padding-top: 20px;"><label class="text-success"> Time Sheet <strong>{{ task_name }}</strong></label>
+<div class="col-md-12" style="text-align: center;padding-top: 20px;"><label class="text-success"> Resource Utilization </label>
 
-    <table class="table table-bordered table-sm">
-        <thead class="thead-dark">
-            <tr>
+    <table class="table table-bordered">
+  <tr>
+    <td></td>
+    <th scope="col">{{ week }}</th>
+      {%  for w in week_days %}
+    <th scope="col">{{ w.week_date }}</th>
+    {%  endfor %}
+  </tr>
+          {%  for r in response %}
 
-                <th>Sno</th>
-                <th>project</th>
-                <th>Task</th>
-                <th>Last Modified Date</th>
-                <th>Bill Status</th>
-                <th>Owner Name</th>
-                <th>Work Hours</th>
-                {% comment %}<th>total_minutes</th>{% endcomment %}
-                <th>hours_display</th>
-               {% comment %} <td>Owners</td>{% endcomment %}
-                <th>notes</th>
-                <th>created_date</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% if tasks %}
-             {% for t in tasks %}
-            <tr>
-                <td>{{forloop.counter}}</td>
-                <td>{{t.project.name}}</td>
-                <td>{{t.task.task_name}}</td>
-                <td>{{t.last_modified_date}}</td>
-                <td>{{t.bill_status}}</td>
-                <td>{{t.owner_name}}</td>
-                <td>{{t.task.work}}</td>
-                <td>{{t.hours_display}}</td>
-                {% comment %}<td>{{t.hours_display}}</td>{% endcomment %}
-                <td>{{t.notes}}</td>
-                <td>{{t.created_date}}</td>
-            </tr>
-            {% endfor %}
-        {% else %}
-        <tr>
-        <td colspan="10"style="text-align: center">No Data Found</td>
-        </tr>
-        {% endif %}
-        </tbody>
-    </table>
+          <tr>
+            <th scope="row">{{ r.user }}</th>
+            <td>{%  if r.week_hours == 40 %}<span class="text-success"> {{ r.week_hours }}</span>
+                {% elif r.week_hours < 40%}<span class="text-warning"> {{ r.week_hours }}</span>
+                {%  else %}<span class="text-danger"> {{ r.week_hours }}</span>
+
+                {%  endif %}
+            </td>
+          {%  for d in r.days_log %}
+            <td>{%  if d == 8 %}<span class="text-success"> {{ d }}</span>
+                {% elif 6 <= d and d < 8 %}<span class="text-warning"> {{ d }}</span>
+                {% elif 6 <= d and d < 8 %}<span class="text-warning"> {{ d }}</span>
+                {%  else %}<span class="text-danger"> {{ d }}</span>
+
+                {%  endif %}
+            </td>           {%  endfor %}
+          </tr>
+    {%  endfor %}
+</table>
 
     <hr></div></div>
-<script>
-    $(".shipment_sold").click(function(){
-    //  alert("Invalid Shipment Number");
-        var task_id=$(this).attr("task_id");
 
-        $("#" + task_id ).toggle();
-    });
-</script>
 </body>
 </html>

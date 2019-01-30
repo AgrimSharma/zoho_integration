@@ -592,6 +592,49 @@ def time_sheet_pull(request):
         return HttpResponse(json.dumps(dict(error="Auth error")))
 
 
+def resource_utilization(request):
+    today = datetime.datetime.now()
+    days = today.weekday()
+    week_start = today - datetime.timedelta(days=days)
+    week_end = today + datetime.timedelta(days=days)
+    print week_end
+    time_users = TimeSheet.objects.all().values_list("owner_name")
+    user_set = [str(user[0]) for user in set(time_users)]
+    week_days = []
+    for d in range(5):
+        if d == 0:
+            days = datetime.datetime.strftime(week_start, "%b %d")
+        elif days == 5:
+            days = datetime.datetime.strftime(week_end, "%b %d")
+        else:
+            date = week_start + datetime.timedelta(days=d)
+            days = datetime.datetime.strftime(date, "%b %d")
+        week_days.append(dict(week_date=days))
+    response = []
+    week_end = week_end + datetime.timedelta(days=1)
+    for u in user_set:
+        time_sheet_week = TimeSheet.objects.filter(last_modified_date__gte=week_start, last_modified_date__lte=week_end, owner_name=u)
+        time_sheet = []
+        for d in range(5):
+            time_sheet_data = TimeSheet.objects.filter(
+                last_modified_date=week_start + datetime.timedelta(days=d),
+                owner_name=u).values_list("hours")
+            time_sheet.append(sum([int(f[0]) for f in time_sheet_data]))
+
+        user = u
+        week_hours = sum([int(d.hours) for d in time_sheet_week])
+        response.append(dict(user=user,
+                             week_hours=week_hours,
+                             days_log=time_sheet
+                             ))
+
+    return render(request, 'resource.html',
+                  {
+                      "week": datetime.datetime.strftime(week_start, "%b %d") + " - " + datetime.datetime.strftime(week_end, "%b %d"),
+                      "week_days":week_days,
+                      "response": response
+                  })
+
 def home(request):
     return render(request, "home.html")
 
