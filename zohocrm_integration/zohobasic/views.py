@@ -623,10 +623,13 @@ def resource_utilization(request):
 
         user = u
         week_hours = sum([int(d.total_minutes) for d in time_sheet_week]) / 60
-        response.append(dict(user=user,
+        response.append(dict(user=" ".join(user.split(".")).upper(),
                              week_hours=week_hours,
                              days_log=time_sheet
                              ))
+    from operator import itemgetter
+
+    response = sorted(response, key=itemgetter('user'))
 
     return render(request, 'resource.html',
                   {
