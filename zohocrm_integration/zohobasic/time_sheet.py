@@ -28,7 +28,6 @@ def all_project_time_sheet():
             else:
                 response = response.json()
                 response = response['timelogs']['tasklogs']
-                print p.project.name, "===>", p.task_name, "===>", len(response)
 
                 for r in response:
                     try:
