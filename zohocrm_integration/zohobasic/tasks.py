@@ -146,7 +146,6 @@ def all_projects_task():
 
             response = requests.request("GET", url, headers=headers)
             # if data:
-            print p.name, "=====>", response.status_code
             if response.status_code in [204, 400, 401, 404]:
                 pass
             else:
