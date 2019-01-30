@@ -166,7 +166,11 @@ def all_projects_task():
 
                     # try:
                     status = d['status']['name']
-                    print p.name,"===>", d['name'], "===>", status
+                    import re
+                    remove_numbers = re.sub("[^a-zA-Z0-9]+", " ",
+                                            d['name'].strip())
+                    remove_hypen = re.sub("[0-9]{1,}", " ", remove_numbers)
+                    print p.name,"===>", remove_hypen, "===>", status
 
                     color_code = d['status']['color_code']
                     # except Exception:
@@ -214,7 +218,7 @@ def all_projects_task():
                     task.last_updated_time = datetime.datetime.strptime(
                         last_updated_time,
                         "%m-%d-%Y") if last_updated_time else None
-                    task.task_name = d['name']
+                    task.task_name = remove_hypen
                     task.tasklist_id = d['tasklist']['id']
                     task.status = status
                     task.color_code = color_code
