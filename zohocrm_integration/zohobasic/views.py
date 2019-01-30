@@ -632,7 +632,7 @@ def resource_utilization(request):
             time_sheet_data = TimeSheet.objects.filter(
                 last_modified_date=(week_start + datetime.timedelta(days=d)).date(),
                 owner_name=u)
-            time_sheet.append(round(float(sum([int(f.total_minutes) for f in time_sheet_data])/60)),2)
+            time_sheet.append(round(float(sum([int(f.total_minutes) for f in time_sheet_data])/60),2))
         print time_sheet
         user = u
         week_hours = float(sum([int(d.total_minutes) for d in time_sheet_week]) / 60)
