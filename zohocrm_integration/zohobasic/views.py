@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals, division
+from __future__ import unicode_literals
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 import pytz
@@ -10,6 +10,7 @@ from tasks import *
 from milestone import *
 from time_sheet import *
 from django.contrib.auth.models import User
+
 utc=pytz.UTC
 
 scope = "ZohoProjects.portals.READ,ZohoProjects.projects.READ,ZohoProjects.tasklists.READ," \
@@ -590,16 +591,18 @@ def time_sheet_pull(request):
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
 
+
 def is_leap_year(year):
     return (year % 4 == 0) and (year % 100 != 0) or (year % 400 == 0)
 
 
 def resource_utilization(request):
     today = datetime.datetime.now()
+    days_left = today.weekday()
     year = today.year
     month = today.month
     if month in [4, 6, 9, 11]:
-        end_days =  30
+        end_days = 30
     elif month in [1, 3, 5, 7, 8, 10, 12]:
         end_days = 31
     elif month == 2 and is_leap_year(year) == True:
@@ -609,15 +612,19 @@ def resource_utilization(request):
     else:
         end_days = 0
     days = today.day
-    week_start = today - datetime.timedelta(days=days - 1)
-    week_end = today + datetime.timedelta(days=days)
+    month_end = today + datetime.timedelta(days=days)
+    month_start = today - datetime.timedelta(days=days - 1)
+
+    week_start = today - datetime.timedelta(days=days_left)
+    week_end = today + datetime.timedelta(days=5 - days_left)
     time_users = TimeSheet.objects.all().values_list("owner_name")
     user_set = [str(user[0]) for user in set(time_users)]
     week_days = []
-    for d in range(end_days):
+    print days_left
+    for d in range(5):
         if d == 0:
             days = datetime.datetime.strftime(week_start, "%b %d")
-        elif days == 31:
+        elif d == 5:
             days = datetime.datetime.strftime(week_end, "%b %d")
         else:
             date = week_start + datetime.timedelta(days=d)
@@ -627,19 +634,24 @@ def resource_utilization(request):
     week_end = week_end + datetime.timedelta(days=1)
     for u in user_set:
         time_sheet_week = TimeSheet.objects.filter(last_modified_date__gte=week_start, last_modified_date__lte=week_end, owner_name=u)
+        time_sheet_month = TimeSheet.objects.filter(last_modified_date__gte=month_start, last_modified_date__lte=month_end, owner_name=u)
+
         time_sheet = []
-        for d in range(end_days):
+        for d in range(5):
             time_sheet_data = TimeSheet.objects.filter(
                 last_modified_date=(week_start + datetime.timedelta(days=d)).date(),
-                owner_name=u)
-            time_sheet.append(round(float(sum([int(f.total_minutes) for f in time_sheet_data])/60),2))
-        print time_sheet
+                owner_name=u).values_list("total_minutes")
+            time_sheet.append(float(sum([int(f[0]) for f in time_sheet_data])/ 60))
+
         user = u
         week_hours = float(sum([int(d.total_minutes) for d in time_sheet_week]) / 60)
+        month_logs = float(sum([int(d.total_minutes) for d in time_sheet_month]) / 60)
+
         response.append(dict(user=" ".join(user.split(".")).upper(),
-                             week_hours=round(week_hours,2),
+                             week_hours=week_hours,
                              days_log=time_sheet,
-                             user_name=user
+                             user_name=user,
+                             month=month_logs
                              ))
     from operator import itemgetter
 

@@ -49,6 +49,7 @@
     <table class="table table-bordered">
   <tr>
     <td></td>
+    <th scope="col">Month</th>
     <th scope="col">{{ week }}</th>
       {%  for w in week_days %}
     <th scope="col">{{ w.week_date }}</th>
@@ -58,7 +59,12 @@
 
           <tr>
             <th scope="row">{{ r.user }}</th>
-            <td>{%  if r.week_hours == 40 %}<span class="text-success"> {{ r.week_hours }}</span>
+            <td>{%  if r.month == 160 %}<span class="text-success"> {{ r.month }}</span>
+                {% elif r.week_hours < 160%}<span class="text-warning"> {{ r.month }}</span>
+                {%  else %}<span class="text-danger"> {{ r.month }}</span>
+
+                {%  endif %}
+            </td>            <td>{%  if r.week_hours == 40 %}<span class="text-success"> {{ r.week_hours }}</span>
                 {% elif r.week_hours < 40%}<span class="text-warning"> {{ r.week_hours }}</span>
                 {%  else %}<span class="text-danger"> {{ r.week_hours }}</span>
 
@@ -76,7 +82,9 @@
     {%  endfor %}
 </table>
 
-    <hr></div></div>
+    <hr>
+</div>
+</div>
 
 </body>
 </html>
