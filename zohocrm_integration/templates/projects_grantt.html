@@ -206,12 +206,6 @@
 
                 var project = projects[i];
                 var category = project.name;
-                    {#{#}
-                    {#        "start": project.start_date_year + "-" + project.start_date_month + "-" + project.start_date_date,#}
-                    {#        "end": project.end_date_year + "-" + project.end_date_month + "-" + project.end_date_date,#}
-                    {#        "color": '#' + parseInt(Math.random() * 0xffffff).toString(16),#}
-                    {#        "task": "Gathering requirements"#}
-                    {#    }];#}
                 for(var j =0; j < project.tasks.length; j++){
                     var tasks = project.tasks[j];
                     segments.push({
@@ -225,8 +219,7 @@
             data_provider.push({
                 "category": category,
                 "segments": segments
-            })
-                console.log(data_provider)
+            });
 
             }
 

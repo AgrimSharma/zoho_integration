@@ -95,7 +95,6 @@ class Tasks(models.Model):
     completed = models.CharField(max_length=1000,null=True,blank=True)
     percent_complete = models.CharField(max_length=1000,null=True,blank=True)
     last_updated_time = models.DateField(null=True,blank=True)
-    completed_time = models.CharField(max_length=1000,null=True,blank=True)
     task_name = models.CharField(max_length=1000,null=True,blank=True)
     tasklist_id = models.CharField(max_length=1000,null=True,blank=True)
     status = models.CharField(max_length=1000,null=True,blank=True)

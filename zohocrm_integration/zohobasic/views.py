@@ -87,11 +87,11 @@ def callback(request):
         port = settings.PORTAL_ID
 
     if port:
-        projects = all_projects()
-        tasks = all_projects_task()
-        milestone = all_projects_milestone()
-        timesheet= all_project_time_sheet()
-        return redirect("/projects/")
+        # projects = all_projects()
+        # tasks = all_projects_task()
+        # milestone = all_projects_milestone()
+        # timesheet= all_project_time_sheet()
+        return redirect("/projects_pull/")
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
 
@@ -189,9 +189,9 @@ def projects_grantt(request):
             if ends >= current and t.status in ["Open", "In Progress"]:
                 color = "#ffbf00"
             elif ends <= current and t.status in ["Open", "In Progress"]:
-                color = "#008000"
-            else:
                 color = "#FF0000"
+            else:
+                color = "#008000"
             task_data.append(dict(task=t.task_name,
                                   start=start_date,
                                   end=end_date,
@@ -466,7 +466,7 @@ def projects_pull(request):
 
     if port:
         projects = all_projects()
-        return redirect("/projects/")
+        return redirect("/tasks_pull/")
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
 
@@ -505,7 +505,7 @@ def tasks_pull(request):
 
     if port:
         tasks = all_projects_task()
-        return redirect("/projects/")
+        return redirect("/time_sheet_pull/")
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
 
@@ -587,7 +587,7 @@ def time_sheet_pull(request):
 
     if port:
         timesheet = all_project_time_sheet()
-        return redirect("/projects/")
+        return redirect("/milestone_pull/")
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
 
