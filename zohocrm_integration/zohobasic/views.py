@@ -622,7 +622,7 @@ def resource_utilization(request):
             time_sheet.append(sum([int(f[0]) for f in time_sheet_data])/60)
 
         user = u
-        week_hours = sum([int(d.hours) for d in time_sheet_week])
+        week_hours = sum([int(d.total_minutes) for d in time_sheet_week]) / 60
         response.append(dict(user=user,
                              week_hours=week_hours,
                              days_log=time_sheet
