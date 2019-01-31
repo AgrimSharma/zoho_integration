@@ -24,13 +24,13 @@ def all_projects():
         pass
     else:
         projects = projects.json()
-        projects = projects['projects']
+        projects_data = projects['projects']
 
-        for p in projects:
+        for p in projects_data:
             try:
                 pro = Projects.objects.get(project_id=p['id'])
             except Exception:
-                pros = Projects.objects.create(
+                pro = Projects.objects.create(
                     project_id=p.get('id', ""),
                     name=p.get('name', ""))
             pro = Projects.objects.get(project_id=p['id'])
