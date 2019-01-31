@@ -121,9 +121,11 @@ def project_list_view(name):
     projects = Projects.objects.filter(name__icontains=name)
     response = []
     for pro in projects:
+        taks_open = pro.tasks_set.filter(status__in=['Open', 'In Progress'])
+        tasks_close = pro.tasks_set.filter(status='Closed')
         current_task, future_date_one_week, past_date_one_week, past_date_two_week = project_task_list_week(pro.id)
         try:
-            percent = pro.task_count_close / pro.task_count_close + pro.task_count_open * 100
+            percent = tasks_close / tasks_close + taks_open * 100
         except Exception:
             percent = 0
         today = datetime.datetime.now().date()
@@ -141,10 +143,8 @@ def project_list_view(name):
             pass
         milestone_closed = pro.milestone_set.filter(status='notcompleted')
         milestone_open = pro.milestone_set.filter(status='completed')
-        print milestone_open, milestone_closed
 
-        taks_open = pro.tasks_set.filter(status__in=['Open', 'In Progress'])
-        tasks_close = pro.tasks_set.filter(status='Closed')
+
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
