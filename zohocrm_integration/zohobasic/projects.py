@@ -135,13 +135,19 @@ def project_list_view(name):
                 color = 'green'
         except Exception:
             pass
+        milestone_closed = pro.milestone_set.filter(status='notcompleted')
+        milestone_open = pro.milestone_set.filter(status='completed')
+        print milestone_open, milestone_closed
+
+        taks_open = pro.tasks_set.filter(status__in=['Open', 'In Progress'])
+        tasks_close = pro.tasks_set.filter(status='Closed')
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
-                    task_count_open=pro.task_count_open + pro.task_count_close,
-                    milestone_count_open=pro.milestone_count_open + pro.milestone_count_close,
-                    task_count_close=pro.task_count_close,
-                    milestone_count_close=pro.milestone_count_close,
+                    task_count_open=len(taks_open) + len(tasks_close),
+                    milestone_count_open=len(milestone_closed) + len(milestone_open),
+                    task_count_close=len(tasks_close),
+                    milestone_count_close=len(milestone_closed),
                     start_date=pro.start_date_format,
                     status=pro.status.capitalize(),
                     created_date=pro.created_date_format,
