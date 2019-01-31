@@ -110,7 +110,8 @@ def project_detail_view(project_id):
                 current_task=len(current_task),
                 future_date_one_week=len(future_date_one_week),
                 past_date_one_week=len(past_date_one_week),
-                past_date_two_week=len(past_date_two_week)
+                past_date_two_week=len(past_date_two_week),
+                csm=pro.owner_name
                 )
     return data
 
