@@ -116,3 +116,9 @@ def project_open_milestone(project_id):
     project = Projects.objects.get(id=project_id)
     milestone = project.milestone_set.filter(status='notcompleted')
     return milestone
+
+
+def project_all_milestone(project_id):
+    project = Projects.objects.get(id=project_id)
+    milestone = project.milestone_set.all()
+    return milestone

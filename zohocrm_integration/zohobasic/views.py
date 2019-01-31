@@ -322,6 +322,22 @@ def close_tasks(request, project_id):
         return redirect("/")
 
 
+def all_tasks(request, project_id):
+    user = request.user
+    if user.is_authenticated():
+        project = Projects.objects.get(id=project_id)
+        tasks = project_all_tasks(project_id)
+
+        date_today = datetime.datetime.now().date()
+
+        return render(request, "tasks/project_tasks.html", {
+            "date_today": date_today,
+            "current_task": tasks,
+            "name": "ALL Task {}".format(project.name)})
+    else:
+        return redirect("/")
+
+
 def open_milestone(request, project_id):
     user = request.user
     if user.is_authenticated():
@@ -353,6 +369,21 @@ def close_milestone(request, project_id):
     else:
         return redirect("/")
 
+
+def all_milestone(request, project_id):
+    user = request.user
+    if user.is_authenticated():
+        project = Projects.objects.get(id=project_id)
+        tasks = project_close_milestone(project_id)
+
+        date_today = datetime.datetime.now().date()
+
+        return render(request, "tasks/project_milestone.html", {
+            "date_today": date_today,
+            "milestone": tasks,
+            "name": "ALL Milestone {}".format(project.name)})
+    else:
+        return redirect("/")
 
 @csrf_exempt
 def register_user(request):
@@ -401,8 +432,7 @@ def client_list(request):
         project = [dict(name="HDFC BANK", search='hdfc', open=len(hdfc_open), closed=len(hdfc_close), percent=hdfc_percent),
                    dict(name="Indusind BANK", search='indusind', open=len(indus_open),
                         closed=len(indus_closed), percent=indus_percent),
-                   dict(name="HDFC BANK ADHOC", search='hdfc adhoc', open=len(hdfc_open),
-                        closed=len(hdfc_close), percent=hdfc_percent)]
+                   ]
 
         return render(request, "clients.html", {
             "project": project})

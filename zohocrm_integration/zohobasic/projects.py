@@ -7,6 +7,7 @@ from .models import *
 from django.conf import settings
 import datetime
 from .task_list import *
+from django.utils.html import strip_tags
 
 
 def all_projects():
@@ -51,7 +52,7 @@ def all_projects():
             except Exception:
                 owner_name = None
             pro.owner_name = owner_name if owner_name else None
-            pro.description = p.get('description', "")
+            pro.description = strip_tags(p.get('description', ""))
             pro.task_count_open = p.get('task_count', "").get('open', 0)
             pro.task_count_close = p.get('task_count', "").get('closed', 0)
             pro.milestone_count_open = p.get('milestone_count', "").get('open',
@@ -133,8 +134,6 @@ def project_list_view(name):
             else:
                 color = 'green'
         except Exception:
-            pass
-        if name == "hdfc" and pro.project_id == "1086673000000068051":
             pass
         else:
             data = dict(name=pro.name,

@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from .models import *
 import requests
 import datetime
+from django.utils.html import strip_tags
 
 
 def project_task(project_id):
@@ -85,7 +86,7 @@ def project_task(project_id):
         task.milestone_id=d['milestone_id']
         task.self_url=self_url
         task.timesheet_url=timesheet
-        task.description=description
+        task.description=strip_tags(description)
         task.duration=d['duration']
         task.task_id=d['id']
         task.task_key=d['key']
@@ -239,3 +240,25 @@ def project_close_tasks(project_id):
     project = Projects.objects.get(id=project_id)
     tasks = project.tasks_set.filter(status__icontains="Closed")
     return tasks
+
+
+def project_all_tasks(project_id):
+    project = Projects.objects.get(id=project_id)
+    tasks = project.tasks_set.all()
+    response = []
+    for t in tasks:
+        response.append(dict(
+            description=strip_tags(t.description),
+            project_id=project.project_id,
+            task_id=t.task_id,
+            start_date=t.start_date,
+            end_date=t.end_date,
+            status=t.status,
+            task_name = t.task_name,
+            created_by=t.created_person,
+            created_time = t.created_time,
+            completed=t.completed,
+            percent = t.percent_complete,
+            completed_time=t.last_updated_time
+        ))
+    return response
