@@ -141,14 +141,6 @@ def project_list_view(name):
                 color = 'green'
         except Exception:
             pass
-        # if color == "red" and percent * 100 > 85:
-        #     color = "green"
-        # elif color == "red" and 75 <= percent * 100 < 85:
-        #     color = "yellow"
-        # elif pro.end_date_format == None:
-        #     color = "yellow"
-        # else:
-        #     color = "red"
 
         milestone_closed = pro.milestone_set.filter(status='notcompleted')
         milestone_open = pro.milestone_set.filter(status='completed')
