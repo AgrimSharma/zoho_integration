@@ -112,6 +112,7 @@ def project_detail_view(project_id):
 
 
 def project_list_view(name):
+
     projects = Projects.objects.filter(name__icontains=name)
     response = []
     for pro in projects:
@@ -128,29 +129,32 @@ def project_list_view(name):
         try:
             datetime.datetime.strftime(pro.end_date_format, "%Y-%m-%d")
             if pro.end_date_format < today:
-                print 1
                 color = 'red'
             else:
                 color = 'green'
         except Exception:
             pass
-        data = dict(name=pro.name,
-                    id=pro.id,
-                    end_date=pro.end_date_format,
-                    task_count_open=pro.task_count_open + pro.task_count_close,
-                    milestone_count_open=pro.milestone_count_open + pro.milestone_count_close,
-                    task_count_close=pro.task_count_close,
-                    milestone_count_close=pro.milestone_count_close,
-                    start_date=pro.start_date_format,
-                    status=pro.status.capitalize(),
-                    created_date=pro.created_date_format,
-                    project_id=pro.project_id,
-                    current_task=len(current_task),
-                    future_date_one_week=len(future_date_one_week),
-                    past_date_one_week=len(past_date_one_week),
-                    past_date_two_week=len(past_date_two_week),
-                    percent=percent,
-                    color=color
-                    )
-        response.append(data)
+        if name == "hdfc" and pro.project_id == "1086673000000068051":
+            pass
+        else:
+            data = dict(name=pro.name,
+                        id=pro.id,
+                        end_date=pro.end_date_format,
+                        task_count_open=pro.task_count_open + pro.task_count_close,
+                        milestone_count_open=pro.milestone_count_open + pro.milestone_count_close,
+                        task_count_close=pro.task_count_close,
+                        milestone_count_close=pro.milestone_count_close,
+                        start_date=pro.start_date_format,
+                        status=pro.status.capitalize(),
+                        created_date=pro.created_date_format,
+                        project_id=pro.project_id,
+                        current_task=len(current_task),
+                        future_date_one_week=len(future_date_one_week),
+                        past_date_one_week=len(past_date_one_week),
+                        past_date_two_week=len(past_date_two_week),
+                        percent=percent,
+                        color=color,
+                        csm=pro.owner_name
+                        )
+            response.append(data)
     return response

@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^close_task/(?P<project_id>\w+)', close_tasks),
     url(r'^open_milestone/(?P<project_id>\w+)', open_milestone),
     url(r'^close_milestone/(?P<project_id>\w+)', close_milestone),
-    url(r'^project_list/(?P<name>\w+)', project_list),
+    url(r'^project_list/', project_list),
 
     # URL for auth request
     url(r'^task/(?P<project_id>\w+)', task_project),

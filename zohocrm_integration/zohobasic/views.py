@@ -400,7 +400,9 @@ def client_list(request):
 
         project = [dict(name="HDFC BANK", search='hdfc', open=len(hdfc_open), closed=len(hdfc_close), percent=hdfc_percent),
                    dict(name="Indusind BANK", search='indusind', open=len(indus_open),
-                        closed=len(indus_closed), percent=indus_percent)]
+                        closed=len(indus_closed), percent=indus_percent),
+                   dict(name="HDFC BANK ADHOC", search='hdfc adhoc', open=len(hdfc_open),
+                        closed=len(hdfc_close), percent=hdfc_percent)]
 
         return render(request, "clients.html", {
             "project": project})
@@ -418,14 +420,15 @@ def resource_utilisation(request):
         return redirect("/")
 
 
-def project_list(request, name):
-    user = request.user
-    if user.is_authenticated():
-        today = datetime.datetime.now().date()
-        project = project_list_view(name)
-        return render(request, "project_list.html", {"projects": project, "date": today})
-    else:
-        return redirect("/")
+def project_list(request):
+    # user = request.user
+    # if user.is_authenticated():
+    today = datetime.datetime.now().date()
+    name = request.GET.get('name')
+    project = project_list_view(name)
+    return render(request, "project_list.html", {"projects": project, "date": today})
+    # else:
+    #     return redirect("/")
 
 
 def logout_user(request):
