@@ -83,9 +83,9 @@
 {#                <td>{{project.end_date}}</td>#}
                 <td>{% if  project.color == "red"%}<span class="text-danger">{{project.status}}</span>{%  else %}<span class="text-success">{{project.status}}</span> {%  endif %}</td>
 {#                <td>{%  if project.task_count_open > 0 %}<a href="/open_task/{{ project.id }}"> {{project.task_count_open}}</a>{%  else %}{{project.task_count_open}}{%  endif %}</td>#}
-                <td>{%  if project.task_count_close > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
+                <td>{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
 {#                <td>{%  if project.milestone_count_open > 0 %}<a href="/open_milestone/{{ project.id }}">  {{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_open}}{%  endif %}</td>#}
-                <td>{%  if project.milestone_count_close > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>
+                <td>{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>
 
 
                     <td>{%  if project.past_date_two_week > 0 %}<a href="/task_bifurcate/{{ project.id }}/?task=past_two">{{project.past_date_two_week}}</a>{%  else %}{{project.past_date_two_week}}{%  endif %}</td>
