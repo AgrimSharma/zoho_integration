@@ -91,23 +91,26 @@ def all_projects():
 
 def project_detail_view(project_id):
     pro = Projects.objects.get(id=project_id)
-    current_task, future_date_one_week, future_date_two_week, future_date_three_week= project_task_list_week(project_id)
-
+    current_task, future_date_one_week, past_date_one_week, past_date_two_week=project_task_list_week(project_id)
+    task_open = pro.tasks_set.filter(status__in=['Open', 'In Progress'])
+    task_close = pro.tasks_set.filter(status="Closed")
+    milestone_close = pro.milestone_set.filter(status="notcompleted")
+    milestone_open = pro.tasks_set.filter(status="completed")
     data = dict(name=pro.name,
                 id=pro.id,
                 end_date=pro.end_date_format,
-                task_count_open=pro.task_count_open,
-                milestone_count_open=pro.milestone_count_open,
-                task_count_close=pro.task_count_close,
-                milestone_count_close=pro.milestone_count_close,
+                task_count_open=len(task_close) + len(task_open),
+                milestone_count_open=len(milestone_open) + len(milestone_close),
+                task_count_close=len(task_close),
+                milestone_count_close=len(milestone_close),
                 start_date=pro.start_date_format,
                 status=pro.status,
                 created_date=pro.created_date_format,
                 project_id=pro.project_id,
                 current_task=len(current_task),
                 future_date_one_week=len(future_date_one_week),
-                future_date_two_week=len(future_date_two_week),
-                future_date_three_week=len(future_date_three_week)
+                past_date_one_week=len(past_date_one_week),
+                past_date_two_week=len(past_date_two_week)
                 )
     return data
 
