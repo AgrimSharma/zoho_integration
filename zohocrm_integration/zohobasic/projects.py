@@ -135,7 +135,7 @@ def project_list_view(name):
             color='green'
         try:
             datetime.datetime.strftime(pro.end_date_format, "%Y-%m-%d")
-            if pro.end_date_format < today:
+            if pro.end_date_format < today and pro.status == 'active':
                 color = 'red'
             else:
                 color = 'green'
