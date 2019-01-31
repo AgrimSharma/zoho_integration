@@ -65,8 +65,8 @@ def project_task_list_week(project_id):
     end_date = datetime.datetime.now().date() + datetime.timedelta(
         days=6 - week_day)
     future_date_one = end_date + datetime.timedelta(days=7)
-    future_date_two = future_date_one + datetime.timedelta(days=7)
-    future_date_three = future_date_two + datetime.timedelta(days=7)
+    past_date_one = begin_date - datetime.timedelta(days=7)
+    past_date_two = past_date_one - datetime.timedelta(days=7)
 
     current_task = Tasks.objects.filter(project=project,
                                         end_date__gte=begin_date,
@@ -74,11 +74,11 @@ def project_task_list_week(project_id):
     future_date_one_week = Tasks.objects.filter(project=project,
                                      end_date__gte=end_date,
                                      end_date__lt=future_date_one)
-    future_date_two_week = Tasks.objects.filter(project=project,
-                                       end_date__gte=future_date_one,
-                                       end_date__lte=future_date_two)
+    past_date_one_week = Tasks.objects.filter(project=project,
+                                       end_date__gte=past_date_one,
+                                       end_date__lte=begin_date)
 
-    future_date_three_week = Tasks.objects.filter(project=project,
-                                               end_date__gte=future_date_two,
-                                               end_date__lte=future_date_three)
-    return current_task,future_date_one_week, future_date_two_week, future_date_three_week
+    past_date_two_week = Tasks.objects.filter(project=project,
+                                               end_date__gte=past_date_two,
+                                               end_date__lte=past_date_one)
+    return current_task,future_date_one_week, past_date_one_week, past_date_two_week

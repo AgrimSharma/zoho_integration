@@ -421,8 +421,9 @@ def resource_utilisation(request):
 def project_list(request, name):
     user = request.user
     if user.is_authenticated():
+        today = datetime.datetime.now().date()
         project = project_list_view(name)
-        return render(request, "project_list.html", {"projects": project})
+        return render(request, "project_list.html", {"projects": project, "date": today})
     else:
         return redirect("/")
 
@@ -665,7 +666,15 @@ def resource_utilization(request):
                   })
 
 
-# def resource(request):
+def time_sheet_range(request):
+    tasks = Tasks.objects.all()
+    for p in tasks:
+        if p.timesheet_url == "" or p.timesheet_url == None:
+            pass
+        else:
+            url = p.timesheet_url
+            task_time_sheet(url=url, task=p)
+    return HttpResponse("test")
 
 def home(request):
     return render(request, "home.html")

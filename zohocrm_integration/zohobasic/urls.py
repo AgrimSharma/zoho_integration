@@ -46,6 +46,7 @@ urlpatterns = [
     url(r'^tasks_pull/', tasks_pull, name='tasks_pull'),
     url(r'^milestone_pull/', milestone_pull, name='milestone_pull'),
     url(r'^resource_utilization/', resource_utilization, name='resource_utilization'),
+    url(r'^time_sheet_range/', time_sheet_range, name='time_sheet_range'),
     url(r'^', home),
 
 ]

@@ -115,27 +115,42 @@ def project_list_view(name):
     projects = Projects.objects.filter(name__icontains=name)
     response = []
     for pro in projects:
-        current_task, future_date_one_week, future_date_two_week, future_date_three_week= project_task_list_week(pro.id)
+        current_task, future_date_one_week, past_date_one_week, past_date_two_week= project_task_list_week(pro.id)
         try:
             percent = pro.task_count_close / pro.task_count_close + pro.task_count_open * 100
         except Exception:
             percent = 0
+        today = datetime.datetime.now().date()
+        if pro.status in ["Open", "In Progress"] and pro.end_date_format and pro.end_date_format < today:
+            color = "red"
+        else:
+            color='green'
+        try:
+            datetime.datetime.strftime(pro.end_date_format, "%Y-%m-%d")
+            if pro.end_date_format < today:
+                print 1
+                color = 'red'
+            else:
+                color = 'green'
+        except Exception:
+            pass
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
-                    task_count_open=pro.task_count_open,
-                    milestone_count_open=pro.milestone_count_open,
+                    task_count_open=pro.task_count_open + pro.task_count_close,
+                    milestone_count_open=pro.milestone_count_open + pro.milestone_count_close,
                     task_count_close=pro.task_count_close,
                     milestone_count_close=pro.milestone_count_close,
                     start_date=pro.start_date_format,
-                    status=pro.status,
+                    status=pro.status.capitalize(),
                     created_date=pro.created_date_format,
                     project_id=pro.project_id,
                     current_task=len(current_task),
                     future_date_one_week=len(future_date_one_week),
-                    future_date_two_week=len(future_date_two_week),
-                    future_date_three_week=len(future_date_three_week),
-                    percent=percent
+                    past_date_one_week=len(past_date_one_week),
+                    past_date_two_week=len(past_date_two_week),
+                    percent=percent,
+                    color=color
                     )
         response.append(data)
     return response
