@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+    # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.contrib import admin
@@ -25,7 +25,7 @@ class TaskAdmin(admin.ModelAdmin):
     def projects(self,obj):
         return obj.project.name
 
-    list_display = ['projects', "task_id", "milestone_id", "start_date", "end_date"]
+    list_display = ['projects', "task_id", "milestone_id", "task_name", "start_date", "end_date"]
     search_fields = ['project__name',"milestone_id", "task_id"]
 
 

@@ -117,7 +117,7 @@ def project_list_view(name):
     projects = Projects.objects.filter(name__icontains=name)
     response = []
     for pro in projects:
-        current_task, future_date_one_week, past_date_one_week, past_date_two_week= project_task_list_week(pro.id)
+        current_task, future_date_one_week, past_date_one_week, past_date_two_week = project_task_list_week(pro.id)
         try:
             percent = pro.task_count_close / pro.task_count_close + pro.task_count_open * 100
         except Exception:

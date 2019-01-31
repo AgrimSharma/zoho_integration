@@ -445,20 +445,16 @@ def resource_utilisation(request):
     if user.is_authenticated():
         project = resource_utilisation_all()
         return HttpResponse(json.dumps(dict(users=project)))
-        # return render(request, "project_list.html", {"projects": project})
     else:
         return redirect("/")
 
 
 def project_list(request):
-    # user = request.user
-    # if user.is_authenticated():
     today = datetime.datetime.now().date()
     name = request.GET.get('name')
     project = project_list_view(name)
-    return render(request, "project_list.html", {"projects": project, "date": today})
-    # else:
-    #     return redirect("/")
+    return render(request, "project_list.html", {"projects": project,
+                                                 "date": today})
 
 
 def logout_user(request):
@@ -709,6 +705,61 @@ def time_sheet_range(request):
             task_time_sheet(url=url, task=p)
     return HttpResponse("test")
 
+
+def task_list_projects(request, project_id):
+    project = Projects.objects.get(id=project_id)
+    tasks = project.tasks_set.all()
+    response = []
+    for t in tasks:
+        time_sheet = t.timesheet_set.all()
+        response.append(
+            dict(task_name=t.task_name,
+                 time_sheet=len(time_sheet),
+                 task_id=t.id,
+                 start_date=t.start_date,
+                 end_date=t.end_date,
+                 status=t.status))
+
+    return render(request,"task_lists.html", dict(tasks=response, project=project.name))
+
+
+def project_task_time_sheet(request, task_id):
+    task = Tasks.objects.get(id=task_id)
+    return render(request, "time_sheet.html", {"tasks": task.timesheet_set.all(),
+                                               "task_name": task.project.name + " - " + task.task_name, })
+
+
+def task_bifurcate(request, project_id):
+    task_sep = request.GET.get("task")
+    project = Projects.objects.get(id=project_id)
+    current_task, future_date_one_week, past_date_one_week, past_date_two_week = project_task_list_week(project_id)
+    if task_sep == "past_two":
+        task = past_date_two_week
+    elif task_sep == "past_one":
+        task = past_date_one_week
+    elif task_sep == "present":
+        task = current_task
+    else:
+        task = future_date_one_week
+    response = []
+    for t in task:
+        try:
+            start_date = datetime.datetime.strftime(t.start_date, "%b, %d %Y")
+        except Exception:
+            start_date = None
+        try:
+            end_date = datetime.datetime.strftime(t.end_date, "%b, %d %Y")
+        except Exception:
+            end_date = None
+        response.append(dict(
+            task_name=t.task_name,
+            start_date=start_date,
+            end_date=end_date,
+            status=t.status,
+            time_sheet=len(t.timesheet_set.all()),
+        ))
+    return render(request,"task_lists.html", dict(tasks=response, project=project.name))
+
+
 def home(request):
     return render(request, "home.html")
-

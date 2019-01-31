@@ -248,7 +248,8 @@ def project_all_tasks(project_id):
     response = []
     for t in tasks:
         response.append(dict(
-            description=strip_tags(t.description),
+            id=t.id,
+            description=strip_tags(t.description) if len(strip_tags(t.description)) < 50 else strip_tags(t.description)[:50] + "...",
             project_id=project.project_id,
             task_list_id=t.tasklist_id,
             task_id=t.task_id,

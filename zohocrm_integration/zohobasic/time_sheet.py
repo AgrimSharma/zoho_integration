@@ -2,6 +2,7 @@ import requests
 from .models import *
 import datetime
 
+import time
 
 def all_project_time_sheet():
     token = Tokens.objects.latest("id")
@@ -11,6 +12,8 @@ def all_project_time_sheet():
         if p.timesheet_url == "" or p.timesheet_url == None:
             pass
         else:
+            time.sleep(5)
+
             url = p.timesheet_url
             headers = {
                 'authorization': "Bearer {}".format(access_token),
