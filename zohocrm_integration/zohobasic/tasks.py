@@ -250,6 +250,7 @@ def project_all_tasks(project_id):
         response.append(dict(
             description=strip_tags(t.description),
             project_id=project.project_id,
+            task_list_id=t.tasklist_id,
             task_id=t.task_id,
             start_date=t.start_date,
             end_date=t.end_date,
