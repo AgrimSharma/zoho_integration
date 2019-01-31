@@ -78,7 +78,7 @@
                 {%  for project in projects %}
                 <td>{{forloop.counter}}</td>
 
-                <td><a href="/detail/{{project.id}}">{{project.name}}</a></td>
+                <td>{% if  project.color == "red"%}<span class="text-danger">{{project.name}}</span>{%  else %}<span class="text-success">{{project.name}}</span> {%  endif %}</td>
                 <td width="140px">{{project.start_date}} <br>{{project.end_date}}</td>
 {#                <td>{{project.end_date}}</td>#}
                 <td>{% if  project.color == "red"%}<span class="text-danger">{{project.status}}</span>{%  else %}<span class="text-success">{{project.status}}</span> {%  endif %}</td>
