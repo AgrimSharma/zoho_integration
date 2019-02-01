@@ -148,7 +148,7 @@ def projects(request):
             if name not in csm_data:
                 csm_list.append(name)
         # csm = list(set([str(u[0]) for u in csm_data]))
-        # sorted(csm)
+        sorted(csm_list)
 
         for p in project:
             open_task = p.tasks_set.filter(status='Open').count()
@@ -503,7 +503,10 @@ def client_list(request):
 
 
         hdfc_query_red = Q(name__icontains='hdfc', status__in=['active', 'Active'], end_date_format__lte=datetime.datetime.now().date())|Q(name__icontains='hdfc', status__in=['active', 'Active', 'closed', "Closed"], end_date_format=None)
-        hdfc_query_green = Q(name__icontains='hdfc', status__in=['closed', "Closed", 'active', 'Active'], end_date_format__gte=datetime.datetime.now().date())
+        hdfc_query_green = Q(name__icontains='hdfc', status__in=['closed', "Closed", 'active', 'Active'], end_date_format__gte=datetime.datetime.now().date()) or \
+                               Q(name__icontains='indusind',
+                             status__in=['closed', "Closed"],
+                             )
         red_hdfc = Projects.objects.filter(hdfc_query_red).count()
         green_hdfc = Projects.objects.filter(hdfc_query_green).exclude(end_date_format=None).count()
 
@@ -517,7 +520,12 @@ def client_list(request):
         indusind_query_green = Q(name__icontains='indusind',
                              status__in=['closed', "Closed", 'active',
                                          'Active'],
+                             end_date_format__gte=datetime.datetime.now().date()) or \
+                               Q(name__icontains='indusind',
+                             status__in=['closed', "Closed", 'active',
+                                         'Active'],
                              end_date_format__gte=datetime.datetime.now().date())
+
         red_indusind = Projects.objects.filter(indusind_query_red).count()
         green_indusind = Projects.objects.filter(indusind_query_green).exclude(
             end_date_format=None).count()
@@ -554,7 +562,7 @@ def project_list(request):
         csm_data = Projects.objects.all().values_list("owner_name")
         csm_list = []
         for c in csm_data:
-            names    = str(c[0])
+            names = str(c[0])
             if names not in csm_data:
                 csm_list.append(names)
         # csm = list(set([str(u[0]) for u in csm_data]))
@@ -562,6 +570,7 @@ def project_list(request):
             project = project_list_view_color(name, csms, color)
         else:
             project = project_list_view(name, status, csms)
+        sorted(csm_list)
         return render(request, "project_list.html", {"projects": project,
                                                      "csm": list(set(csm_list)),
                                                      "date": today,
