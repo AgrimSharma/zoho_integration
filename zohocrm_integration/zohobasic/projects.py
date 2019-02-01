@@ -241,6 +241,7 @@ def project_list_view_color(name, csm, color):
             over_due = datetime.datetime.now().date() - pro.end_date_format
         except Exception:
             over_due = None
+            color = "red"
         milestone_closed = pro.milestone_set.filter(status='notcompleted')
         milestone_open = pro.milestone_set.filter(status='completed')
         data = dict(name=pro.name,
