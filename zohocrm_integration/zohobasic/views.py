@@ -131,130 +131,129 @@ def time_sheet_projects_tasks(request, project_id):
 
 
 def projects(request):
-    # user = request.user
-    # try:
-    #     user = User.objects.get(username=user.username)
-    project = Projects.objects.all().order_by("name")
-    response = []
-    pname = []
+    user = request.user
+    try:
+        user = User.objects.get(username=user.username)
+        project = Projects.objects.all().order_by("name")
+        response = []
+        pname = []
 
-    for p in project:
-        open_task = p.tasks_set.filter(status='Open').count()
-        progress_task = p.tasks_set.filter(status='In Progress').count()
-        closed_task = p.tasks_set.filter(status='Closed').count()
-        open_milestone = p.milestone_set.filter(status='notcompleted').count()
-        closed_milestone = p.milestone_set.filter(status='completed').count()
-        try:
-            datetime.datetime.strftime(p.end_date_format, "%Y-%m-%d")
-            if p.end_date_format < datetime.datetime.now().date() and p.status.lower() == "active":
+        for p in project:
+            open_task = p.tasks_set.filter(status='Open').count()
+            progress_task = p.tasks_set.filter(status='In Progress').count()
+            closed_task = p.tasks_set.filter(status='Closed').count()
+            open_milestone = p.milestone_set.filter(status='notcompleted').count()
+            closed_milestone = p.milestone_set.filter(status='completed').count()
+            try:
+                datetime.datetime.strftime(p.end_date_format, "%Y-%m-%d")
+                if p.end_date_format < datetime.datetime.now().date() and p.status.lower() == "active":
+                    status = 'red'
+                else:
+                    status = "green"
+            except Exception:
                 status = 'red'
-            else:
-                status = "green"
-        except Exception:
-            status = 'red'
-        try:
-            health = open_task + progress_task / (open_task + closed_task + progress_task)
-        except Exception:
-            health = 0
-        print p.name, status
-        if p.name not in pname:
-            pname.append(p.name)
-            response.append(dict(
-                name=p.name,
-                owner=p.owner_name,
-                open_task=open_task,
-                progress_task=progress_task + open_task + closed_task,
-                closed_task=closed_task,
-                status=p.status.capitalize(),
-                color=status,
-                closed_milestone=closed_milestone,
-                total_milestone=closed_milestone + open_milestone,
-                start_date=p.start_date_format,
-                end_date=p.end_date_format,
-                id=p.id,
-                percent=health * 100
-            ))
-    return render(request, "projects.html", {"project": response})
-    # except Exception:
-    #     return redirect("/")
+            try:
+                health = open_task + progress_task / (open_task + closed_task + progress_task)
+            except Exception:
+                health = 0
+            if p.name not in pname:
+                pname.append(p.name)
+                response.append(dict(
+                    name=p.name,
+                    owner=p.owner_name,
+                    open_task=open_task,
+                    progress_task=progress_task + open_task + closed_task,
+                    closed_task=closed_task,
+                    status=p.status.capitalize(),
+                    color=status,
+                    closed_milestone=closed_milestone,
+                    total_milestone=closed_milestone + open_milestone,
+                    start_date=p.start_date_format,
+                    end_date=p.end_date_format,
+                    id=p.id,
+                    percent=health * 100
+                ))
+        return render(request, "projects.html", {"project": response})
+    except Exception:
+        return redirect("/")
 
 
 def projects_grantt(request):
-    # user = request.user
-    # try:
-    #     user = User.objects.get(username=user.username)
-    project = Projects.objects.filter(start_date_format__year__gte=
-                                      datetime.datetime.now().year - 1).order_by("name")
-    response = []
-    for p in project:
-        import re
-        try:
-            datetime.datetime.strftime(p.start_date_format, "%m-%d-%Y")
-            start_date_month = p.start_date_format.month
-            start_date_year = p.start_date_format.year
-            start_date_date = p.start_date_format.day
-        except Exception:
-            start_date_month = datetime.datetime.now().month
-            start_date_year = datetime.datetime.now().year
-            start_date_date = datetime.datetime.now().day
-        try:
-            datetime.datetime.strftime(p.end_date_format, "%m-%d-%Y")
-            end_date_month = p.end_date_format.month
-            end_date_year = p.end_date_format.year
-            end_date_date = p.end_date_format.day
-        except Exception:
-            end_date_month = datetime.datetime.now().month
-            end_date_year = datetime.datetime.now().year
-            end_date_date = datetime.datetime.now().day
-        try:
-            percent = p.task_count_close / (
-                        p.task_count_close + p.task_count_open)
-        except Exception:
-            percent = 0
-        tasks = p.tasks_set.all()
-        task_data = []
-        for t in tasks:
+    user = request.user
+    try:
+        user = User.objects.get(username=user.username)
+        project = Projects.objects.filter(start_date_format__year__gte=
+                                          datetime.datetime.now().year - 1).order_by("name")
+        response = []
+        for p in project:
+            import re
             try:
-                end_date = datetime.datetime.strftime(t.end_date, "%Y-%m-%d")
+                datetime.datetime.strftime(p.start_date_format, "%m-%d-%Y")
+                start_date_month = p.start_date_format.month
+                start_date_year = p.start_date_format.year
+                start_date_date = p.start_date_format.day
             except Exception:
-                end_date = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d")
+                start_date_month = datetime.datetime.now().month
+                start_date_year = datetime.datetime.now().year
+                start_date_date = datetime.datetime.now().day
             try:
-                start_date = datetime.datetime.strftime(t.start_date,
-                                                        "%Y-%m-%d")
+                datetime.datetime.strftime(p.end_date_format, "%m-%d-%Y")
+                end_date_month = p.end_date_format.month
+                end_date_year = p.end_date_format.year
+                end_date_date = p.end_date_format.day
             except Exception:
-                start_date = datetime.datetime.strftime(p.start_date_format, "%Y-%m-%d")
-            current = datetime.datetime.now()
-            ends = datetime.datetime.strptime(end_date, "%Y-%m-%d")
-            if ends >= current and t.status in ["Open", "In Progress"]:
-                color = "#ffbf00"
-            elif ends <= current and t.status in ["Open", "In Progress"]:
-                color = "#FF0000"
-            else:
-                color = "#008000"
-            task_data.append(dict(task=t.task_name,
-                                  start=start_date,
-                                  end=end_date,
-                                  color=color
-                                  ))
-        remove_numbers = re.sub("[^a-zA-Z0-9]+"," ", p.name.strip())
-        remove_hypen = re.sub("[0-9]{1,}"," ", remove_numbers)
-        if len(tasks) > 0:
+                end_date_month = datetime.datetime.now().month
+                end_date_year = datetime.datetime.now().year
+                end_date_date = datetime.datetime.now().day
+            try:
+                percent = p.task_count_close / (
+                            p.task_count_close + p.task_count_open)
+            except Exception:
+                percent = 0
+            tasks = p.tasks_set.all()
+            task_data = []
+            for t in tasks:
+                try:
+                    end_date = datetime.datetime.strftime(t.end_date, "%Y-%m-%d")
+                except Exception:
+                    end_date = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%d")
+                try:
+                    start_date = datetime.datetime.strftime(t.start_date,
+                                                            "%Y-%m-%d")
+                except Exception:
+                    start_date = datetime.datetime.strftime(p.start_date_format, "%Y-%m-%d")
+                current = datetime.datetime.now()
+                ends = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+                if ends >= current and t.status in ["Open", "In Progress"]:
+                    color = "#ffbf00"
+                elif ends <= current and t.status in ["Open", "In Progress"]:
+                    color = "#FF0000"
+                else:
+                    color = "#008000"
+                task_data.append(dict(task=t.task_name,
+                                      start=start_date,
+                                      end=end_date,
+                                      color=color
+                                      ))
+            remove_numbers = re.sub("[^a-zA-Z0-9]+"," ", p.name.strip())
+            remove_hypen = re.sub("[0-9]{1,}"," ", remove_numbers)
+            if len(tasks) > 0:
 
-            response.append(dict(name=remove_hypen,
-                                 start_date_month=start_date_month,
-                                 start_date_year=start_date_year,
-                                 start_date_date=start_date_date,
-                                 end_date_month=end_date_month,
-                                 end_date_year=end_date_year,
-                                 end_date_date=end_date_date,
-                                 project_id=p.project_id,
-                                 status=p.status,
-                                 percent=percent * 100,
-                                 tasks=task_data))
+                response.append(dict(name=remove_hypen,
+                                     start_date_month=start_date_month,
+                                     start_date_year=start_date_year,
+                                     start_date_date=start_date_date,
+                                     end_date_month=end_date_month,
+                                     end_date_year=end_date_year,
+                                     end_date_date=end_date_date,
+                                     project_id=p.project_id,
+                                     status=p.status,
+                                     percent=percent * 100,
+                                     tasks=task_data))
 
-    return HttpResponse(json.dumps(dict(data=response)))
-    # except Exception:
-    #     return redirect("/")
+        return HttpResponse(json.dumps(dict(data=response)))
+    except Exception:
+        return redirect("/")
 
 
 def project_detail(request, project_id):
@@ -509,12 +508,16 @@ def resource_utilisation(request):
 
 
 def project_list(request):
-    today = datetime.datetime.now().date()
-    name = request.GET.get('name')
-    status = request.GET.get('status')
-    project = project_list_view(name, status)
-    return render(request, "project_list.html", {"projects": project,
-                                                 "date": today})
+    user = request.user
+    if user.is_authenticated():
+        today = datetime.datetime.now().date()
+        name = request.GET.get('name')
+        status = request.GET.get('status')
+        project = project_list_view(name, status)
+        return render(request, "project_list.html", {"projects": project,
+                                                     "date": today})
+    else:
+        return redirect("/")
 
 
 def logout_user(request):
@@ -640,7 +643,11 @@ def milestone_pull(request):
 
 
 def projects_grant(request):
-    return render(request, "projects_grantt.html")
+    user = request.user
+    if user.is_authenticated():
+        return render(request, "projects_grantt.html")
+    else:
+        return redirect("/")
 
 
 def time_sheet_pull(request):
@@ -687,72 +694,76 @@ def is_leap_year(year):
 
 
 def resource_utilization(request):
-    today = datetime.datetime.now()
-    days_left = today.weekday()
-    year = today.year
-    month = today.month
-    if month in [4, 6, 9, 11]:
-        end_days = 30
-    elif month in [1, 3, 5, 7, 8, 10, 12]:
-        end_days = 31
-    elif month == 2 and is_leap_year(year) == True:
-        end_days = 29
-    elif month == 2 and is_leap_year(year) == False:
-        end_days = 28
-    else:
-        end_days = 0
-    days = today.day
-    month_end = today + datetime.timedelta(days=days)
-    month_start = today - datetime.timedelta(days=days - 1)
-
-    week_start = today - datetime.timedelta(days=days_left)
-    week_end = today + datetime.timedelta(days=5 - days_left)
-    time_users = TimeSheet.objects.all().values_list("owner_name")
-    user_set = [str(user[0]) for user in set(time_users)]
-    week_days = []
-    print days_left
-    for d in range(5):
-        if d == 0:
-            days = datetime.datetime.strftime(week_start, "%b %d")
-        elif d == 5:
-            days = datetime.datetime.strftime(week_end, "%b %d")
+    user = request.user
+    if user.is_authenticated():
+        today = datetime.datetime.now()
+        days_left = today.weekday()
+        year = today.year
+        month = today.month
+        if month in [4, 6, 9, 11]:
+            end_days = 30
+        elif month in [1, 3, 5, 7, 8, 10, 12]:
+            end_days = 31
+        elif month == 2 and is_leap_year(year) == True:
+            end_days = 29
+        elif month == 2 and is_leap_year(year) == False:
+            end_days = 28
         else:
-            date = week_start + datetime.timedelta(days=d)
-            days = datetime.datetime.strftime(date, "%b %d")
-        week_days.append(dict(week_date=days))
-    response = []
-    week_end = week_end + datetime.timedelta(days=1)
-    for u in user_set:
-        time_sheet_week = TimeSheet.objects.filter(last_modified_date__gte=week_start, last_modified_date__lte=week_end, owner_name=u)
-        time_sheet_month = TimeSheet.objects.filter(last_modified_date__gte=month_start, last_modified_date__lte=month_end, owner_name=u)
+            end_days = 0
+        days = today.day
+        month_end = today + datetime.timedelta(days=days)
+        month_start = today - datetime.timedelta(days=days - 1)
 
-        time_sheet = []
+        week_start = today - datetime.timedelta(days=days_left)
+        week_end = today + datetime.timedelta(days=5 - days_left)
+        time_users = TimeSheet.objects.all().values_list("owner_name")
+        user_set = [str(user[0]) for user in set(time_users)]
+        week_days = []
+        print days_left
         for d in range(5):
-            time_sheet_data = TimeSheet.objects.filter(
-                last_modified_date=(week_start + datetime.timedelta(days=d)).date(),
-                owner_name=u).values_list("total_minutes")
-            time_sheet.append(float(sum([int(f[0]) for f in time_sheet_data])/ 60))
+            if d == 0:
+                days = datetime.datetime.strftime(week_start, "%b %d")
+            elif d == 5:
+                days = datetime.datetime.strftime(week_end, "%b %d")
+            else:
+                date = week_start + datetime.timedelta(days=d)
+                days = datetime.datetime.strftime(date, "%b %d")
+            week_days.append(dict(week_date=days))
+        response = []
+        week_end = week_end + datetime.timedelta(days=1)
+        for u in user_set:
+            time_sheet_week = TimeSheet.objects.filter(last_modified_date__gte=week_start, last_modified_date__lte=week_end, owner_name=u)
+            time_sheet_month = TimeSheet.objects.filter(last_modified_date__gte=month_start, last_modified_date__lte=month_end, owner_name=u)
 
-        user = u
-        week_hours = float(sum([int(d.total_minutes) for d in time_sheet_week]) / 60)
-        month_logs = float(sum([int(d.total_minutes) for d in time_sheet_month]) / 60)
+            time_sheet = []
+            for d in range(5):
+                time_sheet_data = TimeSheet.objects.filter(
+                    last_modified_date=(week_start + datetime.timedelta(days=d)).date(),
+                    owner_name=u).values_list("total_minutes")
+                time_sheet.append(float(sum([int(f[0]) for f in time_sheet_data])/ 60))
 
-        response.append(dict(user=" ".join(user.split(".")).upper(),
-                             week_hours=week_hours,
-                             days_log=time_sheet,
-                             user_name=user,
-                             month=month_logs
-                             ))
-    from operator import itemgetter
+            user = u
+            week_hours = float(sum([int(d.total_minutes) for d in time_sheet_week]) / 60)
+            month_logs = float(sum([int(d.total_minutes) for d in time_sheet_month]) / 60)
 
-    response = sorted(response, key=itemgetter('user'))
+            response.append(dict(user=" ".join(user.split(".")).upper(),
+                                 week_hours=week_hours,
+                                 days_log=time_sheet,
+                                 user_name=user,
+                                 month=month_logs
+                                 ))
+        from operator import itemgetter
 
-    return render(request, 'resource.html',
-                  {
-                      "week": datetime.datetime.strftime(week_start, "%b %d") + " - " + datetime.datetime.strftime(week_end, "%b %d"),
-                      "week_days":week_days,
-                      "response": response
-                  })
+        response = sorted(response, key=itemgetter('user'))
+
+        return render(request, 'resource.html',
+                      {
+                          "week": datetime.datetime.strftime(week_start, "%b %d") + " - " + datetime.datetime.strftime(week_end, "%b %d"),
+                          "week_days":week_days,
+                          "response": response
+                      })
+    else:
+        return redirect("/")
 
 
 def time_sheet_range(request):
@@ -767,59 +778,69 @@ def time_sheet_range(request):
 
 
 def task_list_projects(request, project_id):
-    project = Projects.objects.get(id=project_id)
-    tasks = project.tasks_set.all()
-    response = []
-    for t in tasks:
-        time_sheet = t.timesheet_set.all()
-        response.append(
-            dict(task_name=t.task_name,
-                 time_sheet=len(time_sheet),
-                 task_id=t.id,
-                 start_date=t.start_date,
-                 end_date=t.end_date,
-                 status=t.status))
+    user = request.user
+    if user.is_authenticated():
+        project = Projects.objects.get(id=project_id)
+        tasks = project.tasks_set.all()
+        response = []
+        for t in tasks:
+            time_sheet = t.timesheet_set.all()
+            response.append(
+                dict(task_name=t.task_name,
+                     time_sheet=len(time_sheet),
+                     task_id=t.id,
+                     start_date=t.start_date,
+                     end_date=t.end_date,
+                     status=t.status))
 
-    return render(request,"task_lists.html", dict(tasks=response, project=project.name))
+        return render(request,"task_lists.html", dict(tasks=response, project=project.name))
+    else:
+        return redirect("/")
 
 
 def project_task_time_sheet(request, task_id):
-    task = Tasks.objects.get(id=task_id)
-    return render(request, "time_sheet.html", {"tasks": task.timesheet_set.all(),
+    user = request.user
+    if user.is_authenticated():
+        task = Tasks.objects.get(id=task_id)
+        return render(request, "time_sheet.html", {"tasks": task.timesheet_set.all(),
                                                "task_name": task.project.name + " - " + task.task_name, })
+    else:
+        return redirect("/")
 
 
 def task_bifurcate(request, project_id):
-    task_sep = request.GET.get("task")
-    project = Projects.objects.get(id=project_id)
-    current_task, future_date_one_week, past_date_one_week, past_date_two_week = project_task_list_week(project_id)
-    if task_sep == "past_two":
-        task = past_date_two_week
-    elif task_sep == "past_one":
-        task = past_date_one_week
-    elif task_sep == "present":
-        task = current_task
-    else:
-        task = future_date_one_week
-    response = []
-    for t in task:
-        try:
-            start_date = datetime.datetime.strftime(t.start_date, "%b, %d %Y")
-        except Exception:
-            start_date = None
-        try:
-            end_date = datetime.datetime.strftime(t.end_date, "%b, %d %Y")
-        except Exception:
-            end_date = None
-        response.append(dict(
-            task_name=t.task_name,
-            start_date=start_date,
-            end_date=end_date,
-            status=t.status,
-            time_sheet=len(t.timesheet_set.all()),
-        ))
-    return render(request,"task_lists.html", dict(tasks=response, project=project.name))
-
+    user = request.user
+    if user.is_authenticated():
+        task_sep = request.GET.get("task")
+        project = Projects.objects.get(id=project_id)
+        current_task, future_date_one_week, past_date_one_week, past_date_two_week = project_task_list_week(project_id)
+        if task_sep == "past_two":
+            task = past_date_two_week
+        elif task_sep == "past_one":
+            task = past_date_one_week
+        elif task_sep == "present":
+            task = current_task
+        else:
+            task = future_date_one_week
+        response = []
+        for t in task:
+            try:
+                start_date = datetime.datetime.strftime(t.start_date, "%b, %d %Y")
+            except Exception:
+                start_date = None
+            try:
+                end_date = datetime.datetime.strftime(t.end_date, "%b, %d %Y")
+            except Exception:
+                end_date = None
+            response.append(dict(
+                task_name=t.task_name,
+                start_date=start_date,
+                end_date=end_date,
+                status=t.status,
+                time_sheet=len(t.timesheet_set.all()),
+            ))
+        return render(request,"task_lists.html", dict(tasks=response, project=project.name))
+    return redirect("/")
 
 def home(request):
     return render(request, "home.html")
