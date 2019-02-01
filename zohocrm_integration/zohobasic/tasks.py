@@ -31,7 +31,6 @@ def project_task(project_id):
             task = Tasks.objects.get(task_id=d['id'])
 
         try:
-            # details = d.get('details',"")
             own = ZohoUsers.obejcts.filter(tasks=task)
             print own
             owner = [dict(name=o.username, id=o.user_id) for o in own]
@@ -247,6 +246,7 @@ def project_all_tasks(project_id):
     tasks = project.tasks_set.all()
     response = []
     for t in tasks:
+        users = ZohoUsers.objects.filter(tasks=t)
         response.append(dict(
             id=t.id,
             description=strip_tags(t.description) if len(strip_tags(t.description)) < 50 else strip_tags(t.description)[:50] + "...",
@@ -261,6 +261,7 @@ def project_all_tasks(project_id):
             created_time = t.created_time,
             completed=t.completed,
             percent = t.percent_complete,
-            completed_time=t.last_updated_time
+            completed_time=t.last_updated_time,
+            owner=",".join(list(set([o.username for o in users])))
         ))
     return response

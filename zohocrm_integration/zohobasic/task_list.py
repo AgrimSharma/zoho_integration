@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.utils.html import strip_tags
 
 from .models import *
 import requests
@@ -34,6 +35,25 @@ def task_list_project(project_id, portal_id, access_token):
     return response
 
 
+def filter_tasks(tasks):
+    response = []
+    for t in tasks:
+        response.append(dict(
+            description=strip_tags(t.description)[:20],
+            start_date=t.start_date,
+            end_date=t.end_date,
+            status=t.status,
+            subtasks=t.subtasks,
+            name=t.task_name,
+            id=t.id,
+            created_person=t.created_person,
+            created_time=t.created_time,
+            completed=t.completed,
+            percent=t.percent_complete,
+        ))
+    return response
+
+
 def project_task_list(project_id):
     project = Projects.objects.get(id=project_id)
     date_today = datetime.datetime.now().date()
@@ -52,7 +72,10 @@ def project_task_list(project_id):
     current_task = Tasks.objects.filter(cq)
     past_task = Tasks.objects.filter(pq)
     future_task = Tasks.objects.filter(fq)
-    print len(past_task)
+    current_task = filter_tasks(current_task)
+    past_task = filter_tasks(past_task)
+    future_task = filter_tasks(future_task)
+
     return current_task,past_task, future_task
 
 

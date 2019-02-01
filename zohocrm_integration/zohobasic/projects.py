@@ -1,8 +1,9 @@
+from __future__ import division
+
 import json
 
 import requests
 from django.http import HttpResponse
-
 from .models import *
 from django.conf import settings
 import datetime
@@ -116,20 +117,28 @@ def project_detail_view(project_id):
     return data
 
 
-def project_list_view(name):
+def project_list_view(name, status):
+    if status == "all":
+        projects = Projects.objects.filter(name__icontains=name)
+    elif status == 'open':
+        projects = Projects.objects.filter(name__icontains=name, status__in=['active', 'Active'])
+    else:
+        projects = Projects.objects.filter(name__icontains=name, status__in=['Closed', 'closed'])
 
-    projects = Projects.objects.filter(name__icontains=name)
     response = []
     for pro in projects:
-        taks_open = pro.tasks_set.filter(status__in=['Open', 'In Progress'])
-        tasks_close = pro.tasks_set.filter(status='Closed')
+        taks_open = pro.tasks_set.filter(status__in=['Open', 'In Progress', 'open' , 'in progress'])
+        tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])
+        total = len(taks_open) + len(tasks_close)
         current_task, future_date_one_week, past_date_one_week, past_date_two_week = project_task_list_week(pro.id)
         try:
-            percent = len(tasks_close) / len(taks_open) + len(tasks_close)
+            percent = len(tasks_close) / total
         except Exception:
             percent = 0
         today = datetime.datetime.now().date()
-        if pro.status in ["Open", "In Progress"] and pro.end_date_format and pro.end_date_format < today:
+        if pro.status in ["Active",'active'] and pro.end_date_format and pro.end_date_format < today:
+            color = "red"
+        elif pro.status in ["Active",'active'] and pro.end_date_format == None:
             color = "red"
         else:
             color='green'
@@ -139,17 +148,9 @@ def project_list_view(name):
                 color = 'red'
             else:
                 color = 'green'
+            over_due = datetime.datetime.now().date() - pro.end_date_format
         except Exception:
-            pass
-        # if color == "red" and percent * 100 > 85:
-        #     color = "green"
-        # elif color == "red" and 75 <= percent * 100 < 85:
-        #     color = "yellow"
-        # elif pro.end_date_format == None:
-        #     color = "yellow"
-        # else:
-        #     color = "red"
-
+            over_due = None
         milestone_closed = pro.milestone_set.filter(status='notcompleted')
         milestone_open = pro.milestone_set.filter(status='completed')
         data = dict(name=pro.name,
@@ -167,9 +168,10 @@ def project_list_view(name):
                     future_date_one_week=len(future_date_one_week),
                     past_date_one_week=len(past_date_one_week),
                     past_date_two_week=len(past_date_two_week),
-                    percent=round(percent * 100, 2),
+                    percent=round(percent, 2) * 100,
                     color=color,
-                    csm=pro.owner_name
+                    csm=pro.owner_name,
+                    overdue=over_due.days if over_due else None
                     )
         response.append(data)
     return response

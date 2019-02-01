@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import unicode_literals, division
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 import pytz
@@ -135,7 +135,46 @@ def projects(request):
     try:
         user = User.objects.get(username=user.username)
         project = Projects.objects.all().order_by("name")
-        return render(request, "projects.html", {"project": project})
+        response = []
+        pname = []
+
+        for p in project:
+            open_task = p.tasks_set.filter(status='Open').count()
+            progress_task = p.tasks_set.filter(status='In Progress').count()
+            closed_task = p.tasks_set.filter(status='Closed').count()
+            open_milestone = p.milestone_set.filter(status='notcompleted').count()
+            closed_milestone = p.milestone_set.filter(status='completed').count()
+            try:
+                datetime.datetime.strftime(p.end_date_format, "%Y-%m-%d")
+                if p.end_date_format < datetime.datetime.now().date() and p.status.lower() == "active":
+                    status = 'red'
+                else:
+                    status = "green"
+            except Exception:
+                status = 'red'
+            try:
+                health = open_task + progress_task / (open_task + closed_task + progress_task)
+            except Exception:
+                health = 0
+            print p.name, status
+            if p.name not in pname:
+                pname.append(p.name)
+                response.append(dict(
+                    name=p.name,
+                    owner=p.owner_name,
+                    open_task=open_task,
+                    progress_task=progress_task + open_task + closed_task,
+                    closed_task=closed_task,
+                    status=p.status.capitalize(),
+                    color=status,
+                    closed_milestone=closed_milestone,
+                    total_milestone=closed_milestone + open_milestone,
+                    start_date=p.start_date_format,
+                    end_date=p.end_date_format,
+                    id=p.id,
+                    percent=health * 100
+                ))
+        return render(request, "projects.html", {"project": response})
     except Exception:
         return redirect("/")
 
@@ -246,8 +285,27 @@ def task_list(request, project_id):
         milestone = Milestone.objects.filter(project=project)
         if milestone:
             milestone = milestone
+
         else:
             milestone = milestone_project_id(project_id)
+        response = []
+        for m in milestone:
+            tasks = Tasks.objects.filter(milestone_id=m.id_string)
+            user = ""
+            for t in tasks:
+                user_list = t.zohousers_set.all()
+                user = ",".join(list(set([u.username for u in user_list])))
+            response.append(dict(
+                project=project.name,
+                owner_name=m.owner_name,
+                name=m.name,
+                status=m.status,
+                start_date=m.start_date,
+                end_date=m.end_date,
+                sequence=m.sequence,
+                flag=m.flag,
+                users=user
+            ))
         current_task,past_task,future_task = project_task_list(project_id)
         date_today = datetime.datetime.now().date()
 
@@ -255,7 +313,7 @@ def task_list(request, project_id):
                                             "current_task": current_task,
                                             "past_task": past_task,
                                             "future_task": future_task,
-                                            "milestone":milestone,
+                                            "milestone":response,
                                              "date_today": date_today,
                                             "name": project.name})
     else:
@@ -381,7 +439,7 @@ def all_milestone(request, project_id):
         return render(request, "tasks/project_milestone.html", {
             "date_today": date_today,
             "milestone": tasks,
-            "name": "ALL Milestone {}".format(project.name)})
+            "name": project.name})
     else:
         return redirect("/")
 
@@ -422,18 +480,19 @@ def login_user(request):
 def client_list(request):
     user = request.user
     if user.is_authenticated():
-        hdfc_close = Projects.objects.filter(name__icontains='hdfc', status='closed', owner_name=user.username)
+        hdfc_close = Projects.objects.filter(name__icontains='hdfc', status='closed')
         hdfc_open = Projects.objects.filter(name__icontains='hdfc', status='active')
         indus_open = Projects.objects.filter(name__icontains='indusind', status='active')
         indus_closed = Projects.objects.filter(name__icontains='indusind', status='closed')
-        hdfc_percent = len(hdfc_close) / len(hdfc_open) + len(hdfc_close) * 100
-        indus_percent = len(indus_closed) / len(indus_open) + len(indus_closed) * 100
-
-        project = [dict(name="HDFC BANK", search='hdfc', open=len(hdfc_open), closed=len(hdfc_close), percent=hdfc_percent),
+        hdfc_percent = len(hdfc_close) / (len(hdfc_open) + len(hdfc_close))
+        indus_percent = len(indus_closed) / (len(indus_open) + len(indus_closed))
+        hper = hdfc_percent * 100
+        indu = indus_percent * 100
+        project = [dict(name="HDFC BANK", search='hdfc', open=len(hdfc_open),
+                        closed=len(hdfc_close), percent=round(hper, 2)),
                    dict(name="Indusind BANK", search='indusind', open=len(indus_open),
-                        closed=len(indus_closed), percent=indus_percent),
+                        closed=len(indus_closed), percent=round(indu, 2)),
                    ]
-
         return render(request, "clients.html", {
             "project": project})
     else:
@@ -452,7 +511,8 @@ def resource_utilisation(request):
 def project_list(request):
     today = datetime.datetime.now().date()
     name = request.GET.get('name')
-    project = project_list_view(name)
+    status = request.GET.get('status')
+    project = project_list_view(name, status)
     return render(request, "project_list.html", {"projects": project,
                                                  "date": today})
 

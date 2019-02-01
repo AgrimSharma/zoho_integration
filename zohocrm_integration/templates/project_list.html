@@ -78,23 +78,24 @@
                 {%  for project in projects %}
                 <td>{{forloop.counter}}</td>
 
-                <td><a href="/project_task_list/{{ project.id }}"> {% if  project.color == "red"%}<span class="text-danger">{{project.name}}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.name}}{%  else %}<span class="text-success">{{project.name}}</span> {%  endif %}</a></td>
+                <td width="140px"><a href="/detail/{{ project.id }}"> {% if  project.color == "red"%}<span class="text-danger">{{project.name}}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.name}}{%  else %}<span class="text-success">{{project.name}}</span> {%  endif %}</a></td>
                 <td width="140px">{{project.start_date}} <br>{{project.end_date}}</td>
 
-                <td>{% if  project.color == "red"%}<span class="text-danger">{{project.status}}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.status}}</span>{%  else %}<span class="text-success">{{project.status}}</span> {%  endif %}</td>
-                <td>{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
+                <td width="140px">{% if  project.color == "red"%}<span class="text-danger">{{project.status}}<br> {%  if project.overdue %}-{{project.overdue}} Days{%  endif %}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.status}}</span>{%  else %}<span class="text-success">{{project.status}}</span> {%  endif %}
+                </td>
+                <td width="140px">{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
 
-                <td>{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>
+                <td width="140px">{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>
 
 
-                    <td>{%  if project.past_date_two_week > 0 %}<a href="/task_bifurcate/{{ project.id }}/?task=past_two">{{project.past_date_two_week}}</a>{%  else %}{{project.past_date_two_week}}{%  endif %}</td>
-                    <td>{%  if project.past_date_one_week > 0 %}<a href="/task_bifurcate/{{ project.id }}/?task=past_one">{{project.past_date_one_week}}</a>{%  else %} {{project.past_date_one_week}}{%  endif %}</td>
+                    <td width="140px">{%  if project.past_date_two_week > 0 %}<a href="/task_bifurcate/{{ project.id }}/?task=past_two">{{project.past_date_two_week}}</a>{%  else %}{{project.past_date_two_week}}{%  endif %}</td>
+                    <td width="140px">{%  if project.past_date_one_week > 0 %}<a href="/task_bifurcate/{{ project.id }}/?task=past_one">{{project.past_date_one_week}}</a>{%  else %} {{project.past_date_one_week}}{%  endif %}</td>
 
-                <td>{%  if project.current_task > 0 %}<a href="/task_bifurcate/{{ project.id }}/?task=present"> {{project.current_task}}</a> {%  else %}{{project.current_task}}{%  endif %}</td>
-                <td> {%  if project.future_date_one_week > 0 %}<a href="/task_bifurcate/{{ project.id }}/?task=future"> {{project.future_date_one_week}}</a>{%  else %}{{project.future_date_one_week}}{%  endif %}</td>
-                <td>{{project.csm}}</td>
+                <td width="140px">{%  if project.current_task > 0 %}<a href="/task_bifurcate/{{ project.id }}/?task=present"> {{project.current_task}}</a> {%  else %}{{project.current_task}}{%  endif %}</td>
+                <td width="140px"> {%  if project.future_date_one_week > 0 %}<a href="/task_bifurcate/{{ project.id }}/?task=future"> {{project.future_date_one_week}}</a>{%  else %}{{project.future_date_one_week}}{%  endif %}</td>
+                <td width="140px">{{project.csm}}</td>
 
-                    <td style="text-align: center">
+                    <td style="text-align: center" width="140px">
                     {%  if project.percent >= 85.0 %}    <i class="fas fa-check-circle" style="color: green;font-size: 30px;"></i>
                     {%  elif 75.0 <= project.percent and project.percent < 85.0 %}<i class="fas fa-exclamation-circle" style="color: orange;font-size: 30px;"></i>
                     {%  else %}<i class="fas fa-times-circle" style="color: red;font-size: 30px;"></i>

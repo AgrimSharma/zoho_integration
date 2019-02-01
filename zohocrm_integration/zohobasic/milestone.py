@@ -109,16 +109,69 @@ def milestone_project_id(project_id):
 def project_close_milestone(project_id):
     project = Projects.objects.get(id=project_id)
     milestone = project.milestone_set.filter(status='completed')
-    return milestone
-
+    response = []
+    for m in milestone:
+        tasks = Tasks.objects.filter(milestone_id=m.id_string)
+        user = ""
+        for t in tasks:
+            user_list = t.zohousers_set.all()
+            user = ",".join(list(set([u.username for u in user_list])))
+        response.append(dict(
+            project=project.name,
+            owner_name=m.owner_name,
+            name=m.name,
+            status=m.status,
+            start_date=m.start_date,
+            end_date=m.end_date,
+            sequence=m.sequence,
+            flag=m.flag,
+            users=user
+        ))
+    return response
 
 def project_open_milestone(project_id):
     project = Projects.objects.get(id=project_id)
     milestone = project.milestone_set.filter(status='notcompleted')
-    return milestone
+    response = []
+    for m in milestone:
+        tasks = Tasks.objects.filter(milestone_id=m.id_string)
+        user = ""
+        for t in tasks:
+            user_list = t.zohousers_set.all()
+            user = ",".join(list(set([u.username for u in user_list])))
+        response.append(dict(
+            project=project.name,
+            owner_name=m.owner_name,
+            name=m.name,
+            status=m.status,
+            start_date=m.start_date,
+            end_date=m.end_date,
+            sequence=m.sequence,
+            flag=m.flag,
+            users=user
+        ))
+    return response
 
 
 def project_all_milestone(project_id):
     project = Projects.objects.get(id=project_id)
     milestone = project.milestone_set.all()
-    return milestone
+    response = []
+    for m in milestone:
+        tasks = Tasks.objects.filter(milestone_id=m.id_string)
+        user = ""
+        for t in tasks:
+            user_list = t.zohousers_set.all()
+            user = ",".join(list(set([u.username for u in user_list])))
+        response.append(dict(
+            project=project.name,
+            owner_name=m.owner_name,
+            name=m.name,
+            status=m.status,
+            start_date=m.start_date,
+            end_date=m.end_date,
+            sequence=m.sequence,
+            flag=m.flag,
+            users=user
+        ))
+    return response

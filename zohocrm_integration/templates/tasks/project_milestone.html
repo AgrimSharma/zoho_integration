@@ -44,19 +44,20 @@
 
 <div style="padding-top: 70px">
 <hr>
-<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-success"><strong>{{ name }}</strong></label>
+<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <strong>Milestone for project <label class="text-success"> {{ name }}</label></strong>
      <table class="table table-bordered table-sm">
         <thead class="thead-dark">
             <tr>
                 <th>SNo</th>
-                <th>project</th>
-                <th>owner_name</th>
-                <th>name</th>
-                <th>status</th>
-                <th>end_date</th>
-                <th>sequence</th>
-                <th>start_date</th>
-                <th>flag</th>
+                <th>Project Name</th>
+                <th>Milestone Name</th>
+                <th>Start Date <br>End Date</th>
+                <th>Owner Name</th>
+                <th>Assigned To</th>
+                <th>Sequence</th>
+                <th>Flag</th>
+                                <th>Status</th>
+
             </tr>
         </thead>
         <tbody>
@@ -64,19 +65,20 @@
              {% for t in milestone %}
             <tr>
                 <td>{{forloop.counter}}</td>
-                <td>{{t.project.name}}</td>
+                <td>{{t.project}}</td>
+                            <td>{{t.name}}</td>
+
+                <td>{{t.start_date}}<br>{{t.end_date}}</td>
+
                 <td>{{t.owner_name}}</td>
-                <td>{{t.name}}</td>
-                <td>{%  if t.status == 'notcompleted' and date_today < t.end_date %} <label class="text-warning">{{t.status}}</label>
+                <td>{{ t.users }}</td>
+                <td>{{t.sequence}}</td>
+                <td>{{t.flag}}</td>
+                 <td>{%  if t.status == 'notcompleted' and date_today < t.end_date %} <label class="text-warning">{{t.status}}</label>
                 {%  elif t.status == 'notcompleted' %}<label class="text-danger">{{t.status}}</label>
                                 {% else %} <label class="text-success">{{t.status}}</label>
                 {%  endif %}
                 </td>
-                <td>{{t.end_date}}</td>
-                <td>{{t.sequence}}</td>
-                <td>{{t.start_date}}</td>
-                <td>{{t.flag}}</td>
-
             </tr>
             {% endfor %}
         {% else %}
