@@ -554,9 +554,9 @@ def project_list(request):
         csm_data = Projects.objects.all().values_list("owner_name")
         csm_list = []
         for c in csm_data:
-            name = str(c[0])
-            if name not in csm_data:
-                csm_list.append(name)
+            names = str(c[0])
+            if names not in csm_data:
+                csm_list.append(names)
         # csm = list(set([str(u[0]) for u in csm_data]))
         if color:
             project = project_list_view_color(name, csms, color)
