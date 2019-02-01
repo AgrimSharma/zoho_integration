@@ -141,9 +141,14 @@ def projects(request):
 
         response = []
         pname = []
+        csm_list = []
         csm_data = Projects.objects.all().values_list("owner_name")
-        csm = list(set([str(u[0]) for u in csm_data]))
-        sorted(csm)
+        for c in csm_data:
+            name = str(c[0])
+            if name not in csm_data:
+                csm_list.append(name)
+        # csm = list(set([str(u[0]) for u in csm_data]))
+        # sorted(csm)
 
         for p in project:
             open_task = p.tasks_set.filter(status='Open').count()
@@ -181,7 +186,7 @@ def projects(request):
                     percent=health * 100
                 ))
         return render(request, "projects.html", {"project": response,
-                                                 "csm": csm})
+                                                 "csm": list(set(csm_list))})
     except Exception:
         return redirect("/")
 
@@ -547,13 +552,18 @@ def project_list(request):
         csms = request.GET.get('csm')
         color = request.GET.get('color')
         csm_data = Projects.objects.all().values_list("owner_name")
-        csm = list(set([str(u[0]) for u in csm_data]))
+        csm_list = []
+        for c in csm_data:
+            name = str(c[0])
+            if name not in csm_data:
+                csm_list.append(name)
+        # csm = list(set([str(u[0]) for u in csm_data]))
         if color:
             project = project_list_view_color(name, csms, color)
         else:
             project = project_list_view(name, status, csms)
         return render(request, "project_list.html", {"projects": project,
-                                                     "csm": csm,
+                                                     "csm": list(set(csm_list)),
                                                      "date": today,
                                                      "name": name,
                                                      "status": status})
