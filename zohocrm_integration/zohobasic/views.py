@@ -73,12 +73,9 @@ def callback(request):
         vals['code'] = code
         access = Tokens.objects.latest("id")
         access.access_token = vals['access_token']
-        # access.refresh_token = vals['refresh_token']
         access.created_at = datetime.datetime.now()
         access.code = code
-        # refresh = token_refresh(access.refresh_token)
-        # access.access_token = refresh
-        # access.created_at = datetime.datetime.now()
+
         access.save()
         port = settings.PORTAL_ID
         
@@ -87,10 +84,7 @@ def callback(request):
         port = settings.PORTAL_ID
 
     if port:
-        # projects = all_projects()
-        # tasks = all_projects_task()
-        # milestone = all_projects_milestone()
-        # timesheet= all_project_time_sheet()
+
         return redirect("/projects_pull/")
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
@@ -134,11 +128,16 @@ def projects(request):
     user = request.user
     try:
         user = User.objects.get(username=user.username)
+        # try:
         csms = request.GET.get("csm")
         if csms == "all":
             project = Projects.objects.all().order_by("name")
+        elif csms == None:
+            project = Projects.objects.all().order_by("name")
         else:
-            project = Projects.objects.filter(owner_name=csms).order_by("name")
+            project = Projects.objects.filter(owner_name=csms).order_by(
+                "name")
+
 
         response = []
         pname = []
@@ -496,10 +495,13 @@ def client_list(request):
         indus_percent = len(indus_closed) / (len(indus_open) + len(indus_closed))
         hper = hdfc_percent * 100
         indu = indus_percent * 100
+
+
         hdfc_query_red = Q(name__icontains='hdfc', status__in=['active', 'Active'], end_date_format__lte=datetime.datetime.now().date())|Q(name__icontains='hdfc', status__in=['active', 'Active', 'closed', "Closed"], end_date_format=None)
         hdfc_query_green = Q(name__icontains='hdfc', status__in=['closed', "Closed", 'active', 'Active'], end_date_format__gte=datetime.datetime.now().date())
         red_hdfc = Projects.objects.filter(hdfc_query_red).count()
         green_hdfc = Projects.objects.filter(hdfc_query_green).exclude(end_date_format=None).count()
+
 
         indusind_query_red = Q(name__icontains='indusind',
                            status__in=['active', 'Active'],
@@ -516,11 +518,6 @@ def client_list(request):
             end_date_format=None).count()
 
 
-
-        red_indus = Projects.objects.filter(name__icontains='indusind',
-                                           status='active',
-                                           start_date_format__lte=datetime.datetime.now().date()).count()
-        amber_indus = red_hdfc - hdfc_close.count()
         project = [dict(name="HDFC BANK", search='hdfc', open=len(hdfc_open),
                         closed=len(hdfc_close), percent=round(hper, 2), red=red_hdfc, green=green_hdfc),
                    dict(name="Indusind BANK", search='indusind', open=len(indus_open),
