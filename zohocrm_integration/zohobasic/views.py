@@ -134,9 +134,17 @@ def projects(request):
     user = request.user
     try:
         user = User.objects.get(username=user.username)
-        project = Projects.objects.all().order_by("name")
+        csms = request.GET.get("csm")
+        if csms == "all":
+            project = Projects.objects.all().order_by("name")
+        else:
+            project = Projects.objects.filter(owner_name=csms).order_by("name")
+
         response = []
         pname = []
+        csm_data = Projects.objects.all().values_list("owner_name")
+        csm = list(set([str(u[0]) for u in csm_data]))
+        sorted(csm)
 
         for p in project:
             open_task = p.tasks_set.filter(status='Open').count()
@@ -173,7 +181,8 @@ def projects(request):
                     id=p.id,
                     percent=health * 100
                 ))
-        return render(request, "projects.html", {"project": response})
+        return render(request, "projects.html", {"project": response,
+                                                 "csm": csm})
     except Exception:
         return redirect("/")
 
@@ -479,18 +488,43 @@ def login_user(request):
 def client_list(request):
     user = request.user
     if user.is_authenticated():
-        hdfc_close = Projects.objects.filter(name__icontains='hdfc', status='closed')
-        hdfc_open = Projects.objects.filter(name__icontains='hdfc', status='active')
+        hdfc_close = Projects.objects.filter(name__icontains='hdfc', status__in=['closed', "Closed",])
+        hdfc_open = Projects.objects.filter(name__icontains='hdfc', status__in=['active', 'Active'])
         indus_open = Projects.objects.filter(name__icontains='indusind', status='active')
         indus_closed = Projects.objects.filter(name__icontains='indusind', status='closed')
         hdfc_percent = len(hdfc_close) / (len(hdfc_open) + len(hdfc_close))
         indus_percent = len(indus_closed) / (len(indus_open) + len(indus_closed))
         hper = hdfc_percent * 100
         indu = indus_percent * 100
+        hdfc_query_red = Q(name__icontains='hdfc', status__in=['active', 'Active'], end_date_format__lte=datetime.datetime.now().date())|Q(name__icontains='hdfc', status__in=['active', 'Active', 'closed', "Closed"], end_date_format=None)
+        hdfc_query_green = Q(name__icontains='hdfc', status__in=['closed', "Closed", 'active', 'Active'], end_date_format__gte=datetime.datetime.now().date())
+        red_hdfc = Projects.objects.filter(hdfc_query_red).count()
+        green_hdfc = Projects.objects.filter(hdfc_query_green).exclude(end_date_format=None).count()
+
+        indusind_query_red = Q(name__icontains='indusind',
+                           status__in=['active', 'Active'],
+                           end_date_format__lte=datetime.datetime.now().date()) | Q(
+            name__icontains='indusind',
+            status__in=['active', 'Active', 'closed', "Closed"],
+            end_date_format=None)
+        indusind_query_green = Q(name__icontains='indusind',
+                             status__in=['closed', "Closed", 'active',
+                                         'Active'],
+                             end_date_format__gte=datetime.datetime.now().date())
+        red_indusind = Projects.objects.filter(indusind_query_red).count()
+        green_indusind = Projects.objects.filter(indusind_query_green).exclude(
+            end_date_format=None).count()
+
+
+
+        red_indus = Projects.objects.filter(name__icontains='indusind',
+                                           status='active',
+                                           start_date_format__lte=datetime.datetime.now().date()).count()
+        amber_indus = red_hdfc - hdfc_close.count()
         project = [dict(name="HDFC BANK", search='hdfc', open=len(hdfc_open),
-                        closed=len(hdfc_close), percent=round(hper, 2)),
+                        closed=len(hdfc_close), percent=round(hper, 2), red=red_hdfc, green=green_hdfc),
                    dict(name="Indusind BANK", search='indusind', open=len(indus_open),
-                        closed=len(indus_closed), percent=round(indu, 2)),
+                        closed=len(indus_closed), percent=round(indu, 2), red=red_indusind, green=green_indusind),
                    ]
         return render(request, "clients.html", {
             "project": project})
@@ -513,9 +547,19 @@ def project_list(request):
         today = datetime.datetime.now().date()
         name = request.GET.get('name')
         status = request.GET.get('status')
-        project = project_list_view(name, status)
+        csms = request.GET.get('csm')
+        color = request.GET.get('color')
+        csm_data = Projects.objects.all().values_list("owner_name")
+        csm = list(set([str(u[0]) for u in csm_data]))
+        if color:
+            project = project_list_view_color(name, csms, color)
+        else:
+            project = project_list_view(name, status, csms)
         return render(request, "project_list.html", {"projects": project,
-                                                     "date": today})
+                                                     "csm": csm,
+                                                     "date": today,
+                                                     "name": name,
+                                                     "status": status})
     else:
         return redirect("/")
 
@@ -841,6 +885,7 @@ def task_bifurcate(request, project_id):
             ))
         return render(request,"task_lists.html", dict(tasks=response, project=project.name))
     return redirect("/")
+
 
 def home(request):
     return render(request, "home.html")

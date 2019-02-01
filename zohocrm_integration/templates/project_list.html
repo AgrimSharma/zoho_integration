@@ -7,7 +7,55 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+<style>
+.dropbtn {
+  background-color: #4CAF50;
+  color: white;
+  font-size: 16px;
+  border: none;
+            min-width: 166px;
 
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+      min-width: 160px;
+        padding-bottom: 10px;
+
+
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+    background-color: #4CAF50;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd;}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: block;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+</style>
 
     <title>Zoho</title>
 </head>
@@ -46,34 +94,42 @@
   </div>
 </nav>
 
-<div class="col-md-12" style="text-align: center;padding-top: 70px;"> <label class="text-success"><strong>Projects </strong></label>
+<div class="col-md-12" style="text-align: center;padding-top: 70px;">
+<div style="text-align: center; display: inline-flex"><div><label class="text-success"><strong>Projects </strong></label></div>
+    <div style="padding-left: 20px;">
+        <div class="dropdown">
+  <button class="dropbtn">CSM's <i class="fas fa-angle-down" style="font-size: 20px;"></i></button>
+  <div class="dropdown-content">
 
+    <a href="/project_list/?name={{ name }}&status={{ status }}&csm=all">All</a>
+      {%  for c in  csm %}
+          <a href="/project_list/?name={{ name }}&status={{ status }}&csm={{ c }}">{{ c }}</a>
+
+      {%  endfor %}
+  </div>
+</div>
+    </div>
+</div>
     <table class="table">
         <thead class="thead-dark">
             <tr>
                 <th>SNo</th>
                 <th>Project Name</th>
                 <th width="140px">Start Date <br>End Date</th>
-{#                <th>End Date</th>#}
                 <th>Status</th>
                 <th>Task</th>
-{#                <th>Task Closed</th>#}
                 <th>Milestone</th>
-{#                <th>Milestone Close</th>#}
                 <th>CW - 2 Task</th>
                 <th>CW - 1 Task</th>
                 <th>Current Task</th>
                 <th>NW Task</th>
                 <th>CSM</th>
-
                 <th>Project Health</th>
-
-                {% comment %}<th>Milestone</th>
-                <th>Detail</th>{% endcomment %}
 
             </tr>
         </thead>
         <tbody>
+
             <tr>
                 {%  for project in projects %}
                 <td>{{forloop.counter}}</td>
@@ -101,9 +157,6 @@
                     {%  else %}<i class="fas fa-times-circle" style="color: red;font-size: 30px;"></i>
                     {%  endif %}
                 </td>
-                {% comment %}<td><a href="/milestone/{{project.id}}">Milestone</a> </td>
-
-                <td><a href="/detail/{{project.id}}"><i class="fas fa-arrow-right"></i></a> </td>{% endcomment %}
             </tr>{%  endfor %}
         </tbody>
     </table>

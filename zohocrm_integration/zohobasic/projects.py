@@ -117,17 +117,107 @@ def project_detail_view(project_id):
     return data
 
 
-def project_list_view(name, status):
-    if status == "all":
-        projects = Projects.objects.filter(name__icontains=name)
-    elif status == 'open':
-        projects = Projects.objects.filter(name__icontains=name, status__in=['active', 'Active'])
+def project_list_view(name, status, csm):
+    if csm == "all" :
+        if status == "all":
+            projects = Projects.objects.filter(name__icontains=name)
+        elif status == 'open':
+            projects = Projects.objects.filter(name__icontains=name, status__in=['active', 'Active'])
+        else:
+            projects = Projects.objects.filter(name__icontains=name, status__in=['Closed', 'closed'])
     else:
-        projects = Projects.objects.filter(name__icontains=name, status__in=['Closed', 'closed'])
-
+        if status == "all":
+            projects = Projects.objects.filter(name__icontains=name, owner_name=csm)
+        elif status == 'open':
+            projects = Projects.objects.filter(name__icontains=name,
+                                               status__in=['active', 'Active'], owner_name=csm)
+        else:
+            projects = Projects.objects.filter(name__icontains=name,
+                                               status__in=['Closed', 'closed'], owner_name=csm)
     response = []
     for pro in projects:
-        taks_open = pro.tasks_set.filter(status__in=['Open', 'In Progress', 'open' , 'in progress'])
+        taks_open = pro.tasks_set.filter(status__in=['Open', 'In Progress', 'open', 'in progress'])
+        tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])
+        total = len(taks_open) + len(tasks_close)
+        current_task, future_date_one_week, past_date_one_week, past_date_two_week = project_task_list_week(pro.id)
+        try:
+            percent = len(tasks_close) / total
+        except Exception:
+            percent = 0
+        today = datetime.datetime.now().date()
+        if pro.status in ["Active",'active'] and pro.end_date_format and pro.end_date_format < today:
+            color = "red"
+        elif pro.status in ["Active",'active'] and pro.end_date_format == None:
+            color = "red"
+        elif pro.status in ["closed",'Closed'] and pro.end_date_format == None:
+            color = "red"
+        else:
+            color='green'
+        try:
+            datetime.datetime.strftime(pro.end_date_format, "%Y-%m-%d")
+            if pro.end_date_format < today and pro.status == 'active':
+                color = 'red'
+            else:
+                color = 'green'
+            over_due = datetime.datetime.now().date() - pro.end_date_format
+        except Exception:
+            over_due = None
+        milestone_closed = pro.milestone_set.filter(status='notcompleted')
+        milestone_open = pro.milestone_set.filter(status='completed')
+        data = dict(name=pro.name,
+                    id=pro.id,
+                    end_date=pro.end_date_format,
+                    task_count_open=len(taks_open) + len(tasks_close),
+                    milestone_count_open=len(milestone_closed) + len(milestone_open),
+                    task_count_close=len(tasks_close),
+                    milestone_count_close=len(milestone_closed),
+                    start_date=pro.start_date_format,
+                    status=pro.status.capitalize(),
+                    created_date=pro.created_date_format,
+                    project_id=pro.project_id,
+                    current_task=len(current_task),
+                    future_date_one_week=len(future_date_one_week),
+                    past_date_one_week=len(past_date_one_week),
+                    past_date_two_week=len(past_date_two_week),
+                    percent=round(percent, 2) * 100,
+                    color=color,
+                    csm=pro.owner_name,
+                    overdue=over_due.days if over_due else None
+                    )
+        response.append(data)
+    return response
+
+
+def project_list_view_color(name, csm, color):
+    today = datetime.datetime.now().date()
+    if color == 'red':
+        if csm == "all":
+            query = Q(name__icontains=name, status__in=['active', 'Active'], end_date_format__lte=today) | Q(name__icontains=name, status__in=['active', 'Active', 'Closed', 'closed'], end_date_format=None)
+            projects = Projects.objects.filter(query)
+        else:
+            query = Q(name__icontains=name,status__in=['active', 'Active'], owner_name=csm, end_date_format__lte=today) | Q(name__icontains=name,status__in=['active', 'Active', 'Closed', 'closed'], owner_name=csm, end_date_format=None)
+            projects = Projects.objects.filter(query)
+    elif color == 'green':
+        if csm == "all":
+            query = Q(name__icontains=name, status__in=['Closed', 'closed']) |  Q(name__icontains=name, status__in=['active', 'Active'], end_date_format__gte=today)
+
+            projects = Projects.objects.filter(query).exclude(end_date_format=None)
+        else:
+            query = Q(name__icontains=name,status__in=['Closed', 'closed'],owner_name=csm)
+
+            projects = Projects.objects.filter(query)
+    else:
+        week = today + datetime.timedelta(days=7)
+        if csm == "all" :
+            query = Q(name__icontains=name, status__in=['active', 'Active'], end_date_format__gte=today,end_date_format__lte=week)
+
+            projects = Projects.objects.filter(query)
+        else:
+            query = Q(name__icontains=name,status__in=['active','Active'],owner_name=csm,end_date_format__gte=today,end_date_format__lte=week)
+            projects = Projects.objects.filter(query)
+    response = []
+    for pro in projects:
+        taks_open = pro.tasks_set.filter(status__in=['Open', 'In Progress', 'open', 'in progress'])
         tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])
         total = len(taks_open) + len(tasks_close)
         current_task, future_date_one_week, past_date_one_week, past_date_two_week = project_task_list_week(pro.id)
