@@ -14,6 +14,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 class ZohoUserAdmin(admin.ModelAdmin):
+    raw_id_fields = ['tasks']
     def task(self, obj):
         return obj.tasks.task_name
     list_display = ['username', "task"]
@@ -30,7 +31,7 @@ class TaskAdmin(admin.ModelAdmin):
 
 
 class TimeSheetAdmin(admin.ModelAdmin):
-    raw_id_fields = ['project']
+    raw_id_fields = ['project', "task"]
 
     def projects(self, obj):
         return obj.project.name
