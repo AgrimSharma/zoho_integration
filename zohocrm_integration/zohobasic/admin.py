@@ -10,6 +10,7 @@ class TokenAdmin(admin.ModelAdmin):
 
 
 class ProjectAdmin(admin.ModelAdmin):
+    search_fields = ['name', "owner_name"]
     list_display = ['project_id', "name", "status"]
 
 
