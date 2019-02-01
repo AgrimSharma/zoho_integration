@@ -131,52 +131,52 @@ def time_sheet_projects_tasks(request, project_id):
 
 
 def projects(request):
-    user = request.user
-    try:
-        user = User.objects.get(username=user.username)
-        project = Projects.objects.all().order_by("name")
-        response = []
-        pname = []
+    # user = request.user
+    # try:
+    #     user = User.objects.get(username=user.username)
+    project = Projects.objects.all().order_by("name")
+    response = []
+    pname = []
 
-        for p in project:
-            open_task = p.tasks_set.filter(status='Open').count()
-            progress_task = p.tasks_set.filter(status='In Progress').count()
-            closed_task = p.tasks_set.filter(status='Closed').count()
-            open_milestone = p.milestone_set.filter(status='notcompleted').count()
-            closed_milestone = p.milestone_set.filter(status='completed').count()
-            try:
-                datetime.datetime.strftime(p.end_date_format, "%Y-%m-%d")
-                if p.end_date_format < datetime.datetime.now().date() and p.status.lower() == "active":
-                    status = 'red'
-                else:
-                    status = "green"
-            except Exception:
+    for p in project:
+        open_task = p.tasks_set.filter(status='Open').count()
+        progress_task = p.tasks_set.filter(status='In Progress').count()
+        closed_task = p.tasks_set.filter(status='Closed').count()
+        open_milestone = p.milestone_set.filter(status='notcompleted').count()
+        closed_milestone = p.milestone_set.filter(status='completed').count()
+        try:
+            datetime.datetime.strftime(p.end_date_format, "%Y-%m-%d")
+            if p.end_date_format < datetime.datetime.now().date() and p.status.lower() == "active":
                 status = 'red'
-            try:
-                health = open_task + progress_task / (open_task + closed_task + progress_task)
-            except Exception:
-                health = 0
-            print p.name, status
-            if p.name not in pname:
-                pname.append(p.name)
-                response.append(dict(
-                    name=p.name,
-                    owner=p.owner_name,
-                    open_task=open_task,
-                    progress_task=progress_task + open_task + closed_task,
-                    closed_task=closed_task,
-                    status=p.status.capitalize(),
-                    color=status,
-                    closed_milestone=closed_milestone,
-                    total_milestone=closed_milestone + open_milestone,
-                    start_date=p.start_date_format,
-                    end_date=p.end_date_format,
-                    id=p.id,
-                    percent=health * 100
-                ))
-        return render(request, "projects.html", {"project": response})
-    except Exception:
-        return redirect("/")
+            else:
+                status = "green"
+        except Exception:
+            status = 'red'
+        try:
+            health = open_task + progress_task / (open_task + closed_task + progress_task)
+        except Exception:
+            health = 0
+        print p.name, status
+        if p.name not in pname:
+            pname.append(p.name)
+            response.append(dict(
+                name=p.name,
+                owner=p.owner_name,
+                open_task=open_task,
+                progress_task=progress_task + open_task + closed_task,
+                closed_task=closed_task,
+                status=p.status.capitalize(),
+                color=status,
+                closed_milestone=closed_milestone,
+                total_milestone=closed_milestone + open_milestone,
+                start_date=p.start_date_format,
+                end_date=p.end_date_format,
+                id=p.id,
+                percent=health * 100
+            ))
+    return render(request, "projects.html", {"project": response})
+    # except Exception:
+    #     return redirect("/")
 
 
 def projects_grantt(request):
