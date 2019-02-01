@@ -95,13 +95,56 @@ def project_task_list_week(project_id):
                                         end_date__gte=begin_date,
                                         end_date__lt=end_date)
     future_date_one_week = Tasks.objects.filter(project=project,
-                                     end_date__gte=end_date,
-                                     end_date__lt=future_date_one)
+                                                end_date__gte=end_date,
+                                                end_date__lt=future_date_one)
     past_date_one_week = Tasks.objects.filter(project=project,
-                                       end_date__gte=past_date_one,
-                                       end_date__lte=begin_date)
+                                              end_date__gte=past_date_one,
+                                              end_date__lte=begin_date)
 
     past_date_two_week = Tasks.objects.filter(project=project,
-                                               end_date__gte=past_date_two,
-                                               end_date__lte=past_date_one)
+                                              end_date__gte=past_date_two,
+                                              end_date__lte=past_date_one)
     return current_task,future_date_one_week, past_date_one_week, past_date_two_week
+
+
+def task_list_week_project(project_id):
+    project = Projects.objects.get(id=project_id)
+    date_today = datetime.datetime.now().date()
+    week_day = date_today.weekday()
+    begin_date = datetime.datetime.now().date() - datetime.timedelta(
+        days=week_day)
+    end_date = datetime.datetime.now().date() + datetime.timedelta(
+        days=6 - week_day)
+    future_date_one = end_date + datetime.timedelta(days=7)
+    past_date_one = begin_date - datetime.timedelta(days=7)
+    past_date_two = past_date_one - datetime.timedelta(days=7)
+
+    current_task = Tasks.objects.filter(project=project,
+                                        end_date__gte=begin_date,
+                                        end_date__lt=end_date).count()
+    current_task_closed = Tasks.objects.filter(project=project,
+                                        end_date__gte=begin_date,
+                                        end_date__lt=end_date, status__in=['closed', 'Closed']).count()
+    future_date_one_week = Tasks.objects.filter(project=project,
+                                                end_date__gte=end_date,
+                                                end_date__lt=future_date_one).count()
+    future_date_one_week_closed = Tasks.objects.filter(project=project,
+                                                end_date__gte=end_date,
+                                                end_date__lt=future_date_one,
+                                                       status__in=['closed',
+                                                                   'Closed']).count()
+    past_date_one_week_total = Tasks.objects.filter(project=project,
+                                              end_date__gte=past_date_one,
+                                              end_date__lte=begin_date).count()
+    past_date_one_week_close = Tasks.objects.filter(project=project,
+                                                    end_date__gte=past_date_one,
+                                                    end_date__lte=begin_date, status__in=['closed', 'Closed']).count()
+
+    past_date_two_week_total = Tasks.objects.filter(project=project,
+                                              end_date__gte=past_date_two,
+                                              end_date__lte=past_date_one).count()
+
+    past_date_two_week_closed=Tasks.objects.filter(project=project,
+                                              end_date__gte=past_date_two,
+                                              end_date__lte=past_date_one, status__in=['closed', 'Closed']).count()
+    return "{}/{}".format(current_task_closed,current_task), "{}/{}".format(future_date_one_week_closed,future_date_one_week), "{}/{}".format(past_date_one_week_close,past_date_one_week_total), "{}/{}".format(past_date_two_week_closed,past_date_two_week_total)
