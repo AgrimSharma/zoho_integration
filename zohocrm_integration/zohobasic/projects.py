@@ -220,7 +220,7 @@ def project_list_view_color(name, csm, color):
         taks_open = pro.tasks_set.filter(status__in=['Open', 'In Progress', 'open', 'in progress'])
         tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])
         total = len(taks_open) + len(tasks_close)
-        current_task, future_date_one_week, past_date_one_week, past_date_two_week = project_task_list_week(pro.id)
+        current_task, future_date_one_week, past_date_one_week, past_date_two_week = task_list_week_project(pro.id)
         try:
             percent = len(tasks_close) / total
         except Exception:
@@ -255,10 +255,10 @@ def project_list_view_color(name, csm, color):
                     status=pro.status.capitalize(),
                     created_date=pro.created_date_format,
                     project_id=pro.project_id,
-                    current_task=len(current_task),
-                    future_date_one_week=len(future_date_one_week),
-                    past_date_one_week=len(past_date_one_week),
-                    past_date_two_week=len(past_date_two_week),
+                    current_task=current_task,
+                    future_date_one_week=future_date_one_week,
+                    past_date_one_week=past_date_one_week,
+                    past_date_two_week=past_date_two_week,
                     percent=round(percent, 2) * 100,
                     color=color,
                     csm=pro.owner_name,
