@@ -9,7 +9,7 @@
     <title>Zoho</title>
 </head>
 <body>
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <a class="navbar-brand" href="#">Zoho Dashboard</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -21,7 +21,6 @@
         <a class="nav-link" href="{%  url 'clients' %}">Home <span class="sr-only">(current)</span></a>
       </li>
         <li class="nav-item ">
-
                 <a class="nav-link" href="{%  url 'grant_view' %}">Project Gantt</a>
               </li>
          <li class="nav-item ">
@@ -35,50 +34,50 @@
     </form>
     </li>
     </ul>
-
-<div style="display: flex">
+      <div style="display: flex">
           <a class="text-success" href="#">Welcome {{ request.user|upper }}</a>
           <a class="text-danger" href="/logout_user/" style="padding-left: 10px;">Logout</a>
-        </div>  </div>
+        </div>
+
+  </div>
 </nav>
 
-<div style="padding-top: 70px">
-<hr>
-<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <strong>Milestone for project <label class="text-success"> {{ name }}</label></strong>
-     <table class="table table-bordered table-sm">
+<div style="padding-top: 20px">
+<div class="col-md-12" style="text-align: center;padding-top: 20px;"><label class="text-success"> Time Sheet <strong>{{ task_name }}</strong></label>
+
+    <table class="table table-bordered table-sm">
         <thead class="thead-dark">
             <tr>
-                <th>SNo</th>
-                <th>Project Name</th>
-                <th>Milestone Name</th>
-                <th>Start Date <br>End Date</th>
-                <th>Owner Name</th>
-                <th>Assigned To</th>
-                <th>Sequence</th>
-                <th>Flag</th>
-                                <th>Status</th>
 
+                <th>Sno</th>
+                <th>project</th>
+                <th>Task</th>
+                <th>Last Modified Date</th>
+                <th>Bill Status</th>
+                <th>Owner Name</th>
+                <th>Work Hours</th>
+                {% comment %}<th>total_minutes</th>{% endcomment %}
+                <th>hours_display</th>
+               {% comment %} <td>Owners</td>{% endcomment %}
+                <th>notes</th>
+                <th>created_date</th>
             </tr>
         </thead>
         <tbody>
-        {% if milestone %}
-             {% for t in milestone %}
+        {% if tasks %}
+             {% for t in tasks %}
             <tr>
                 <td>{{forloop.counter}}</td>
-                <td>{{t.project}}</td>
-                            <td>{{t.name}}</td>
-
-                <td>{{t.start_date}}<br>{{t.end_date}}</td>
-
+                <td>{{t.project.name}}</td>
+                <td>{{t.task.task_name}}</td>
+                <td>{{t.last_modified_date}}</td>
+                <td>{{t.bill_status}}</td>
                 <td>{{t.owner_name}}</td>
-                <td><a href="/mile_stone_task/{{ t.id }}"> {{ t.users }}</a></td>
-                <td>{{t.sequence}}</td>
-                <td>{{t.flag}}</td>
-                 <td>{%  if t.status == 'notcompleted' and date_today < t.end_date %} <label class="text-warning">{{t.status}}</label>
-                {%  elif t.status == 'notcompleted' %}<label class="text-danger">{{t.status}}</label>
-                                {% else %} <label class="text-success">{{t.status}}</label>
-                {%  endif %}
-                </td>
+                <td>{{t.task.work}}</td>
+                <td>{{t.hours_display}}</td>
+                {% comment %}<td>{{t.hours_display}}</td>{% endcomment %}
+                <td>{{t.notes}}</td>
+                <td>{{t.created_date}}</td>
             </tr>
             {% endfor %}
         {% else %}
@@ -88,7 +87,8 @@
         {% endif %}
         </tbody>
     </table>
-</div></div>
+
+    <hr></div></div>
 <script>
     $(".shipment_sold").click(function(){
     //  alert("Invalid Shipment Number");

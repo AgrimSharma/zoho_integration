@@ -76,7 +76,7 @@
         <td scope="col">{{ t.start_date }}</td>
         <td scope="col">{{ t.end_date }}</td>
         <td scope="col">{{ t.status }}</td>
-        <td scope="col"><a href="/sub_tasks/{{ t.id }}/"> {{ t.subtasks }}</a> </td>
+        <td scope="col">{{ t.subtasks }}</td>
         <td scope="col">{%  if t.time_sheet > 0 %}<a href="/project/task/time_sheet/{{ t.task_id }}"> {{ t.time_sheet }}</a> {%  else %}{{ t.time_sheet }}{%  endif %}</td>
                {%  endif %}
                </tr>

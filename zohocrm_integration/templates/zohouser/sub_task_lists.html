@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <title>Zoho</title>
+    <style>
+        .rTable {
+            display: table;
+            width: 100%;
+        }
+
+        .rTableRow {
+            display: table-row;
+        }
+
+        .rTableHeading {
+            display: table-header-group;
+            background-color: #ddd;
+        }
+
+        .rTableCell, .rTableHead {
+            display: table-cell;
+            padding: 3px 10px;
+            border: 1px solid #999999;
+        }
+
+        .rTableHeading {
+            display: table-header-group;
+            background-color: #ddd;
+            font-weight: bold;
+        }
+
+        .rTableFoot {
+            display: table-footer-group;
+            font-weight: bold;
+            background-color: #ddd;
+        }
+
+        .rTableBody {
+            display: table-row-group;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">Zoho Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'clients' %}">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item ">
+
+                <a class="nav-link" href="{% url 'grant_view' %}">Project Gantt</a>
+            </li>
+            <li class="nav-item ">
+
+                <a class="nav-link" href="{% url 'resource_utilization' %}">Resource Utilization</a>
+            </li>
+            <li>
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                </form>
+            </li>
+        </ul>
+        <div style="display: flex">
+            <a class="text-success" href="#">Welcome {{ request.user|upper }}</a>
+            <a class="text-danger" href="/logout_user/" style="padding-left: 10px;">Logout</a>
+        </div>
+
+    </div>
+</nav>
+
+<div style="padding-top: 20px">
+    <div class="col-md-12" style="text-align: center;padding-top: 20px;"><label class="text-success"> {{ project }} </label> Tasks
+        <div class="rTable">
+            <div class="rTableRow">
+                <div class="rTableHead"><strong>SNo</strong></div>
+                <div class="rTableHead"><span style="font-weight: bold;">Modules</span></div>
+                <div class="rTableHead"><span style="font-weight: bold;">UX</span></div>
+                <div class="rTableHead"><span style="font-weight: bold;">UI</span></div>
+                <div class="rTableHead"><span style="font-weight: bold;">HTML</span></div>
+                <div class="rTableHead"><span style="font-weight: bold;">API</span></div>
+                <div class="rTableHead"><span style="font-weight: bold;">BEE</span></div>
+                <div class="rTableHead"><span style="font-weight: bold;">FEE</span></div>
+                <div class="rTableHead"><span style="font-weight: bold;">QC</span></div>
+                <div class="rTableHead"><span style="font-weight: bold;">UAT</span></div>
+            </div>
+
+
+            {% for t in tasks %}
+
+                <div class="rTableRow">
+                    <div class="rTableCell">{{ forloop.counter }}</div>
+                    <div class="rTableCell" style="text-align: left;"><strong>{{ t.task_name }}</strong></div>
+                {%  if t.completed == "False" or t.completed == "false"%}
+
+                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
+                    {% else %}
+
+                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
+                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
+                {%  endif %}
+
+                </div>
+                                {%  for s in t.tasks %}
+                                    {%  if "html" in s.name %}{{ s.name|lower }}{%  endif %}
+                    {% if s.color == 'red' %}
+
+                             <div class="rTableRow text-danger">
+                                <div class="rTableCell"></div>
+                                <div class="rTableCell" style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;{{ s.name }}</div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
+                                        </div>
+
+                    {%  elif  s.color == 'green' %}
+                             <div class="rTableRow text-success">
+                                <div class="rTableCell"></div>
+                                <div class="rTableCell" style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;{{ s.name }}</div>
+                                <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                        </div>
+                    {%  else %}
+                     <div class="rTableRow text-warning">
+                                <div class="rTableCell"></div>
+                                <div class="rTableCell" style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;{{ s.name }}</div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
+                                        </div>
+                    {%  endif %}
+
+
+                                {%  endfor %}
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

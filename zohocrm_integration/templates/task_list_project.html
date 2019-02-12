@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <title>Zoho</title>
+</head>
+<body>
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Zoho Dashboard</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{%  url 'clients' %}">Home <span class="sr-only">(current)</span></a>
+      </li>
+        <li class="nav-item ">
+
+                <a class="nav-link" href="{%  url 'grant_view' %}">Project Gantt</a>
+              </li>
+         <li class="nav-item ">
+
+                <a class="nav-link" href="{%  url 'resource_utilization' %}">Resource Utilization</a>
+              </li>
+        <li>
+        <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    </li>
+    </ul>
+      <div style="display: flex">
+          <a class="text-success" href="#">Welcome {{ request.user|upper }}</a>
+          <a class="text-danger" href="/logout_user/" style="padding-left: 10px;">Logout</a>
+        </div>
+
+  </div>
+</nav>
+
+<div style="padding-top: 70px">
+<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-warning">Task</label>
+
+    <table class="table table-bordered table-sm ">
+        <thead class="thead-dark">
+            <tr>
+                <th>SNo</th>
+                <th>UX</th>
+                <th>UI</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Subtasks</th>
+                <th>Task Name</th>
+                <th>Timesheet</th>
+                <th>Owners</th>
+                <th>Created Person</th>
+                <th>Created Time</th>
+                <th>Completed</th>
+                <th>Percent Complete</th>
+                <th>Completed Time</th>
+            </tr>
+        </thead>
+        <tbody>
+             {% for t in tasks %}
+            <tr>
+                            <td>{{forloop.counter}}</td>
+
+                <td>{% if t.description == None or t.description == "" %} No Description {% else %}{{t.description}}{% endif %}</td>
+                <td>{{t.task_id}}</td>
+                <td>{{t.milestone_id}}</td>
+                <td>{{t.start_date}}</td>
+                <td>{{t.end_date}}</td>
+                <td>{% if t.status == 'Closed' %} <label class="text-success">{{t.status}}</label>
+                    {% elif t.status == 'Open' %} <label class="text-warning">{{t.status}}</label>
+                    {% else %} <label class="text-danger">{{t.status}}</label>
+                    {% endif %}
+                </td>
+                <td>{{t.subtasks}}</td>
+                <td>{{t.task_name}}</td>
+                <td><a href="/time_sheet/{{t.task_id}}">Timesheet</a> </td>
+                <td><button class="btn btn-primary shipment_sold" task_id="{{t.task_id}}" id="task_id{{t.task_id}}">Owner</button>
+                    <div class="col-md-12 collapse" id="{{t.task_id}}" style="display:none;" >
+                            <table class="table table-bordered table-sm">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <td>ID</td>
+                                        <td>Name</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for owner in t.owners %}
+                                        <tr>
+                                            <td> {{owner.id}}</td>
+                                            <td>{{owner.name}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                    </div>
+                </td>
+                <td>{{t.created_person}}</td>
+                <td>{{t.created_time}}</td>
+                <td>{{t.completed}}</td>
+                <td>{{t.percent_complete}}</td>
+                <td>{{t.completed_time}}</td>
+
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+</div>
+
+</body>
+<script>
+    $(".shipment_sold").click(function(){
+    //  alert("Invalid Shipment Number");
+        var task_id=$(this).attr("task_id");
+
+        $("#" + task_id ).toggle();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        #chartdiv {
+  width: 100%;
+  height: 720px;
+}
+        @media only screen and (max-width: 480px) {
+          #chartdiv {
+          width: 100%;
+          height: 1080px;
+        }
+}
+    </style>
+    <title>Zoho</title>
+</head>
+<body>
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Zoho Dashboard</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{%  url 'clients' %}">Home <span class="sr-only">(current)</span></a>
+      </li>
+        <li class="nav-item ">
+
+                <a class="nav-link" href="{%  url 'grant_view' %}">Project Gantt</a>
+              </li>
+         <li class="nav-item ">
+
+                <a class="nav-link" href="{%  url 'resource_utilization' %}">Resource Utilization</a>
+              </li>
+        <li>
+        <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+    </li>
+    </ul>
+      <div style="display: flex">
+          <a class="text-success" href="#">Welcome {{ request.user|upper }}</a>
+          <a class="text-danger" href="/logout_user/" style="padding-left: 10px;">Logout</a>
+        </div>
+
+  </div>
+</nav>
+<div style="padding-top: 100px;"></div>
+
+<div id="chartdiv"></div>
+
+<div style="padding-top: 60px">
+</div>
+
+<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+<script src="https://www.amcharts.com/lib/3/serial.js"></script>
+<script src="https://www.amcharts.com/lib/3/gantt.js"></script>
+<script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+<script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+<script>
+    var data_provider = new Array();
+
+    $.ajax({
+        type: "GET",
+        url: "/projects_grantt/",
+        data: {},
+        success: function (resp) {
+            var data = JSON.parse(resp);
+            if(data.data.length > 0){
+            var projects = data.data;
+            for(var i=0;i < projects.length; i++){
+                var segments =  new Array();
+
+                var project = projects[i];
+                var category = project.name;
+                for(var j =0; j < project.tasks.length; j++){
+                    var tasks = project.tasks[j];
+                    segments.push({
+                        "start": tasks.start,
+                        "end": tasks.end,
+                        "task": tasks.task,
+                        "color": tasks.color, //'#' + parseInt(Math.random() * 0xffffff).toString(16),
+                        "completion": project.percent
+,                    })
+                }
+            data_provider.push({
+                "category": category,
+                "segments": segments
+            });
+
+            }
+
+            var chart = AmCharts.makeChart("chartdiv", {
+                "type": "gantt",
+                "theme": "light",
+                "marginRight": 100,
+                "period": "DD",
+                "dataDateFormat": "YYYY-MM-DD",
+                "columnWidth": 0.5,
+                "valueAxis": {
+                    "type": "date"
+                },
+                "brightnessStep": 7,
+                "graph": {
+                    "fillAlphas": 1,
+                    "lineAlpha": 1,
+                    "lineColor": "#fff",
+                    "balloonText": "<b>[[task]]</b>:[[completion]]<br />[[open]] -- [[value]]"
+                },
+                "rotate": true,
+                "categoryField": "category",
+                "segmentsField": "segments",
+                "colorField": "color",
+                "startDateField": "start",
+                "endDateField": "end",
+                "dataProvider": data_provider,
+                "valueScrollbar": {
+                    "autoGridCount": true
+                },
+                "chartCursor": {
+                    "cursorColor": "#55bb76",
+                    "valueBalloonsEnabled": false,
+                    "cursorAlpha": 0,
+                    "valueLineAlpha": 0.5,
+                    "valueLineBalloonEnabled": true,
+                    "valueLineEnabled": true,
+                    "zoomable": true,
+                    "valueZoomable": true
+                },
+
+                "export": {
+                    "enabled": true
+                }
+            });
+
+        }
+            else {
+                $("#chartdiv").css({"text-align": "center"});
+                $("#chartdiv").append("<h1>No Projects found</h1>");
+            }
+        }
+    });
+
+
+</script>
+</body>
+</html>

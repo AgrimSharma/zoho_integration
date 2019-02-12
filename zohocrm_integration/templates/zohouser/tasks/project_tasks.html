@@ -43,52 +43,70 @@
 </nav>
 
 <div style="padding-top: 70px">
-<hr>
-<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <strong>Milestone for project <label class="text-success"> {{ name }}</label></strong>
-     <table class="table table-bordered table-sm">
+<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-success"><strong>{{ name }}</strong></label>
+
+
+    <table class="table table-bordered table-sm">
         <thead class="thead-dark">
             <tr>
-                <th>SNo</th>
-                <th>Project Name</th>
-                <th>Milestone Name</th>
-                <th>Start Date <br>End Date</th>
-                <th>Owner Name</th>
-                <th>Assigned To</th>
-                <th>Sequence</th>
-                <th>Flag</th>
-                                <th>Status</th>
+                <th>SNo.</th>
+                <th>Task Name</th>
 
+                <th>Description</th>
+{#                <th>Task ID</th>#}
+{#                <th>Milestone ID</th>#}
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Subtasks</th>
+{#                <th>Timesheet</th>#}
+                <th>Assigned To</th>
+                <th>Created Time</th>
+                <th>Completed</th>
+                <th>Percent Complete</th>
+                <th>Completed Time</th>
             </tr>
         </thead>
         <tbody>
-        {% if milestone %}
-             {% for t in milestone %}
+        {% if current_task %}
+             {% for t in current_task %}
             <tr>
-                <td>{{forloop.counter}}</td>
-                <td>{{t.project}}</td>
-                            <td>{{t.name}}</td>
+                            <td>{{forloop.counter}}</td>
+                <td>{{t.task_name}}</td>
 
-                <td>{{t.start_date}}<br>{{t.end_date}}</td>
+                <td>{% if t.description == None or t.description == "" %} No Description {% else %}{{t.description}}{% endif %}</td>
+{#                <td><a href="https://projects.zoho.com/portal/indigoconsulting#taskdetail/{{ t.project_id }}/{{ t.task_list_id }}/{{ t.task_id }}#}
+{#">{{t.task_id}}</a> </td>#}
+{#                <td>{{t.milestone_id}}</td>#}
+                <td>{{t.start_date}}</td>
+                <td>{{t.end_date}}</td>
+                <td>{% if t.status == 'Closed' %} <label class="text-success">{{t.status}}</label>
+                    {% elif t.status == 'Open' and date_today < t.end_date%} <label class="text-success">{{t.status}}</label>
+                    {% elif t.status == 'Open' and t.end_date == None %} <label class="text-warning">{{t.status}}</label>
 
-                <td>{{t.owner_name}}</td>
-                <td><a href="/mile_stone_task/{{ t.id }}"> {{ t.users }}</a></td>
-                <td>{{t.sequence}}</td>
-                <td>{{t.flag}}</td>
-                 <td>{%  if t.status == 'notcompleted' and date_today < t.end_date %} <label class="text-warning">{{t.status}}</label>
-                {%  elif t.status == 'notcompleted' %}<label class="text-danger">{{t.status}}</label>
-                                {% else %} <label class="text-success">{{t.status}}</label>
-                {%  endif %}
+                    {% else %} <label class="text-danger">{{t.status}}</label>
+                    {% endif %}
                 </td>
+                <td>{{t.subtasks}}</td>
+{#                <td><a href="/time_sheet_task/{{t.id}}">Timesheet</a> </td>#}
+                <td>{{ t.owner }}</td>
+                <td>{{t.created_time}}</td>
+                <td>{{t.completed}}</td>
+                <td>{{t.percent_complete}}</td>
+                <td>{{t.completed_time}}</td>
             </tr>
             {% endfor %}
         {% else %}
         <tr>
-        <td colspan="10"style="text-align: center">No Data Found</td>
+        <td colspan="14"style="text-align: center">No Data Found</td>
         </tr>
         {% endif %}
         </tbody>
     </table>
+
+<hr>
 </div></div>
+
 <script>
     $(".shipment_sold").click(function(){
     //  alert("Invalid Shipment Number");

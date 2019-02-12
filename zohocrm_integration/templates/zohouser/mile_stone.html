@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,50 +36,46 @@
     </form>
     </li>
     </ul>
-
-<div style="display: flex">
+      <div style="display: flex">
           <a class="text-success" href="#">Welcome {{ request.user|upper }}</a>
           <a class="text-danger" href="/logout_user/" style="padding-left: 10px;">Logout</a>
-        </div>  </div>
+        </div>
+
+  </div>
 </nav>
 
 <div style="padding-top: 70px">
-<hr>
-<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <strong>Milestone for project <label class="text-success"> {{ name }}</label></strong>
-     <table class="table table-bordered table-sm">
+<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-success">Milestone </label>
+
+
+    <table class="table table-bordered table-sm">
         <thead class="thead-dark">
             <tr>
                 <th>SNo</th>
-                <th>Project Name</th>
-                <th>Milestone Name</th>
-                <th>Start Date <br>End Date</th>
-                <th>Owner Name</th>
-                <th>Assigned To</th>
-                <th>Sequence</th>
-                <th>Flag</th>
-                                <th>Status</th>
-
+                <th>project</th>
+                <th>owner_name</th>
+                <th>name</th>
+                <th>status</th>
+                <th>end_date</th>
+                <th>sequence</th>
+                <th>start_date</th>
+                <th>flag</th>
             </tr>
         </thead>
         <tbody>
-        {% if milestone %}
-             {% for t in milestone %}
+        {% if mile_stone %}
+             {% for t in mile_stone %}
             <tr>
                 <td>{{forloop.counter}}</td>
-                <td>{{t.project}}</td>
-                            <td>{{t.name}}</td>
-
-                <td>{{t.start_date}}<br>{{t.end_date}}</td>
-
+                <td>{{t.project.name}}</td>
                 <td>{{t.owner_name}}</td>
-                <td><a href="/mile_stone_task/{{ t.id }}"> {{ t.users }}</a></td>
+                <td>{{t.name}}</td>
+                <td>{{t.status}}</td>
+                <td>{{t.end_date|date:"d-m-y"}}</td>
                 <td>{{t.sequence}}</td>
+                <td>{{t.start_date}}</td>
                 <td>{{t.flag}}</td>
-                 <td>{%  if t.status == 'notcompleted' and date_today < t.end_date %} <label class="text-warning">{{t.status}}</label>
-                {%  elif t.status == 'notcompleted' %}<label class="text-danger">{{t.status}}</label>
-                                {% else %} <label class="text-success">{{t.status}}</label>
-                {%  endif %}
-                </td>
+
             </tr>
             {% endfor %}
         {% else %}
@@ -88,7 +85,10 @@
         {% endif %}
         </tbody>
     </table>
-</div></div>
+</div>
+
+<hr>
+</div>
 <script>
     $(".shipment_sold").click(function(){
     //  alert("Invalid Shipment Number");

@@ -18,5 +18,6 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^', include("zohobasic.urls")),
+    # url(r'^', include("zohobasic.urls")),
+    url(r'^', include("userzoho.urls")),
 ]

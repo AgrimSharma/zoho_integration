@@ -4,13 +4,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 import pytz
 from django.views.decorators.csrf import csrf_exempt
-from resource_utils import *
 from projects import *
 from tasks import *
 from milestone import *
 from time_sheet import *
 from django.contrib.auth.models import User
-
+from task_list import all_project_task_list
 utc=pytz.UTC
 
 scope = "ZohoProjects.portals.READ,ZohoProjects.projects.READ,ZohoProjects.tasklists.READ," \
@@ -51,43 +50,52 @@ def token_refresh(refresh):
 
 
 def callback(request):
-    code = request.GET.get("code","")
-    url = "https://accounts.zoho.com/oauth/v2/token"
+    user = request.user
+    if user.is_authenticated:
+        code = request.GET.get("code","")
+        url = "https://accounts.zoho.com/oauth/v2/token"
 
-    querystring = {
-        "code": code,
-        "redirect_uri": settings.REDIRECT_URL,
-        "client_id": settings.CLIENT_ID,
-        "client_secret": settings.CLIENT_SECRET,
-        "grant_type": "authorization_code"}
+        querystring = {
+            "code": code,
+            "redirect_uri": settings.REDIRECT_URL,
+            "client_id": settings.CLIENT_ID,
+            "client_secret": settings.CLIENT_SECRET,
+            "grant_type": "authorization_code"}
 
-    headers = {
-        'cache-control': "no-cache",
-        'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
-    }
+        headers = {
+            'cache-control': "no-cache",
+            'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
+        }
 
-    response = requests.request("POST", url, headers=headers,
-                                params=querystring)
-    try:
-        vals = response.json()
-        vals['code'] = code
-        access = Tokens.objects.latest("id")
-        access.access_token = vals['access_token']
-        access.created_at = datetime.datetime.now()
-        access.code = code
+        response = requests.request("POST", url, headers=headers,
+                                    params=querystring)
+        try:
+            vals = response.json()
+            vals['code'] = code
+            access = Tokens.objects.get(user=user)
+            access.access_token = vals['access_token']
+            access.created_at = datetime.datetime.now()
+            access.code = code
 
-        access.save()
-        port = settings.PORTAL_ID
-        
-    except Exception:
+            access.save()
+            port = settings.PORTAL_ID
 
-        port = settings.PORTAL_ID
+        except Exception:
+            vals = response.json()
+            vals['code'] = code
+            access = Tokens.objects.create(user=user)
+            access.access_token = vals['access_token']
+            access.created_at = datetime.datetime.now()
+            access.code = code
 
-    if port:
+            access.save()
+            port = settings.PORTAL_ID
 
-        return redirect("/projects_pull/")
+        if port:
+
+            return redirect("/projects_pull/")
     else:
-        return HttpResponse(json.dumps(dict(error="Auth error")))
+        return redirect("/")
 
 
 def auth_request(request):
@@ -131,9 +139,9 @@ def projects(request):
         # try:
         csms = request.GET.get("csm")
         if csms == "all":
-            project = Projects.objects.all().order_by("name")
+            project = user.projects_set.all().order_by("name")
         elif csms == None:
-            project = Projects.objects.all().order_by("name")
+            project = user.projects_set.all().order_by("name")
         else:
             project = Projects.objects.filter(owner_name=csms).order_by(
                 "name")
@@ -148,7 +156,7 @@ def projects(request):
             if name not in csm_data:
                 csm_list.append(name)
         # csm = list(set([str(u[0]) for u in csm_data]))
-        sorted(csm_list)
+        sorted(list(set(csm_list)))
 
         for p in project:
             open_task = p.tasks_set.filter(status='Open').count()
@@ -165,9 +173,10 @@ def projects(request):
             except Exception:
                 status = 'red'
             try:
-                health = open_task + progress_task / (open_task + closed_task + progress_task)
+                health = closed_task / (open_task + closed_task + progress_task)
             except Exception:
                 health = 0
+            print p.name, health
             if p.name not in pname:
                 pname.append(p.name)
                 response.append(dict(
@@ -183,9 +192,9 @@ def projects(request):
                     start_date=p.start_date_format,
                     end_date=p.end_date_format,
                     id=p.id,
-                    percent=health * 100
+                    percent=round(health * 100)
                 ))
-        return render(request, "projects.html", {"project": response,
+        return render(request, "zohouser/projects.html", {"project": response,
                                                  "csm": list(set(csm_list))})
     except Exception:
         return redirect("/")
@@ -194,8 +203,22 @@ def projects(request):
 def projects_grantt(request):
     user = request.user
     try:
-        user = User.objects.get(username=user.username)
-        project = Projects.objects.filter(start_date_format__year__gte=
+        # user = User.objects.get(username=user.username)
+        if "hdfc" in user.username:
+            print 1
+            project = Projects.objects.filter(name__icontains='hdfc', start_date_format__year__gte=
+                                               datetime.datetime.now().year - 1).order_by(
+                "name")
+        elif "indusind" in user.username:
+            print 2
+
+            project = Projects.objects.filter(name__icontains='indusind',
+                                              start_date_format__year__gte=
+                                              datetime.datetime.now().year - 1).order_by(
+                "name")
+        else:
+            print 3
+            project = user.projects_set.filter(start_date_format__year__gte=
                                           datetime.datetime.now().year - 1).order_by("name")
         response = []
         for p in project:
@@ -261,9 +284,9 @@ def projects_grantt(request):
                                      end_date_date=end_date_date,
                                      project_id=p.project_id,
                                      status=p.status,
-                                     percent=percent * 100,
+                                     percent=round(percent * 100, 2),
                                      tasks=task_data))
-
+        print response
         return HttpResponse(json.dumps(dict(data=response)))
     except Exception:
         return redirect("/")
@@ -274,7 +297,7 @@ def project_detail(request, project_id):
     if user.is_authenticated():
         project = project_detail_view(project_id)
         print project
-        return render(request, "project_detail.html", {"project": project})
+        return render(request, "zohouser/project_detail.html", {"project": project})
     else:
         return redirect("/")
 
@@ -283,7 +306,7 @@ def time_sheet_task(request, task_id):
     user = request.user
     if user.is_authenticated():
         tasks,task_name = time_sheet_projects(task_id)
-        return render(request, "time_sheet.html", dict(tasks=tasks,
+        return render(request, "zohouser/time_sheet.html", dict(tasks=tasks,
                                                        task_name=task_name))
     # return HttpResponse(json.dumps(tasks))
     else:
@@ -321,7 +344,7 @@ def task_list(request, project_id):
         current_task,past_task,future_task = project_task_list(project_id)
         date_today = datetime.datetime.now().date()
 
-        return render(request, "tasks.html", {
+        return render(request, "zohouser/tasks.html", {
                                             "current_task": current_task,
                                             "past_task": past_task,
                                             "future_task": future_task,
@@ -336,7 +359,7 @@ def milestone_data(request, project_id):
     user = request.user
     if user.is_authenticated():
         mile_stone = milestone_project_id(project_id)
-        return render(request, "mile_stone.html", dict(mile_stone=mile_stone))
+        return render(request, "zohouser/mile_stone.html", dict(mile_stone=mile_stone))
     else:
         return redirect("/")
 
@@ -352,7 +375,7 @@ def task_project(request, project_id):
     else:
         milestone = milestone_project_id(project_id)
 
-    return render(request, "tasks/tasks.html", {
+    return render(request, "zohouser/tasks/tasks.html", {
         "current_task": current_task,
         "past_task": past_task,
         "future_task": future_task,
@@ -368,7 +391,7 @@ def open_tasks(request, project_id):
 
         date_today = datetime.datetime.now().date()
 
-        return render(request, "tasks/project_tasks.html", {
+        return render(request, "zohouser/tasks/project_tasks.html", {
             "date_today": date_today,
             "current_task": tasks,
             "name": "Open Task {}".format(project.name)})
@@ -384,7 +407,7 @@ def close_tasks(request, project_id):
 
         date_today = datetime.datetime.now().date()
 
-        return render(request, "tasks/project_tasks.html", {
+        return render(request, "zohouser/tasks/project_tasks.html", {
             "date_today": date_today,
             "current_task": tasks,
             "name": "Close Task {}".format(project.name)})
@@ -400,7 +423,7 @@ def all_tasks(request, project_id):
 
         date_today = datetime.datetime.now().date()
 
-        return render(request, "tasks/project_tasks.html", {
+        return render(request, "zohouser/tasks/project_tasks.html", {
             "date_today": date_today,
             "current_task": tasks,
             "name": "ALL Task {}".format(project.name)})
@@ -416,7 +439,7 @@ def open_milestone(request, project_id):
 
         date_today = datetime.datetime.now().date()
 
-        return render(request, "tasks/project_milestone.html", {
+        return render(request, "zohouser/tasks/project_milestone.html", {
             "date_today": date_today,
             "milestone": tasks,
             "name": "Open Milestone {}".format(project.name)})
@@ -432,7 +455,7 @@ def close_milestone(request, project_id):
 
         date_today = datetime.datetime.now().date()
 
-        return render(request, "tasks/project_milestone.html", {
+        return render(request, "zohouser/tasks/project_milestone.html", {
             "date_today": date_today,
             "milestone": tasks,
             "name": "Close Milestone {}".format(project.name)})
@@ -448,7 +471,7 @@ def all_milestone(request, project_id):
 
         date_today = datetime.datetime.now().date()
 
-        return render(request, "tasks/project_milestone.html", {
+        return render(request, "zohouser/tasks/project_milestone.html", {
             "date_today": date_today,
             "milestone": tasks,
             "name": project.name})
@@ -478,12 +501,23 @@ def register_user(request):
 @csrf_exempt
 def login_user(request):
     if request.method == 'POST':
-        user_name = request.POST.get("username")
+        email = request.POST.get("email")
         password = request.POST.get("password")
-        user = authenticate(username=user_name, password=password)
+        try:
+            user = User.objects.get(email=email)
+        except Exception:
+            user = User.objects.create(email=email, username=email)
+            use = User.objects.get(email=email)
+            use.set_password(password)
+            use.save()
+
+        user = authenticate(username=email, password=password)
         if user:
             login(request, user)
-            response = dict(message='success')
+            if "indigo" in email:
+                response = dict(message='success', redirect='auth')
+            else:
+                response = dict(message='success', redirect='client')
         else:
             response = dict(message='fail')
         return HttpResponse(json.dumps(response))
@@ -492,61 +526,71 @@ def login_user(request):
 def client_list(request):
     user = request.user
     if user.is_authenticated():
-        hdfc_close = Projects.objects.filter(name__icontains='hdfc', status__in=['closed', "Closed",])
-        hdfc_open = Projects.objects.filter(name__icontains='hdfc', status__in=['active', 'Active'])
-        indus_open = Projects.objects.filter(name__icontains='indusind', status='active')
-        indus_closed = Projects.objects.filter(name__icontains='indusind', status='closed')
-        hdfc_percent = len(hdfc_close) / (len(hdfc_open) + len(hdfc_close))
-        indus_percent = len(indus_closed) / (len(indus_open) + len(indus_closed))
-        hper = hdfc_percent * 100
-        indu = indus_percent * 100
+        if "hdfc" in user.username:
+            hdfc_close = Projects.objects.filter(name__icontains='hdfc', status__in=['closed', "Closed",])
+            hdfc_open = Projects.objects.filter(name__icontains='hdfc', status__in=['active', 'Active'])
+            hdfc_percent = len(hdfc_close) / (len(hdfc_open) + len(hdfc_close))
+            hper = hdfc_percent * 100
 
-
-        hdfc_query_red = Q(name__icontains='hdfc', status__in=['active', 'Active'], end_date_format__lte=datetime.datetime.now().date())|Q(name__icontains='hdfc', status__in=['active', 'Active', 'closed', "Closed"], end_date_format=None)
-        hdfc_query_green = Q(name__icontains='hdfc', status__in=['closed', "Closed", 'active', 'Active'], end_date_format__gte=datetime.datetime.now().date()) or \
+            hdfc_query_red = Q(name__icontains='hdfc',
+                               status__in=['active', 'Active'],
+                               end_date_format__lte=datetime.datetime.now().date()) | Q(
+                name__icontains='hdfc',
+                status__in=['active', 'Active', 'closed', "Closed"],
+                end_date_format=None)
+            hdfc_query_green = Q(name__icontains='hdfc',
+                                 status__in=['closed', "Closed", 'active',
+                                             'Active'],
+                                 end_date_format__gte=datetime.datetime.now().date()) or \
                                Q(name__icontains='indusind',
-                             status__in=['closed', "Closed"],
-                             )
-        red_hdfc = Projects.objects.filter(hdfc_query_red).count()
-        green_hdfc = Projects.objects.filter(hdfc_query_green).exclude(end_date_format=None).count()
+                                 status__in=['closed', "Closed"],
+                                 )
+            red_hdfc = Projects.objects.filter(hdfc_query_red).count()
+            green_hdfc = Projects.objects.filter(hdfc_query_green).exclude(
+                end_date_format=None).count()
+            project = [
+                dict(name="HDFC BANK", search='hdfc', open=len(hdfc_open),
+                     closed=len(hdfc_close), percent=round(hper, 2),
+                     red=red_hdfc, green=green_hdfc),
 
+                ]
+        elif "indusind" in user.username:
+            indus_open = Projects.objects.filter(name__icontains='indusind', status='active')
+            indus_closed = Projects.objects.filter(name__icontains='indusind', status='closed')
+            try:
+                indus_percent = len(indus_closed) / (len(indus_open) + len(indus_closed))
+            except Exception:
+                indus_percent = 0
+            indu = indus_percent * 100
+            indusind_query_red = Q(name__icontains='indusind',
+                               status__in=['active', 'Active'],
+                               end_date_format__lte=datetime.datetime.now().date()) | Q(
+                name__icontains='indusind',
+                status__in=['active', 'Active', 'closed', "Closed"],
+                end_date_format=None)
+            indusind_query_green = Q(name__icontains='indusind',
+                                 status__in=['closed', "Closed", 'active',
+                                             'Active'],
+                                 end_date_format__gte=datetime.datetime.now().date()) or \
+                                   Q(name__icontains='indusind',
+                                 status__in=['closed', "Closed", 'active',
+                                             'Active'],
+                                 end_date_format__gte=datetime.datetime.now().date())
 
-        indusind_query_red = Q(name__icontains='indusind',
-                           status__in=['active', 'Active'],
-                           end_date_format__lte=datetime.datetime.now().date()) | Q(
-            name__icontains='indusind',
-            status__in=['active', 'Active', 'closed', "Closed"],
-            end_date_format=None)
-        indusind_query_green = Q(name__icontains='indusind',
-                             status__in=['closed', "Closed", 'active',
-                                         'Active'],
-                             end_date_format__gte=datetime.datetime.now().date()) or \
-                               Q(name__icontains='indusind',
-                             status__in=['closed', "Closed", 'active',
-                                         'Active'],
-                             end_date_format__gte=datetime.datetime.now().date())
+            red_indusind = Projects.objects.filter(indusind_query_red).count()
+            green_indusind = Projects.objects.filter(indusind_query_green).exclude(
+                end_date_format=None).count()
+            project = [
+                dict(name="Indusind BANK", search='indusind',
+                     open=len(indus_open),
+                     closed=len(indus_closed), percent=round(indu, 2),
+                     red=red_indusind, green=green_indusind),
+                ]
+        else:
+            project = []
 
-        red_indusind = Projects.objects.filter(indusind_query_red).count()
-        green_indusind = Projects.objects.filter(indusind_query_green).exclude(
-            end_date_format=None).count()
-
-
-        project = [dict(name="HDFC BANK", search='hdfc', open=len(hdfc_open),
-                        closed=len(hdfc_close), percent=round(hper, 2), red=red_hdfc, green=green_hdfc),
-                   dict(name="Indusind BANK", search='indusind', open=len(indus_open),
-                        closed=len(indus_closed), percent=round(indu, 2), red=red_indusind, green=green_indusind),
-                   ]
-        return render(request, "clients.html", {
+        return render(request, "zohouser/clients.html", {
             "project": project})
-    else:
-        return redirect("/")
-
-
-def resource_utilisation(request):
-    user = request.user
-    if user.is_authenticated():
-        project = resource_utilisation_all()
-        return HttpResponse(json.dumps(dict(users=project)))
     else:
         return redirect("/")
 
@@ -570,8 +614,8 @@ def project_list(request):
             project = project_list_view_color(name, csms, color)
         else:
             project = project_list_view(name, status, csms)
-        sorted(csm_list)
-        return render(request, "project_list.html", {"projects": project,
+        sorted(list(set(csm_list)))
+        return render(request, "zohouser/project_list.html", {"projects": project,
                                                      "csm": list(set(csm_list)),
                                                      "date": today,
                                                      "name": name,
@@ -586,118 +630,126 @@ def logout_user(request):
 
 
 def projects_pull(request):
-    code = request.GET.get("code", "")
-    url = "https://accounts.zoho.com/oauth/v2/token"
+    user = request.user
+    if user.is_authenticated:
+        code = request.GET.get("code", "")
+        url = "https://accounts.zoho.com/oauth/v2/token"
 
-    querystring = {
-        "code": code,
-        "redirect_uri": settings.REDIRECT_URL,
-        "client_id": settings.CLIENT_ID,
-        "client_secret": settings.CLIENT_SECRET,
-        "grant_type": "authorization_code"}
+        querystring = {
+            "code": code,
+            "redirect_uri": settings.REDIRECT_URL,
+            "client_id": settings.CLIENT_ID,
+            "client_secret": settings.CLIENT_SECRET,
+            "grant_type": "authorization_code"}
 
-    headers = {
-        'cache-control': "no-cache",
-        'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
-    }
+        headers = {
+            'cache-control': "no-cache",
+            'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
+        }
 
-    response = requests.request("POST", url, headers=headers,
-                                params=querystring)
-    try:
-        vals = response.json()
-        vals['code'] = code
-        access = Tokens.objects.latest("id")
-        access.access_token = vals['access_token']
-        access.created_at = datetime.datetime.now()
-        access.code = code
-        access.save()
-        port = settings.PORTAL_ID
+        response = requests.request("POST", url, headers=headers,
+                                    params=querystring)
+        try:
+            vals = response.json()
+            vals['code'] = code
+            access = Tokens.objects.latest("id")
+            access.access_token = vals['access_token']
+            access.created_at = datetime.datetime.now()
+            access.code = code
+            access.save()
+            port = settings.PORTAL_ID
 
-    except Exception:
+        except Exception:
 
-        port = settings.PORTAL_ID
+            port = settings.PORTAL_ID
 
-    if port:
-        projects = all_projects()
-        return redirect("/tasks_pull/")
+        if port:
+            projects = all_projects(user)
+            return redirect("/tasks_pull/")
+        # return HttpResponse("Success")
     else:
-        return HttpResponse(json.dumps(dict(error="Auth error")))
+        return redirect("/")
 
 
 def tasks_pull(request):
-    code = request.GET.get("code", "")
-    url = "https://accounts.zoho.com/oauth/v2/token"
+    user = request.user
+    if user.is_authenticated:
+        code = request.GET.get("code", "")
+        url = "https://accounts.zoho.com/oauth/v2/token"
 
-    querystring = {
-        "code": code,
-        "redirect_uri": settings.REDIRECT_URL,
-        "client_id": settings.CLIENT_ID,
-        "client_secret": settings.CLIENT_SECRET,
-        "grant_type": "authorization_code"}
+        querystring = {
+            "code": code,
+            "redirect_uri": settings.REDIRECT_URL,
+            "client_id": settings.CLIENT_ID,
+            "client_secret": settings.CLIENT_SECRET,
+            "grant_type": "authorization_code"}
 
-    headers = {
-        'cache-control': "no-cache",
-        'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
-    }
+        headers = {
+            'cache-control': "no-cache",
+            'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
+        }
 
-    response = requests.request("POST", url, headers=headers,
-                                params=querystring)
-    try:
-        vals = response.json()
-        vals['code'] = code
-        access = Tokens.objects.latest("id")
-        access.access_token = vals['access_token']
-        access.created_at = datetime.datetime.now()
-        access.code = code
-        access.save()
-        port = settings.PORTAL_ID
+        response = requests.request("POST", url, headers=headers,
+                                    params=querystring)
+        try:
+            vals = response.json()
+            vals['code'] = code
+            access = Tokens.objects.latest("id")
+            access.access_token = vals['access_token']
+            access.created_at = datetime.datetime.now()
+            access.code = code
+            access.save()
+            port = settings.PORTAL_ID
 
-    except Exception:
+        except Exception:
 
-        port = settings.PORTAL_ID
+            port = settings.PORTAL_ID
 
-    if port:
-        tasks = all_projects_task()
-        return redirect("/time_sheet_pull/")
+        if port:
+            tasks = all_project_task_list(user)
+            # return HttpResponse("success")
+            return redirect("/time_sheet_pull/")
     else:
-        return HttpResponse(json.dumps(dict(error="Auth error")))
+        return redirect("/")
 
 
 def milestone_pull(request):
-    code = request.GET.get("code", "")
-    url = "https://accounts.zoho.com/oauth/v2/token"
+    user =request.user
+    if user.is_authenticated:
+        code = request.GET.get("code", "")
+        url = "https://accounts.zoho.com/oauth/v2/token"
 
-    querystring = {
-        "code": code,
-        "redirect_uri": settings.REDIRECT_URL,
-        "client_id": settings.CLIENT_ID,
-        "client_secret": settings.CLIENT_SECRET,
-        "grant_type": "authorization_code"}
+        querystring = {
+            "code": code,
+            "redirect_uri": settings.REDIRECT_URL,
+            "client_id": settings.CLIENT_ID,
+            "client_secret": settings.CLIENT_SECRET,
+            "grant_type": "authorization_code"}
 
-    headers = {
-        'cache-control': "no-cache",
-        'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
-    }
+        headers = {
+            'cache-control': "no-cache",
+            'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
+        }
 
-    response = requests.request("POST", url, headers=headers,
-                                params=querystring)
-    try:
-        vals = response.json()
-        vals['code'] = code
-        access = Tokens.objects.latest("id")
-        access.access_token = vals['access_token']
-        access.created_at = datetime.datetime.now()
-        access.code = code
-        access.save()
-        port = settings.PORTAL_ID
+        response = requests.request("POST", url, headers=headers,
+                                    params=querystring)
+        try:
+            vals = response.json()
+            vals['code'] = code
+            access = Tokens.objects.latest("id")
+            access.access_token = vals['access_token']
+            access.created_at = datetime.datetime.now()
+            access.code = code
+            access.save()
+            port = settings.PORTAL_ID
 
-    except Exception:
+        except Exception:
 
-        port = settings.PORTAL_ID
+            port = settings.PORTAL_ID
 
-    if port:
-        milestone = all_projects_milestone()
-        return redirect("/projects/")
+        if port:
+            milestone = all_projects_milestone(user=user,)
+            return redirect("/projects/")
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
 
@@ -705,46 +757,48 @@ def milestone_pull(request):
 def projects_grant(request):
     user = request.user
     if user.is_authenticated():
-        return render(request, "projects_grantt.html")
+        return render(request, "zohouser/projects_grantt.html")
     else:
         return redirect("/")
 
 
 def time_sheet_pull(request):
-    code = request.GET.get("code", "")
-    url = "https://accounts.zoho.com/oauth/v2/token"
+    user = request.user
+    if user.is_authenticated:
+        code = request.GET.get("code", "")
+        url = "https://accounts.zoho.com/oauth/v2/token"
 
-    querystring = {
-        "code": code,
-        "redirect_uri": settings.REDIRECT_URL,
-        "client_id": settings.CLIENT_ID,
-        "client_secret": settings.CLIENT_SECRET,
-        "grant_type": "authorization_code"}
+        querystring = {
+            "code": code,
+            "redirect_uri": settings.REDIRECT_URL,
+            "client_id": settings.CLIENT_ID,
+            "client_secret": settings.CLIENT_SECRET,
+            "grant_type": "authorization_code"}
 
-    headers = {
-        'cache-control': "no-cache",
-        'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
-    }
+        headers = {
+            'cache-control': "no-cache",
+            'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
+        }
 
-    response = requests.request("POST", url, headers=headers,
-                                params=querystring)
-    try:
-        vals = response.json()
-        vals['code'] = code
-        access = Tokens.objects.latest("id")
-        access.access_token = vals['access_token']
-        access.created_at = datetime.datetime.now()
-        access.code = code
-        access.save()
-        port = settings.PORTAL_ID
+        response = requests.request("POST", url, headers=headers,
+                                    params=querystring)
+        try:
+            vals = response.json()
+            vals['code'] = code
+            access = Tokens.objects.latest("id")
+            access.access_token = vals['access_token']
+            access.created_at = datetime.datetime.now()
+            access.code = code
+            access.save()
+            port = settings.PORTAL_ID
 
-    except Exception:
+        except Exception:
 
-        port = settings.PORTAL_ID
+            port = settings.PORTAL_ID
 
-    if port:
-        timesheet = all_project_time_sheet()
-        return redirect("/milestone_pull/")
+        if port:
+            timesheet = all_project_time_sheet(user=user,)
+            return redirect("/milestone_pull/")
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
 
@@ -776,7 +830,7 @@ def resource_utilization(request):
 
         week_start = today - datetime.timedelta(days=days_left)
         week_end = today + datetime.timedelta(days=5 - days_left)
-        time_users = TimeSheet.objects.all().values_list("owner_name")
+        time_users = user.timesheet_set.all().values_list("owner_name")
         user_set = [str(user[0]) for user in set(time_users)]
         week_days = []
         print days_left
@@ -816,7 +870,7 @@ def resource_utilization(request):
 
         response = sorted(response, key=itemgetter('user'))
 
-        return render(request, 'resource.html',
+        return render(request, 'zohouser/resource.html',
                       {
                           "week": datetime.datetime.strftime(week_start, "%b %d") + " - " + datetime.datetime.strftime(week_end, "%b %d"),
                           "week_days":week_days,
@@ -844,27 +898,9 @@ def task_list_projects(request, project_id):
         project = Projects.objects.get(id=project_id)
         tasks = project.tasks_set.all()
         response = []
-        for t in tasks:
-            try:
-                datetime.datetime.strftime(t.end_date, "%d-%m-%Y")
-                if t.end_date < today:
-                    color = "red"
-                else:
-                    color = 'green'
-            except Exception:
-                color = "red"
-            time_sheet = t.timesheet_set.all()
-            response.append(
-                dict(task_name=t.task_name,
-                     time_sheet=len(time_sheet),
-                     task_id=t.id,
-                     start_date=t.start_date,
-                     end_date=t.end_date,
-                     subtasks=t.subtasks,
-                     color=color,
-                     status=t.status))
+        data = task_list_project(project_id)
 
-        return render(request,"task_lists.html", dict(tasks=response, project=project.name))
+        return render(request,"zohouser/sub_task_lists.html", dict(tasks=data, project=project.name))
     else:
         return redirect("/")
 
@@ -873,7 +909,7 @@ def project_task_time_sheet(request, task_id):
     user = request.user
     if user.is_authenticated():
         task = Tasks.objects.get(id=task_id)
-        return render(request, "time_sheet.html", {"tasks": task.timesheet_set.all(),
+        return render(request, "zohouser/time_sheet.html", {"tasks": task.timesheet_set.all(),
                                                "task_name": task.project.name + " - " + task.task_name, })
     else:
         return redirect("/")
@@ -910,8 +946,33 @@ def task_bifurcate(request, project_id):
                 status=t.status,
                 time_sheet=len(t.timesheet_set.all()),
             ))
-        return render(request,"task_lists.html", dict(tasks=response, project=project.name))
+        return render(request,"zohouser/task_lists.html", dict(tasks=response, project=project.name))
     return redirect("/")
+
+
+def sub_tasks(request, task_id):
+    user = request.user
+    if user.is_authenticated():
+        sub_task = SubTasks.objects.filter(tasks__id=task_id)
+        sub_tasks = []
+        for s in sub_task:
+            task = s.tasks.task_name
+            # time_sheet = s.tasks.timesheet_set.all()
+            users = ",".join(list(set([u.owner_name for u in s.tasks.timesheet_set.all()])))
+            sub_tasks.append(dict(
+                task_name=task,
+                sub_task=s.name,
+                start_date=s.start_date,
+                end_date=s.end_date,
+                users=users,
+                completed=s.completed,
+                percent_complete=s.percent_complete,
+                status=s.completed,
+                owner=s.created_person,
+            ))
+        return render(request, "zohouser/tasks/sub_tasks.html",{"current_task": sub_tasks})
+    else:
+        return redirect("/")
 
 
 def mile_stone_tasks(request, milestone):
@@ -936,56 +997,45 @@ def mile_stone_tasks(request, milestone):
                 flag=mile.flag,
                 users=user
             ))
-        return render(request, "tasks/project_tasks.html", {"current_task": task})
+        return render(request, "zohouser/tasks/project_tasks.html", {"current_task": task})
     else:
         return redirect("/")
 
 
 def task_filter(tasks):
     response = []
-    if len(tasks) > 0:
-        for t in tasks:
-            print t
-            user_list = t.zohousers_set.all()
-            user = ",".join(list(set([u.username for u in user_list])))
-            response.append(dict(
-                project=t.project.name,
-                owner_name=t.created_person,
-                name=t.task_name,
-                status=t.status,
-                start_date=t.start_date,
-                end_date=t.end_date,
-                users=user
-            ))
-        return response
+    for t in tasks:
+        user_list = t.zohousers_set.all()
+        user = ",".join(list(set([u.username for u in user_list])))
+        response.append(dict(
+            project=t.project.name,
+            owner_name=t.owner_name,
+            name=t.task_name,
+            status=t.status,
+            start_date=t.start_date,
+            end_date=t.end_date,
+            users=user
+        ))
+    return response
 
 
-def task_list_project(request):
+def intermediate(request):
     user = request.user
     if user.is_authenticated():
-        project_id = request.GET.get("project_id")
-        project = Projects.objects.get(id=project_id)
-        task_ux = project.tasks_set.filter(task_name__in=['UX', 'ux', "User Experience"])
-        task_ui = project.tasks_set.filter(task_name__in=['Ui', 'ui'])
-        task_html = project.tasks_set.filter(task_name__in=['HTML', 'html'])
-        task_api = project.tasks_set.filter(task_name__in=['API', 'api', "Technical Development"])
-        task_qc = project.tasks_set.filter(task_name__in=['QC', 'qc'])
-        task_uat = project.tasks_set.filter(task_name__in=['UAT', 'uat', "Deployment", "deployment"])
-        task_ux = task_filter(task_ux)
-        task_ui = task_filter(task_ui)
-        task_html = task_filter(task_html)
-        task_uat = task_filter(task_uat)
-        task_qc = task_filter(task_qc)
-        task_api = task_filter(task_api)
-        return render(request, "task_list_project.html",dict(task_ux=len(task_ux) if task_ux else 0,
-                                                             task_ui=len(task_ui) if task_ui else 0,
-                                                             task_html=len(task_html) if task_html else 0,
-                                                             task_api=len(task_api) if task_api else 0,
-                                                             task_qc=len(task_qc) if task_qc else 0,
-                                                             task_uat=len(task_uat) if task_uat else 0))
+        return render(request, "zohouser/intermediate.html")
     else:
         return redirect("/")
 
 
 def home(request):
-    return render(request, "home.html")
+    user = request.user
+    if "hdfc" in user.username:
+        return redirect("/clients/")
+    elif "indusind" in user.username:
+        return redirect("/clients/")
+    elif "indigo" in user.username:
+        return redirect("/projects/")
+    else:
+        return render(request, "zohouser/home.html")
+    # return redirect("/")
+

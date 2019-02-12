@@ -44,45 +44,42 @@
 </nav>
 
 <div style="padding-top: 20px">
-<div class="col-md-12" style="text-align: center;padding-top: 20px;"><label class="text-success"> {{ project }} </label> Tasks
+<div class="col-md-12" style="text-align: center;padding-top: 20px;"><label class="text-success"> Resource Utilization </label>
+
     <table class="table table-bordered">
-        <thead class="thead-dark">
-            <th>SNo.</th>
-            <th>Taks</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Status</th>
-            <th>Subtasks</th>
-            <th>Time Sheet Users</th>
-        </thead>
+  <tr>
+    <td></td>
+    <th scope="col">Month</th>
+    <th scope="col">{{ week }}</th>
+      {%  for w in week_days %}
+    <th scope="col">{{ w.week_date }}</th>
+    {%  endfor %}
+  </tr>
+          {%  for r in response %}
 
-  <tbody>
-           {% for t in tasks %}
-               {%  if t.color == 'red' %}
-               <tr class="text-danger">
-        <td scope="col">{{ forloop.counter }}</td>
-                       <td scope="col">{{ t.task_name }}</td>
+          <tr>
+            <th scope="row">{{ r.user }}</th>
+            <td>{%  if r.month == 160 %}<span class="text-success"> {{ r.month }}</span>
+                {% elif r.week_hours < 160%}<span class="text-warning"> {{ r.month }}</span>
+                {%  else %}<span class="text-danger"> {{ r.month }}</span>
 
-        <td scope="col">{{ t.start_date }}</td>
-        <td scope="col">{{ t.end_date }}</td>
-        <td scope="col">{{ t.status }}</td>
-        <td scope="col">{{ t.subtasks }}</td>
-        <td scope="col">{%  if t.time_sheet > 0 %}<a href="/project/task/time_sheet/{{ t.task_id }}"> {{ t.time_sheet }}</a> {%  else %}{{ t.time_sheet }}{%  endif %}</td>
-                   {%  else %}
-                   <tr class="text-success">
-        <td scope="col">{{ forloop.counter }}</td>
-                       <td scope="col">{{ t.task_name }}</td>
+                {%  endif %}
+            </td>            <td>{%  if r.week_hours == 40 %}<span class="text-success"> {{ r.week_hours }}</span>
+                {% elif r.week_hours < 40%}<span class="text-warning"> {{ r.week_hours }}</span>
+                {%  else %}<span class="text-danger"> {{ r.week_hours }}</span>
 
-        <td scope="col">{{ t.start_date }}</td>
-        <td scope="col">{{ t.end_date }}</td>
-        <td scope="col">{{ t.status }}</td>
-        <td scope="col"><a href="/sub_tasks/{{ t.id }}/"> {{ t.subtasks }}</a> </td>
-        <td scope="col">{%  if t.time_sheet > 0 %}<a href="/project/task/time_sheet/{{ t.task_id }}"> {{ t.time_sheet }}</a> {%  else %}{{ t.time_sheet }}{%  endif %}</td>
-               {%  endif %}
-               </tr>
+                {%  endif %}
+            </td>
+          {%  for d in r.days_log %}
+            <td>{%  if d == 8 %}<span class="text-success"> {{ d }}</span>
+                {% elif 6 <= d and d < 8 %}<span class="text-warning"> {{ d }}</span>
+                {% elif 6 <= d and d < 8 %}<span class="text-warning"> {{ d }}</span>
+                {%  else %}<span class="text-danger"> {{ d }}</span>
 
-      {%  endfor %}
-    </tbody>
+                {%  endif %}
+            </td>           {%  endfor %}
+          </tr>
+    {%  endfor %}
 </table>
 
     <hr>

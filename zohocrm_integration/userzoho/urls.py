@@ -37,7 +37,6 @@ urlpatterns = [
     url(r'^milestone/(?P<project_id>\w+)', milestone_data),
     url(r'^auth_request/', auth_request),
     url(r'^clients/', client_list,name="clients"),
-    url(r'^users/', resource_utilisation,name="users"),
     url(r'^projects/', projects, name="projects"),
     url(r'^projects_grantt/', projects_grantt, name="projects_grantt"),
     url(r'^grant_view/', projects_grant, name="grant_view"),
@@ -51,9 +50,10 @@ urlpatterns = [
     url(r'^resource_utilization/', resource_utilization, name='resource_utilization'),
     url(r'^time_sheet_range/', time_sheet_range, name='time_sheet_range'),
     url(r'^project_task_list/(?P<project_id>\w+)', task_list_projects, name='task_list_projects'),
+    url(r'^sub_tasks/(?P<task_id>\w+)', sub_tasks, name='sub_tasks'),
     url(r'^task_bifurcate/(?P<project_id>\w+)', task_bifurcate, name='task_bifurcate'),
     url(r'^project/task/time_sheet/(?P<task_id>\w+)', project_task_time_sheet, name='project_task_time_sheet'),
-    url(r'^task_list_project/', task_list_project, name='task_list_project'),
+    url(r'^status_check/', intermediate, name="intermediate"),
     url(r'^', home),
 
 ]

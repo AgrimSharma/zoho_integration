@@ -35,67 +35,49 @@
     </form>
     </li>
     </ul>
-
-<div style="display: flex">
+      <div style="display: flex">
           <a class="text-success" href="#">Welcome {{ request.user|upper }}</a>
           <a class="text-danger" href="/logout_user/" style="padding-left: 10px;">Logout</a>
-        </div>  </div>
-</nav>
+        </div>
 
-<div style="padding-top: 70px">
-<hr>
-<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <strong>Milestone for project <label class="text-success"> {{ name }}</label></strong>
-     <table class="table table-bordered table-sm">
+  </div>
+</nav>
+<div class="col-md-12" style="text-align: center;padding-top: 70px;"> <label class="text-success"><strong>Projects </strong></label>
+
+    <table class="table">
         <thead class="thead-dark">
             <tr>
                 <th>SNo</th>
                 <th>Project Name</th>
-                <th>Milestone Name</th>
-                <th>Start Date <br>End Date</th>
-                <th>Owner Name</th>
-                <th>Assigned To</th>
-                <th>Sequence</th>
-                <th>Flag</th>
-                                <th>Status</th>
+                <th>Created Date</th>
+                <th>End Date</th>
+                <th>Tasks</th>
+                <th>Milestone</th>
+                <th>Timesheet</th>
+                <th>Status</th>
 
             </tr>
         </thead>
         <tbody>
-        {% if milestone %}
-             {% for t in milestone %}
+            {% for d in projects %}
             <tr>
                 <td>{{forloop.counter}}</td>
-                <td>{{t.project}}</td>
-                            <td>{{t.name}}</td>
-
-                <td>{{t.start_date}}<br>{{t.end_date}}</td>
-
-                <td>{{t.owner_name}}</td>
-                <td><a href="/mile_stone_task/{{ t.id }}"> {{ t.users }}</a></td>
-                <td>{{t.sequence}}</td>
-                <td>{{t.flag}}</td>
-                 <td>{%  if t.status == 'notcompleted' and date_today < t.end_date %} <label class="text-warning">{{t.status}}</label>
-                {%  elif t.status == 'notcompleted' %}<label class="text-danger">{{t.status}}</label>
-                                {% else %} <label class="text-success">{{t.status}}</label>
-                {%  endif %}
+                <td>{{d.name}}</td>
+                <td>{{d.created_date}}</td>
+                <td>{{d.end_date}}</td>
+                <td><a href="/task/{{d.id}}/">View Tasks</a>
+                    {% comment %}<button class="btn btn-primary shipment_sold" project_id="{{d.project_id}}" id="project_id{{d.project_id}}">Details</button>{% endcomment %}
                 </td>
+                <td><a href="/milestone/{{d.id}}/">View Milestones</a></td>
+                <td><a href="/time_sheet/{{d.id}}/">View Time Sheet</a></td>
+
+                <td>{{d.status}}</td>
+
+
             </tr>
             {% endfor %}
-        {% else %}
-        <tr>
-        <td colspan="10"style="text-align: center">No Data Found</td>
-        </tr>
-        {% endif %}
         </tbody>
     </table>
-</div></div>
-<script>
-    $(".shipment_sold").click(function(){
-    //  alert("Invalid Shipment Number");
-        var task_id=$(this).attr("task_id");
-
-        $("#" + task_id ).toggle();
-    });
-</script>
+</div>
 </body>
 </html>
