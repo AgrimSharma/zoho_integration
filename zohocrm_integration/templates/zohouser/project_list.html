@@ -136,7 +136,7 @@
                 {%  for project in projects %}
                 <td>{{forloop.counter}}</td>
 
-                <td width="140px"><a href="/detail/{{ project.id }}"> {% if  project.color == "red"%}<span class="text-danger">{{project.name}}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.name}}{%  else %}<span class="text-success">{{project.name}}</span> {%  endif %}</a></td>
+                <td width="140px"><a href="/project_detail/{{ project.id }}"> {% if  project.color == "red"%}<span class="text-danger">{{project.name}}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.name}}{%  else %}<span class="text-success">{{project.name}}</span> {%  endif %}</a></td>
                 <td width="140px">{{project.start_date}} <br>{{project.end_date}}</td>
 
                 <td width="140px">{% if  project.color == "red"%}<span class="text-danger">{{project.status}}<br> {%  if project.overdue %}-{{project.overdue}} Days{%  endif %}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.status}}</span>{%  else %}<span class="text-success">{{project.status}}</span> {%  endif %}
