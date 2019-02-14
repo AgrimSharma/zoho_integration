@@ -601,6 +601,77 @@ def parse_project_data(csm):
     return response
 
 
+def project_data_parse(project_id):
+    pro = Projects.objects.get(id=project_id)
+    taks_open = pro.tasks_set.filter(
+        status__in=['Open', 'In Progress', 'open', 'in progress'])
+    tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])
+    total = len(taks_open) + len(tasks_close)
+    try:
+        percent = len(tasks_close) / total
+    except Exception:
+        percent = 0
+    today = datetime.datetime.now().date()
+    if pro.status in ["Active",
+                      'active'] and pro.end_date_format and pro.end_date_format < today:
+        color = "red"
+    elif pro.status in ["Active",
+                        'active'] and pro.end_date_format == None:
+        color = "red"
+    elif pro.status in ["closed",
+                        'Closed'] and pro.end_date_format == None:
+        color = "red"
+    else:
+        color = 'green'
+    try:
+        datetime.datetime.strftime(pro.end_date_format, "%Y-%m-%d")
+        if pro.end_date_format < today and pro.status == 'active':
+            color = 'red'
+        else:
+            color = 'green'
+        over_due = datetime.datetime.now().date() - pro.end_date_format
+    except Exception:
+        over_due = None
+    milestone_closed = pro.milestone_set.filter(status='notcompleted')
+    milestone_open = pro.milestone_set.filter(status='completed')
+    try:
+        names = pro.owner_name
+        name_data1 = [n[0].capitalize() for n in names.split(".")]
+        name_data2 = [n[0].capitalize() for n in names.split(" ")]
+        if len(name_data1) > 1:
+            name_list = "".join(name_data1)
+        else:
+            name_list = "".join(name_data2)
+
+    except Exception:
+        name_list = ""
+    data = dict(name=pro.name,
+                id=pro.id,
+                end_date=pro.end_date_format,
+                task_count_open=len(taks_open) + len(tasks_close),
+                milestone_count_open=len(milestone_closed) + len(
+                    milestone_open),
+                task_count_close=len(tasks_close),
+                milestone_count_close=len(milestone_closed),
+                start_date=pro.start_date_format,
+                status=pro.status.capitalize(),
+                created_date=pro.created_date_format,
+                project_id=pro.project_id,
+                percent=round(percent, 2) * 100,
+                color=color,
+                csm=name_list,
+                overdue=over_due.days if over_due else None,
+                task_api=task_api(pro),
+                task_html=task_html(pro),
+                task_uat=task_uat(pro),
+                task_bee=task_bee(pro),
+                task_ux=task_ux(pro),
+                task_ui=task_ui(pro),
+                task_qc=task_qc(pro),
+                )
+    return data
+
+
 def parse_project_data_project(project_name):
 
     projects = Projects.objects.filter(name__icontains=project_name)

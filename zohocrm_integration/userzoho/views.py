@@ -958,12 +958,20 @@ def task_list_projects(request, project_id):
     user = request.user
     today = datetime.datetime.now().date()
     if user.is_authenticated():
-        project = Projects.objects.get(id=project_id)
-        tasks = project.tasks_set.all()
-        response = []
-        data = task_list_project(project_id)
+        # project = Projects.objects.get(id=project_id)
+        # tasks = project.tasks_set.all()
+        # response = []
 
-        return render(request,"zohouser/sub_task_lists.html", dict(tasks=data, project=project.name))
+        projects = project_data_parse(project_id)
+
+        return render(request, "zohouser/sub_task_lists.html",
+                  dict(project=projects,
+                       total=len(projects),
+                       today=today,
+                       ))
+        # data = task_list_project(project_id)
+
+        # return render(request,"zohouser/sub_task_lists.html", dict(tasks=data, project=project.name))
     else:
         return redirect("/")
 
@@ -1114,6 +1122,27 @@ def intermediate(request):
     user = request.user
     if user.is_authenticated():
         return render(request, "zohouser/intermediate.html")
+    else:
+        return redirect("/")
+
+
+def task_weekly(request):
+    user = request.user
+    if user.is_authenticated():
+        name = request.GET.get("name")
+        name = request.GET.get("name")
+        date_today = datetime.datetime.now().date()
+        week_day = date_today.weekday()
+        begin_date = datetime.datetime.now().date() - datetime.timedelta(
+            days=week_day)
+        end_date = datetime.datetime.now().date() + datetime.timedelta(
+            days=6 - week_day)
+        this_week = Tasks.objects.filter(project__name__icontains=name,
+                                         end_date__gte=begin_date,
+                                         end_date__lte=end_date)
+        return render(request, "zohouser/tasks/project_tasks.html",{
+            "current_task": this_week
+        })
     else:
         return redirect("/")
 

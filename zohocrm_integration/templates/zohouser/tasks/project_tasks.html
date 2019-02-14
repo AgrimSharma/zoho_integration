@@ -9,6 +9,7 @@
     <title>Zoho</title>
 </head>
 <body>
+{%  comment %}
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
   <a class="navbar-brand" href="#">Zoho Dashboard</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,9 +41,18 @@
           <a class="text-success" href="#">Welcome {{ request.user|upper }}</a>
           <a class="text-danger" href="/logout_user/" style="padding-left: 10px;">Logout</a>
         </div>  </div>
+</nav>{%  endcomment %}
+<nav class="navbar navbar-expand-lg bg-dark">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#" style="color: white">Projects View</a>
+    </div>
+    <ul class="nav navbar-nav pull-right" >
+        <li><a href="#" style="color: white; padding-right: 20px;">{{ user|upper }}</a></li>
+      <li><a href="/logout_user/" style="color: white">Logout</a></li>
+    </ul>
+  </div>
 </nav>
-
-<div style="padding-top: 70px">
 <div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-success"><strong>{{ name }}</strong></label>
 
 
@@ -60,11 +70,11 @@
                 <th>Status</th>
                 <th>Subtasks</th>
 {#                <th>Timesheet</th>#}
-                <th>Assigned To</th>
+{#                <th>Assigned To</th>#}
                 <th>Created Time</th>
                 <th>Completed</th>
                 <th>Percent Complete</th>
-                <th>Completed Time</th>
+{#                <th>Completed Time</th>#}
             </tr>
         </thead>
         <tbody>
@@ -89,11 +99,11 @@
                 </td>
                 <td>{{t.subtasks}}</td>
 {#                <td><a href="/time_sheet_task/{{t.id}}">Timesheet</a> </td>#}
-                <td>{{ t.owner }}</td>
+{#                <td>{{ t.owner }}</td>#}
                 <td>{{t.created_time}}</td>
                 <td>{{t.completed}}</td>
                 <td>{{t.percent_complete}}</td>
-                <td>{{t.completed_time}}</td>
+{#                <td>{{t.completed_time}}</td>#}
             </tr>
             {% endfor %}
         {% else %}

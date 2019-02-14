@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% comment %}<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -159,4 +159,139 @@
 </div>
 
 </body>
+</html>{%  endcomment %}
+
+{%  load static %}<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <link rel="icon" href="assets/images/favicon.ico">
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+      <title>Projects</title>
+	   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+      <link href="{%  static 'css/bootstrap.min.css' %}" rel="stylesheet">
+      <!--<link href="assets/css/style.css" rel="stylesheet">-->
+   </head>
+   <body>
+
+      <nav class="navbar navbar-expand-lg bg-dark">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#" style="color: white">Projects View</a>
+    </div>
+    <ul class="nav navbar-nav pull-right" >
+        <li><a href="#" style="color: white; padding-right: 20px;">{{ user|upper }}</a></li>
+      <li><a href="/logout_user/" style="color: white">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+
+      <div class="space" style="padding-top: 10px;"></div>
+    <ul class="list-inline nav" style="padding-left: 20px;">
+        <li class="list-inline-item nav-item"><a href="/project_list/?name=hdfc&status=all&csm=all" class="active nav-link"> Dash Board</a></li>
+        <li class="list-inline-item nav-item"><a href="/project_filter/?csm=all" class="nav-link" > Projects</a></li>
+        <li class="list-inline-item nav-item"><a href="/customer_managers/" class="nav-link"> CSMs</a></li>
+    </ul>
+<hr>
+         <section class="container-fluid">
+               <div class="row">
+                  <div class="col-xs-12 w-100">
+
+
+
+						   <div class="table-wrap">
+							  <table class="common_table w-100">
+								 <thead>
+									<tr>
+									  <th colspan="6">&nbsp;</th>
+									  <th colspan="8" class="text-center lbordermain">Task Status</th>
+								   </tr>
+									<tr>
+									   <th class="text-left">SNo</th>
+									   <th class="text-left">Health</th>
+									   <th class="text-center">CSM</th>
+									   <th class="text-center">Project Name</th>
+									   <th class="text-center">Project Duration</th>
+									   <th class="text-center">Milestones</th>
+									   <th class="text-center">Task</th>
+									   <th class="text-center lbordermain">UX</th>
+									   <th class="text-center">UI</th>
+									   <th class="text-center">HTML</th>
+									   <th class="text-center">API</th>
+									   <th class="text-center">BEE</th>
+									   <th class="text-center">QC</th>
+									   <th class="text-center">UAT</th>
+									</tr>
+								 </thead>
+								 <tbody>
+                                 {%  if project %}
+									<tr>
+                                        <td scope="row">1</td>
+
+									   <td style="text-align: center" >
+                    {%  if project.color == 'green' %}    <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
+                    {%  elif project.color == 'red' %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
+                    {%  else %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
+                    {%  endif %}
+                    </td>
+									   <td class="text-center"><span class="circletxt">{{ project.csm }}</span></td>
+									   <td class="text-center">{{ project.name }}</td>
+									   <td class="text-center">{{ project.start_date }}<br>{{ project.end_date }}</td>
+									   <td >{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>
+                    <td >{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
+                                    {%  if project.end_date > today or project.status == "Closed" %}
+									   <td class="lbordermain"><span class="green-text">{{ project.task_ux }}<br><font>On Track</font></span></td>
+									   <td><span class="green-text">{{ project.task_ui }}<br><font> On Track</font></span></td>
+									   <td><span class="green-text">{{ project.task_html }}<br><font> On Track</font></span></td>
+									   <td><span class="green-text">{{ project.task_api }}<br><font> On Track</font></span></td>
+									   <td><span class="green-text">{{ project.task_bee }}<br><font> On Track</font></span></td>
+									   <td><span class="green-text">{{ project.task_qc }}<br><font> On Track</font></span></td>
+									   <td><span class="green-text">{{ project.task_uat }}<br><font> On Track</font></span></td>
+                                        {%  else %}
+                                        <td class="lbordermain"><span class="red-text">{{ project.task_ux }}<br><font>Over Due</font></span></td>
+									   <td><span class="red-text">{{ project.task_ui }}<br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{{ project.task_html }}<br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{{ project.task_api }}<br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{{ project.task_bee }}<br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{{ project.task_qc }}<br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{{ project.task_uat }}<br><font> Over Due</font></span></td>
+                                    {%  endif %}
+									</tr>
+                                 {%  else %}
+									<tr>
+                                        <td colspan="14"> NO data found</td>
+                                    </tr>
+                                 {%  endif %}
+								 </tbody>
+							  </table>
+						   </div>
+
+                      </div>
+                  </div>
+               </div>
+         </section>
+
+
+      <script>
+        $("#project_name").on('keyup', function (e) {
+            if (e.keyCode == 13) {
+                var name = $("#project_name").val();
+                window.location.href = "/project_filter/?project_name=" + name;
+            }
+        });
+        $("#csms").change(function(){
+            var csm = $("#csms").val();
+            if(csm === ""){
+                window.location.href = "/project_filter/?csm=all";
+            }else {
+                window.location.href = "/project_filter/?csm=" + csm;
+            }
+
+        });
+      </script>
+   </body>
 </html>

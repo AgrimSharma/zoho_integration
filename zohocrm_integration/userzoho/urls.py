@@ -54,6 +54,7 @@ urlpatterns = [
     url(r'^sub_tasks/(?P<task_id>\w+)', sub_tasks, name='sub_tasks'),
     url(r'^task_bifurcate/(?P<project_id>\w+)', task_bifurcate, name='task_bifurcate'),
     url(r'^project/task/time_sheet/(?P<task_id>\w+)', project_task_time_sheet, name='project_task_time_sheet'),
+    url(r'^client_tasks_week/', task_weekly, name='task_weekly'),
     url(r'^project_filter/', project_filter, name='project_filter'),
     url(r'^status_check/', intermediate, name="intermediate"),
     url(r'^', home),
