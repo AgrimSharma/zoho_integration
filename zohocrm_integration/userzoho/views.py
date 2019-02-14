@@ -1103,8 +1103,7 @@ def project_filter(request):
                   dict(projects=projects,
                        csm=csm_list,
                        total=len(projects),
-                       today = today,
-                       name=project_name
+                       today=today,
                        ))
     else:
         return redirect("/")
