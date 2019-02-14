@@ -1104,6 +1104,7 @@ def project_filter(request):
                        csm=csm_list,
                        total=len(projects),
                        today=today,
+                       name=csm
                        ))
     else:
         return redirect("/")
