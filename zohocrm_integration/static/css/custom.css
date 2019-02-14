@@ -1,0 +1,120 @@
+@charset "utf-8";
+/* CSS Document */
+
+.project_detail_row
+	.card-header{
+		font-size: 20px;
+		text-transform: uppercase;
+		font-weight:600;
+		background: none;
+		border: none;
+}
+.project_detail_row .num_of_projects .numbox h3{
+	font-size: 65px;
+	
+}
+.project_detail_row .num_of_projects .numbox p{
+	font-size: 20px;
+	text-transform: uppercase;
+	font-weight: 600;
+}
+.project_detail_row .num_of_projects .numbox.total{
+	color: #000;
+}
+.project_detail_row .num_of_projects .numbox.active{
+	color: #f29c3c;
+}
+.project_detail_row .num_of_projects .numbox.delivered{
+	color: #00a015;
+}
+
+.project_detail_row .projectwise_health .projectwise_health_list{
+	list-style: none;
+}
+.project_detail_row .projectwise_health .projectwise_health_list li{
+	border-bottom: solid 1px #979797;
+	margin-bottom: 7px;
+	padding-bottom: 7px;
+	padding-left: 30px;
+	position: relative;
+}
+.project_detail_row .projectwise_health .projectwise_health_list li span{
+	position: absolute;
+	left:0;
+	top:10px;
+	width: 20px;
+	height:20px;
+	background-color: #fff;
+}
+.project_detail_row .projectwise_health .projectwise_health_list li.overdue span{
+	background-color:#ff0000;
+}
+.project_detail_row .projectwise_health .projectwise_health_list li.pending span{
+	background-color:#f29c3c;
+}
+.project_detail_row .projectwise_health .projectwise_health_list li.ontrack span{
+	background-color:#FF6600;
+}
+.project_detail_row .projectwise_health .projectwise_health_list li label.lbl_val{
+	font-size: 24px;
+	font-weight: 600;
+	margin-right:30px;
+}
+.project_detail_row .projectwise_health .projectwise_health_list li label.lbl_txt{
+	font-size: 18px;
+}
+.project_detail_row .projectwise_health .projectwise_health_list li.pending .lbl_val{
+	color: #f29c3c;
+}
+
+.project_detail_row .deliverables .numbox h3{
+	font-size: 65px;
+	
+}
+.project_detail_row .deliverables .numbox p{
+	font-size: 20px;
+	text-transform: uppercase;
+	font-weight: 600;
+}
+span.health_box{
+	width: 30px;
+	height: 20px; display:inline-block;
+}
+span.health_box.overdued{
+	width: 30px;
+	height: 20px; background-color:#FF0000;
+}
+
+span.health_box.ontrack{
+	width: 30px;
+	height: 20px; background-color:#FF6600;
+}
+
+
+@media (max-width:1440px) {
+.project_detail_row .projectwise_health .projectwise_health_list li label.lbl_val { font-size:22px; margin-right:15px;}
+.project_detail_row .projectwise_health .projectwise_health_list li label.lbl_txt { font-size:18px;}
+.project_detail_row .num_of_projects .numbox p { font-size: 18px; }
+}
+@media (max-width:1300px) {
+	.project_detail_row .num_of_projects .numbox h3 { font-size:50px;}
+	.project_detail_row .card-header { font-size:17px;}
+
+.project_detail_row .projectwise_health .projectwise_health_list li label.lbl_val { font-size:18px; margin-right:10px;}
+.project_detail_row .projectwise_health .projectwise_health_list li label.lbl_txt { font-size:16px;}
+
+}
+@media (max-width:1150px) {
+.project_detail_row .num_of_projects .numbox h3 { font-size:36px;}
+.project_detail_row .card-header { font-size:12px;}
+.project_detail_row .deliverables .numbox h3 {font-size: 40px;}
+.project_detail_row .num_of_projects .numbox p { font-size: 12px; }
+.project_detail_row .projectwise_health .projectwise_health_list li label.lbl_val { font-size:15px; margin-right:5px;}
+.project_detail_row .projectwise_health .projectwise_health_list li label.lbl_txt { font-size:13px;}
+.project_detail_row .projectwise_health .projectwise_health_list li span { width: 15px; height: 15px; top:6px; }
+
+}
+
+
+
+

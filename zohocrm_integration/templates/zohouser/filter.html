@@ -1,0 +1,191 @@
+{%  load static %}<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <link rel="icon" href="assets/images/favicon.ico">
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+      <title>Projects</title>
+	   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+      <link href="{%  static 'css/bootstrap.min.css' %}" rel="stylesheet">
+      <!--<link href="assets/css/style.css" rel="stylesheet">-->
+   </head>
+   <body>
+      
+      <nav class="navbar navbar-expand-lg bg-dark">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#" style="color: white">Projects View</a>
+    </div>
+    <ul class="nav navbar-nav pull-right" >
+        <li><a href="#" style="color: white; padding-right: 20px;">{{ user|upper }}</a></li>
+      <li><a href="/logout_user/" style="color: white">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+
+      
+     
+         <section class="container-fluid">
+               <div class="row">
+                  <div class="col-xs-12 w-100">
+                     <div class="container-fluid">
+						<div class="filterpanel">
+						<div class="row">
+							<div class="col-md-4">
+								<div class="row align-items-center">
+									<div class="col-md-4 filter-padd">FILTER BY CSM:</div>
+									<div class="col-md-7">
+									<div class="custom_select">
+										<select id="csms">
+										   <option value="">Select</option>
+                                            {%  for c in csm %}
+										   <option value="{{ c }}">{{ c }}</option>
+                                            {%  endfor %}
+										</select>
+									 </div>
+									 </div>
+
+								 </div></div>
+							<div class="col-md-5">
+								<div class="row align-items-center">
+									<div class="col-md-4 filter-padd">FILTER BY HEALTH:</div>
+										<div class="form-inline justify-content-center custom-checkbox d-flex filetrcheck">
+											<div class="form-check form-check-inline">
+
+													<input type="checkbox" id="1">
+													<label for="1">&nbsp;</label>
+												</div>
+
+												<div class="form-check form-check-inline">
+													<input type="checkbox" id="2">
+													<label for="2">&nbsp;</label>
+												</div>
+
+												<div class="form-check form-check-inline">
+													<input type="checkbox" id="3">
+													<label for="3">&nbsp;</label>
+												</div>
+										</div>
+								 </div>
+							</div>
+							<div class="col-md-3">
+							<div class="row align-items-right">
+									<div class="col-md-3 filter-padd">SEARCH</div>
+									<div class="col-md-9">
+									<div class="custom_input">
+                                        <input type="text" value="" id="project_name" placeholder="Project Name" class="inputstyle-exch">
+									 </div>
+									 </div>
+
+								 </div>
+
+							</div>
+						</div>
+					 </div> 
+						<div class="sortby_showing">
+						   <div class="row align-items-center">
+							  <div class="col-md-9">
+								 <div class="sortby_row">
+									 <div class="showing_page">
+										Showing {{ total }} Projects
+									 </div>
+								 </div>
+							  </div>
+							  <div class="col-md-3">
+
+							  </div>
+						   </div>
+						</div>
+			
+						   <div class="table-wrap">
+							  <table class="common_table w-100">
+								 <thead>
+									<tr>
+									  <th colspan="6">&nbsp;</th>
+									  <th colspan="8" class="text-center lbordermain">Task Status</th>
+								   </tr>
+									<tr>
+									   <th class="text-left">SNo</th>
+									   <th class="text-left">Health</th>
+									   <th class="text-center">CSM</th>
+									   <th class="text-center">Project Name</th>
+									   <th class="text-center">Project Duration</th>
+									   <th class="text-center">Milestones</th>
+									   <th class="text-center">Task</th>
+									   <th class="text-center lbordermain">UX</th>
+									   <th class="text-center">UI</th>
+									   <th class="text-center">HTML</th>
+									   <th class="text-center">API</th>
+									   <th class="text-center">BEE</th>
+									   <th class="text-center">QC</th>
+									   <th class="text-center">UAT</th>
+									</tr>
+								 </thead>
+								 <tbody>
+                                 {%  if projects %}
+                                     {%  for project in projects %}
+									<tr>
+                                        <td scope="row">{{ forloop.counter }}</td>
+
+									   <td style="text-align: center" >
+                    {%  if project.percent >= 85.0 %}    <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
+                    {%  elif 75.0 <= project.percent and project.percent < 85.0 %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
+                    {%  else %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
+                    {%  endif %}
+                </td>
+									   <td class="text-center"><span class="circletxt">{{ project.csm }}</span></td>
+									   <td class="text-center">{{ project.name }}</td>
+									   <td class="text-center">{{ project.start_date }}<br>{{ project.end_date }}</td>
+									   <td >{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>
+     <td >{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
+                                    {%  if project.end_date > today or project.status == "Closed" %}
+									   <td class="lbordermain"><span class="green-text">{{ project.task_ux }}<br><font>On Track</font></span></td>
+									   <td><span class="green-text">{{ project.task_ui }}<br><font> On Track</font></span></td>
+									   <td><span class="green-text">{{ project.task_html }}<br><font> On Track</font></span></td>
+									   <td><span class="green-text">{{ project.task_api }}<br><font> On Track</font></span></td>
+									   <td><span class="green-text">{{ project.task_bee }}<br><font> On Track</font></span></td>
+									   <td><span class="green-text">{{ project.task_qc }}<br><font> On Track</font></span></td>
+									   <td><span class="green-text">{{ project.task_uat }}<br><font> On Track</font></span></td>
+                                        {%  else %}
+                                        <td class="lbordermain"><span class="red-text">{{ project.task_ux }}<br><font>Over Due</font></span></td>
+									   <td><span class="red-text">{{ project.task_ui }}<br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{{ project.task_html }}<br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{{ project.task_api }}<br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{{ project.task_bee }}<br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{{ project.task_qc }}<br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{{ project.task_uat }}<br><font> Over Due</font></span></td>
+                                    {%  endif %}
+									</tr>{%  endfor %}
+                                 {%  else %}
+									<tr>
+                                        <td colspan="14"> NO data found</td>
+                                    </tr>
+                                 {%  endif %}
+								 </tbody>
+							  </table>
+						   </div>
+						
+                      </div>
+                  </div>
+               </div>
+         </section>
+      
+
+      <script>
+        $("#project_name").on('keyup', function (e) {
+            if (e.keyCode == 13) {
+                var name = $("#project_name").val();
+                window.location.href = "/project_filter/?project_name=" + name;
+            }
+        });
+        $("#csms").change(function(){
+            var csm = $("#csms").val();
+            window.location.href = "/project_filter/?csm=" + csm;
+        });
+      </script>
+   </body>
+</html>

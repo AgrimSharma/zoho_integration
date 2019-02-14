@@ -595,6 +595,18 @@ def client_list(request):
         return redirect("/")
 
 
+def client_tasks(request, name):
+    task_open = Tasks.objects.filter(project__name__icontains=name,
+                                     status__in=['open', 'Open']).count()
+    task_inprogress = Tasks.objects.filter(project__name__icontains=name,
+                                           status__in=['in progress',
+                                                       'In Progress']).count()
+    task_closed = Tasks.objects.filter(project__name__icontains=name,
+                                       status__in=['open', 'Open']).count()
+
+    return HttpResponse(json.dumps(dict(task_open=task_open, task_inprogress=task_inprogress,task_closed=task_closed)))
+
+
 def project_list(request):
     user = request.user
     if user.is_authenticated():
@@ -615,11 +627,62 @@ def project_list(request):
         else:
             project = project_list_view(name, status, csms)
         sorted(list(set(csm_list)))
-        return render(request, "zohouser/project_list.html", {"projects": project,
-                                                     "csm": list(set(csm_list)),
-                                                     "date": today,
-                                                     "name": name,
-                                                     "status": status})
+        total_projects = len(project)
+        if name == "hdfc":
+            active = Projects.objects.filter(name__icontains=name, status__in=['active', 'Active']).count()
+            closed = Projects.objects.filter(name__icontains=name, status__in=['Closed', 'closed']).count()
+            task_open = Tasks.objects.filter(project__name__icontains=name,
+                                             status__in=['open',
+                                                         'Open']).count()
+            task_inprogress = Tasks.objects.filter(
+                project__name__icontains=name,
+                status__in=['in progress',
+                            'In Progress']).count()
+            task_closed = Tasks.objects.filter(project__name__icontains=name,
+                                               status__in=['open',
+                                                           'Open']).count()
+            date_today = datetime.datetime.now().date()
+            week_day = date_today.weekday()
+            begin_date = datetime.datetime.now().date() - datetime.timedelta(
+                days=week_day)
+            end_date = datetime.datetime.now().date() + datetime.timedelta(
+                days=6 - week_day)
+            this_week = Tasks.objects.filter(project__name__icontains=name, end_date__gte=begin_date, end_date__lte=end_date).count()
+            return render(request, "zohouser/project_list_pie.html",
+                          {"projects": project,
+                           "csm": list(set(csm_list)),
+                           "date": today,
+                           "name": name,
+                           "status": status,
+                           "user_name": user.email,
+                           "total_projects": total_projects,
+                           "active": active,
+                           "closed": closed,
+                           "task_closed": task_closed,
+                           "task_open": task_open,
+                           "task_inprogress": task_inprogress,
+                           "this_week":this_week
+                           })
+
+        else:
+            active = 0
+            closed = 0
+
+            return render(request, "zohouser/project_list.html",
+                          {"projects": project,
+                           "csm": list(set(csm_list)),
+                           "date": today,
+                           "name": name,
+                           "status": status,
+                           "user_name": user.email,
+                           "total_projects": total_projects,
+                           "active": active,
+                           "closed": closed,
+
+
+                           })
+
+
     else:
         return redirect("/")
 
@@ -1019,6 +1082,33 @@ def task_filter(tasks):
     return response
 
 
+def project_filter(request):
+    user = request.user
+    if user.is_authenticated():
+        csm_data = Projects.objects.all().values_list("owner_name")
+        csm_list = []
+        csm = request.GET.get("csm", "all")
+        project_name = request.GET.get("project_name", "all")
+        if project_name == "all":
+            projects = parse_project_data(csm)
+        else:
+            projects = parse_project_data_project(project_name)
+        for c in csm_data:
+            names = str(c[0])
+            if names not in csm_data:
+                csm_list.append(names)
+        csm_list = list(set(csm_list))
+        today = datetime.datetime.now()
+        return render(request, "zohouser/filter.html",
+                  dict(projects=projects,
+                       csm=csm_list,
+                       total=len(projects),
+                       today = today
+                       ))
+    else:
+        return redirect("/")
+
+
 def intermediate(request):
     user = request.user
     if user.is_authenticated():
@@ -1038,4 +1128,5 @@ def home(request):
     else:
         return render(request, "zohouser/home.html")
     # return redirect("/")
+
 

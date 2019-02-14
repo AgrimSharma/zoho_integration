@@ -1,0 +1,401 @@
+{%  load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+{#  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>#}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+<link rel="stylesheet" href="{%  static 'css/custom.css' %}" >
+   <script src="https://www.amcharts.com/lib/3/amcharts.js" type="text/javascript"></script>
+<script src="https://www.amcharts.com/lib/3/pie.js" type="text/javascript"></script>
+<style>
+.dropbtn {
+  background-color: #4CAF50;
+  color: white;
+  font-size: 16px;
+  border: none;
+            min-width: 166px;
+
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+      min-width: 160px;
+        padding-bottom: 10px;
+
+
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  color: white;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+    background-color: #4CAF50;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd;}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {display: block;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+.vl {
+  border-left: 2px solid black;
+  height: auto;
+           margin-left: 10px;
+    margin-right: 10px;
+}
+.hl {
+    border-top: 2px solid black;
+    height: auto;
+    padding-top: 10px;
+
+}
+    #chartdiv {
+  width: 150px;
+  height: 170px;
+}
+
+</style>
+
+    <title>Zoho</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-dark">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#" style="color: white">Projects View</a>
+    </div>
+    <ul class="nav navbar-nav pull-right" >
+        <li><a href="#" style="color: white; padding-right: 20px;">{{ user|upper }}</a></li>
+      <li><a href="/logout_user/" style="color: white">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+<div class="space" style="padding-top: 10px;"></div>
+    <ul class="list-inline nav" style="padding-left: 20px;">
+        <li class="list-inline-item nav-item"><a href="/project_list/?name={{ name }}&status=all&csm=all" class="active nav-link"> Dash Board</a></li>
+        <li class="list-inline-item nav-item"><a href="/project_filter/?csm=all" class="nav-link" > Projects</a></li>
+        <li class="list-inline-item nav-item"><a href="/customer_managers/" class="nav-link"> CSMs</a></li>
+    </ul>
+<hr>
+
+<div class="container-fluid">
+  <div class="row project_detail_row">
+    <div class="col-lg-4">
+     	<div class="card shadow num_of_projects h-100">
+          <div class="card-header">No. of Projects</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4 border-right text-center">
+                <div class="numbox total">
+                  <h3>{{ total_projects }}</h3>
+                  <p>Total</p>
+                </div>
+              </div>
+              <div class="col-md-4 border-right text-center">
+                <div class="numbox active">
+                  <h3>{{ active }}</h3>
+                  <p>Active</p>
+                </div>
+              </div>
+              <div class="col-md-4 text-center">
+                <div class="numbox delivered">
+                  <h3>{{ closed }}</h3>
+                  <p>Delivered</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card shadow projectwise_health h-100">
+        <div class="card-header">Project Wise Health</div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-lg-4"><div id="chartdiv" ></div></div>
+            <div class="col-lg-8">
+              <ul class="projectwise_health_list m-0 p-0">
+                <li class="overdue">
+                  <span></span>
+                  <label class="lbl_val">Overdue {{ task_open }}</label>
+                  <label class="lbl_txt"> >25% lag on delivery date</label>
+                </li>
+                <li class="pending">
+                  <span></span>
+                  <label class="lbl_val">Pending {{ task_inprogress }}</label>
+                  <label class="lbl_txt">Approval pending from client</label>
+                </li>
+                <li class="ontrack">
+                  <span></span>
+                  <label class="lbl_val">Closed {{ task_closed }}</label>
+                  <label class="lbl_txt">Delevires on track</label>
+                </li>
+
+              </ul>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="col-lg-2 text-center">
+
+    	<div class="card shadow deliverables h-100">
+
+        <div class="card-header">
+        	Deleverables This Week
+        </div>
+        <div class="card-body">
+        <div class="numbox">
+        	<h3>{{ this_week }}</h3>
+            <p>Tasks</p>
+            </div>
+        </div>
+
+        </div>
+
+    </div>
+  </div>
+
+	<div class="sortby_showing mt-3">
+						   <div class="row align-items-center">
+							  <div class="col-md-9">
+								 <div class="sortby_row">
+									 <div class="showing_page">
+										Showing 123 Projects
+									 </div>
+								 </div>
+							  </div>
+							  <div class="col-md-3">
+
+							  </div>
+						   </div>
+						</div>
+
+  <div class="row mt-3">
+    <div class="col-lg-12">
+      <table class="table table-striped">
+  <thead class="thead-dark">
+    <tr>
+      <th>SNo.</th>
+      <th>CSM Name</th>
+      <th>Project</th>
+      <th>End Date</th>
+      <th>Start Date</th>
+      <th>Milestones</th>
+      <th>Tasks</th>
+      <th>Health</th>
+    </tr>
+  </thead>
+  <tbody>
+          {%  if projects %}
+    {%  for project in projects %}
+    <tr>
+      <th scope="row">{{ forloop.counter }}</th>
+      <th >{{project.csm}}</th>
+        <td ><a href="/project_task_list/{{ project.id }}"> {% if  project.color == "red"%}<span class="text-danger">{{project.name}}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.name}}</span>{%  else %}<span class="text-success">{{project.name}}</span> {%  endif %}</a></td>
+      <td>{{project.end_date}}</td>
+      <td>{{project.start_date}}</td>
+      <td >{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>
+     <td >{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
+      <td style="text-align: center" >
+                    {%  if project.percent >= 85.0 %}    <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
+                    {%  elif 75.0 <= project.percent and project.percent < 85.0 %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
+                    {%  else %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
+                    {%  endif %}
+                </td>
+    </tr>{%  endfor %}
+    {%  else %}
+  <tr><td colspan="7">No Data found</td></tr>
+  {%  endif %}
+  </tbody>
+</table>
+    </div>
+  </div>
+</div>
+{#<div class="container-fluid">#}
+{#    <div class="row" >#}
+{#        <div style="padding-right: 10px;padding-left: 20px;" class="col-md-3">#}
+{#            <div class="card" style="    height: 100%;    padding-top: 65px; text-align: center">#}
+{#              <div class="card-body">#}
+{#                <h6 class="card-title">No. of Projects</h6>#}
+{#                  <div style="display: inline-flex">#}
+{#                    <div><h5 class="text-center">{{ total_projects }}<br>Total</h5></div>#}
+{#                      <div class="vl"></div>#}
+{#                    <div><h5 class="text-warning text-center">{{ active }}<br>Active</h5></div>#}
+{#                      <div class="vl"></div>#}
+{#                    <div><h5 class="text-success text-center">{{ closed }}<br>Closed</h5></div></div>#}
+{##}
+{#              </div>#}
+{#            </div>#}
+{##}
+{#        </div>#}
+{#        <div style="padding-right: 10px;" class="col-md-6">#}
+{#             <div class="card" >#}
+{#  <div class="card-body">#}
+{#    <h6 class="card-title">Project Wise Health</h6>#}
+{#    <div style="display: inline-flex">#}
+{#        <div id="chartdiv" ></div>#}
+{#        <div style="margin-top: 30px;">#}
+{#            <div style="display: flex"><i class="fas fa-square" style="color: #FF0F00;padding-top: 5px;"></i>&nbsp;&nbsp;&nbsp;<span class="text-danger"><strong>Overdue {{ task_open }}</strong></span> <p> &nbsp;&nbsp;&nbsp;> 25% lag on delivery</p></div>#}
+{#            <div class="hl"></div>#}
+{#            <div style="display: inline-flex"><i class="fas fa-square" style="color: #FF9E01;padding-top: 5px;"></i>&nbsp;&nbsp;&nbsp;<span class="text-warning"><strong>Pending {{ task_inprogress }}</strong> </span>&nbsp;&nbsp;&nbsp;<p> Approval pending from client</p></div>#}
+{#            <div class="hl"></div>#}
+{#            <div style="display: inline-flex"><i class="fas fa-square" style="color: #FF6600;padding-top: 5px;"></i>&nbsp;&nbsp;&nbsp;<span class="text-danger"><strong>Closed {{ task_closed }}</strong></span> &nbsp;&nbsp;&nbsp;<p> Delevires on track</p></div>#}
+{#        </div>#}
+{##}
+{#    </div>#}
+{#  </div>#}
+{#</div>#}
+{#        </div>#}
+{#        <div class="col-md-3">#}
+{#             <div class="card" style="    height: 100%;    padding-top: 65px;text-align: center"">#}
+{#  <div class="card-body">#}
+{#    <h6 class="card-title">Deliverable this week</h6>#}
+{#    <div>#}
+{#        <strong>{{ this_week }}</strong>#}
+{#    </div>#}
+{#  </div>#}
+{#</div>#}
+{#    </div>#}
+{#    </div>#}
+{#</div>#}
+{#<div class="col-md-12" style="text-align: center;padding-top: 70px;">#}
+{#<div style="text-align: center; display: inline-flex"><div><label class="text-success"><strong>Projects </strong></label></div>#}
+{#          {%  if projects %}#}
+{#  <div style="padding-left: 20px;">#}
+{#        <div class="dropdown">#}
+{#  <button class="dropbtn">CSM's <i class="fas fa-angle-down" style="font-size: 20px;"></i></button>#}
+{#  <div class="dropdown-content">#}
+{##}
+{#    <a href="/project_list/?name={{ name }}&status={{ status }}&csm=all">All</a>#}
+{#      {%  for c in  csm %}#}
+{#          <a href="/project_list/?name={{ name }}&status={{ status }}&csm={{ c }}">{{ c }}</a>#}
+{##}
+{#      {%  endfor %}#}
+{#  </div>#}
+{#</div>#}
+{#    </div>#}
+{#{%  endif %}#}
+{#</div>#}
+{#    <table class="table table-bordered">#}
+{#        <thead class="thead-dark">#}
+{#            <tr>#}
+{#                <th>SNo</th>#}
+{#                <th>CSM</th>#}
+{#                <th>Project Name</th>#}
+{#                <th>End Date</th>#}
+{#                <th>Start Date </th>#}
+{#                <th>Status</th>#}
+{#                <th>Milestone</th>#}
+{#                <th>Task</th>#}
+{#                <th>CW - 2 Task</th>#}
+{#                <th>CW - 1 Task</th>#}
+{#                <th>Current Task</th>#}
+{#                <th>NW Task</th>#}
+{#                <th>Project Health</th>#}
+{##}
+{#            </tr>#}
+{#        </thead>#}
+{#        <tbody>#}
+{#        {%  if projects %}#}
+{#            <tr>#}
+{#                {%  for project in projects %}#}
+{#                <td>{{forloop.counter}}</td>#}
+{#                <td >{{project.csm}}</td>#}
+{##}
+{#                <td ><a href="/project_task_list/{{ project.id }}"> {% if  project.color == "red"%}<span class="text-danger">{{project.name}}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.name}}{%  else %}<span class="text-success">{{project.name}}</span> {%  endif %}</a></td>#}
+{#                <td >{{project.end_date}}</td>#}
+{#                <td >{{project.start_date}}</td>#}
+{##}
+{#                <td >{% if  project.color == "red"%}<span class="text-danger">{{project.status}}<br> {%  if project.overdue %}-{{project.overdue}} Days{%  endif %}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.status}}</span>{%  else %}<span class="text-success">{{project.status}}</span> {%  endif %}#}
+{#                </td>#}
+{#                                    <td >{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>#}
+{##}
+{#                <td >{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>#}
+{##}
+{##}
+{##}
+{#                    <td >{%  if project.past_date_two_week == "0/0" %}{{project.past_date_two_week}}{%  else %}<a href="/task_bifurcate/{{ project.id }}/?task=past_two">{{project.past_date_two_week}}</a>{%  endif %}</td>#}
+{#                    <td >{%  if project.past_date_one_week == "0/0" %}{{project.past_date_one_week}}{%  else %} <a href="/task_bifurcate/{{ project.id }}/?task=past_one">{{project.past_date_one_week}}</a>{%  endif %}</td>#}
+{##}
+{#                <td >{%  if project.current_task == "0/0" %}{{project.current_task}}  {%  else %}<a href="/task_bifurcate/{{ project.id }}/?task=present"> {{project.current_task}}  </a>{%  endif %}</td>#}
+{#                    <td > {%  if project.future_date_one_week == "0/0" %}{{project.future_date_one_week}}{%  else %}<a href="/task_bifurcate/{{ project.id }}/?task=future">{{project.future_date_one_week}}</a>{%  endif %}</td>#}
+{##}
+{#                    <td style="text-align: center" >#}
+{#                    {%  if project.percent >= 85.0 %}    <i class="fas fa-square" style="color: green;font-size: 30px;"></i>#}
+{#                    {%  elif 75.0 <= project.percent and project.percent < 85.0 %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>#}
+{#                    {%  else %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>#}
+{#                    {%  endif %}#}
+{#                </td>#}
+{#            </tr>{%  endfor %}#}
+{#        {%  else %}<tr><td colspan="12">No Data found</td></tr>{%  endif %}#}
+{#        </tbody>#}
+{#    </table>#}
+{#</div>#}
+<input type="text" value="{{ name }}" id="name" style="display: none">
+
+<script>
+
+var name = $("#name").val();
+var chartData =  [] ;
+     $.ajax({
+         type: "GET",
+         url: "/client_tasks/" + name + "/",
+         data: {},
+         success: function (resp) {
+             var data = JSON.parse(resp);
+             chartData.push({"Name": "Closed", "Value": data.task_closed});
+             chartData.push({"Name": "Open", "Value": data.task_open});
+             chartData.push({"Name": "In Progress", "Value": data.task_inprogress, "color": "Yellow"});
+             var chart = new AmCharts.AmPieChart();
+        chart.valueField = "Value";
+        chart.titleField = "Name";
+        chart.dataProvider = chartData;
+        chart.pieAlpha = 0.9;
+        chart.outlineAlpha = 1;
+        chart.outlineThickness = 1;
+        chart.labelsEnabled = false;
+
+
+
+        chart.write("chartdiv");
+         },
+         error: function () {
+             alert("error");
+         }
+     });
+
+
+
+
+</script>
+</body>
+</html>

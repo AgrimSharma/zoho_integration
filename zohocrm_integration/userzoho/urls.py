@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^open_milestone/(?P<project_id>\w+)', open_milestone),
     url(r'^close_milestone/(?P<project_id>\w+)', close_milestone),
     url(r'^mile_stone_task/(?P<milestone>\w+)', mile_stone_tasks),
+    url(r'^client_tasks/(?P<name>\w+)', client_tasks),
     url(r'^project_list/', project_list),
 
     # URL for auth request
@@ -53,6 +54,7 @@ urlpatterns = [
     url(r'^sub_tasks/(?P<task_id>\w+)', sub_tasks, name='sub_tasks'),
     url(r'^task_bifurcate/(?P<project_id>\w+)', task_bifurcate, name='task_bifurcate'),
     url(r'^project/task/time_sheet/(?P<task_id>\w+)', project_task_time_sheet, name='project_task_time_sheet'),
+    url(r'^project_filter/', project_filter, name='project_filter'),
     url(r'^status_check/', intermediate, name="intermediate"),
     url(r'^', home),
 

@@ -12,8 +12,8 @@ from django.utils.html import strip_tags
 
 
 def all_projects(user):
-
-    url = "https://projectsapi.zoho.com/restapi/portal/{}/projects/".format(settings.PORTAL_ID)
+    url = "https://projectsapi.zoho.com/restapi/portal/{}/projects/".format(
+        settings.PORTAL_ID)
     token = Tokens.objects.latest("id")
     access_token = token.access_token
     headers = {
@@ -30,9 +30,9 @@ def all_projects(user):
                 pro = Projects.objects.get(user=user, project_id=p['id'])
             except Exception:
                 pro = Projects.objects.create(user=user,
-                    project_id=p.get('id', ""),
-                    name=p.get('name', ""))
-            pro = Projects.objects.get(user=user,project_id=p['id'])
+                                              project_id=p.get('id', ""),
+                                              name=p.get('name', ""))
+            pro = Projects.objects.get(user=user, project_id=p['id'])
             try:
                 start_time = p.get('start_date', "")
             except Exception:
@@ -90,13 +90,15 @@ def all_projects(user):
 
 def project_detail_view(project_id):
     pro = Projects.objects.get(id=project_id)
-    current_task, future_date_one_week, past_date_one_week, past_date_two_week=project_task_list_week(project_id)
-    task_open = pro.tasks_set.filter(status__in=['Open', 'In Progress']).count()
+    current_task, future_date_one_week, past_date_one_week, past_date_two_week = project_task_list_week(
+        project_id)
+    task_open = pro.tasks_set.filter(
+        status__in=['Open', 'In Progress']).count()
     task_close = pro.tasks_set.filter(status="Closed").count()
     milestone_close = pro.milestone_set.filter(status="notcompleted").count()
     milestone_open = pro.tasks_set.filter(status="completed").count()
     try:
-        percent = task_close/ (task_open + task_close)
+        percent = task_close / (task_open + task_close)
     except Exception:
         percent = 0
     data = dict(name=pro.name,
@@ -121,41 +123,51 @@ def project_detail_view(project_id):
 
 
 def project_list_view(name, status, csm):
-    if csm == "all" :
+    if csm == "all":
         if status == "all":
             projects = Projects.objects.filter(name__icontains=name)
         elif status == 'open':
-            projects = Projects.objects.filter(name__icontains=name, status__in=['active', 'Active'])
+            projects = Projects.objects.filter(name__icontains=name,
+                                               status__in=['active', 'Active'])
         else:
-            projects = Projects.objects.filter(name__icontains=name, status__in=['Closed', 'closed'])
+            projects = Projects.objects.filter(name__icontains=name,
+                                               status__in=['Closed', 'closed'])
     else:
         if status == "all":
-            projects = Projects.objects.filter(name__icontains=name, owner_name=csm)
+            projects = Projects.objects.filter(name__icontains=name,
+                                               owner_name=csm)
         elif status == 'open':
             projects = Projects.objects.filter(name__icontains=name,
-                                               status__in=['active', 'Active'], owner_name=csm)
+                                               status__in=['active', 'Active'],
+                                               owner_name=csm)
         else:
             projects = Projects.objects.filter(name__icontains=name,
-                                               status__in=['Closed', 'closed'], owner_name=csm)
+                                               status__in=['Closed', 'closed'],
+                                               owner_name=csm)
     response = []
     for pro in projects:
-        taks_open = pro.tasks_set.filter(status__in=['Open', 'In Progress', 'open', 'in progress'])
+        taks_open = pro.tasks_set.filter(
+            status__in=['Open', 'In Progress', 'open', 'in progress'])
         tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])
         total = len(taks_open) + len(tasks_close)
-        current_task, future_date_one_week, past_date_one_week, past_date_two_week = task_list_week_project(pro.id)
+        current_task, future_date_one_week, past_date_one_week, past_date_two_week = task_list_week_project(
+            pro.id)
         try:
             percent = len(tasks_close) / total
         except Exception:
             percent = 0
         today = datetime.datetime.now().date()
-        if pro.status in ["Active",'active'] and pro.end_date_format and pro.end_date_format < today:
+        if pro.status in ["Active",
+                          'active'] and pro.end_date_format and pro.end_date_format < today:
             color = "red"
-        elif pro.status in ["Active",'active'] and pro.end_date_format == None:
+        elif pro.status in ["Active",
+                            'active'] and pro.end_date_format == None:
             color = "red"
-        elif pro.status in ["closed",'Closed'] and pro.end_date_format == None:
+        elif pro.status in ["closed",
+                            'Closed'] and pro.end_date_format == None:
             color = "red"
         else:
-            color='green'
+            color = 'green'
         try:
             datetime.datetime.strftime(pro.end_date_format, "%Y-%m-%d")
             if pro.end_date_format < today and pro.status == 'active':
@@ -167,11 +179,18 @@ def project_list_view(name, status, csm):
             over_due = None
         milestone_closed = pro.milestone_set.filter(status='notcompleted')
         milestone_open = pro.milestone_set.filter(status='completed')
+        try:
+            names = pro.owner_name
+            name_data = [n.capitalize() for n in names.split(".")]
+            name_list = " ".join(name_data)
+        except Exception:
+            name_list = ""
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
                     task_count_open=len(taks_open) + len(tasks_close),
-                    milestone_count_open=len(milestone_closed) + len(milestone_open),
+                    milestone_count_open=len(milestone_closed) + len(
+                        milestone_open),
                     task_count_close=len(tasks_close),
                     milestone_count_close=len(milestone_closed),
                     start_date=pro.start_date_format,
@@ -184,7 +203,7 @@ def project_list_view(name, status, csm):
                     past_date_two_week=past_date_two_week,
                     percent=round(percent, 2) * 100,
                     color=color,
-                    csm=pro.owner_name,
+                    csm=name_list,
                     overdue=over_due.days if over_due else None
                     )
         response.append(data)
@@ -195,46 +214,68 @@ def project_list_view_color(name, csm, color):
     today = datetime.datetime.now().date()
     if color == 'red':
         if csm == "all":
-            query = Q(name__icontains=name, status__in=['active', 'Active'], end_date_format__lte=today) | Q(name__icontains=name, status__in=['active', 'Active', 'Closed', 'closed'], end_date_format=None)
+            query = Q(name__icontains=name, status__in=['active', 'Active'],
+                      end_date_format__lte=today) | Q(name__icontains=name,
+                                                      status__in=['active',
+                                                                  'Active',
+                                                                  'Closed',
+                                                                  'closed'],
+                                                      end_date_format=None)
             projects = Projects.objects.filter(query)
         else:
-            query = Q(name__icontains=name,status__in=['active', 'Active'], owner_name=csm, end_date_format__lte=today) | Q(name__icontains=name,status__in=['active', 'Active', 'Closed', 'closed'], owner_name=csm, end_date_format=None)
+            query = Q(name__icontains=name, status__in=['active', 'Active'],
+                      owner_name=csm, end_date_format__lte=today) | Q(
+                name__icontains=name,
+                status__in=['active', 'Active', 'Closed', 'closed'],
+                owner_name=csm, end_date_format=None)
             projects = Projects.objects.filter(query)
     elif color == 'green':
         if csm == "all":
-            query = Q(name__icontains=name, status__in=['Closed', 'closed']) |  Q(name__icontains=name, status__in=['active', 'Active'], end_date_format__gte=today)
+            query = Q(name__icontains=name,
+                      status__in=['Closed', 'closed']) | Q(
+                name__icontains=name, status__in=['active', 'Active'],
+                end_date_format__gte=today)
 
-            projects = Projects.objects.filter(query).exclude(end_date_format=None)
+            projects = Projects.objects.filter(query).exclude(
+                end_date_format=None)
         else:
-            query = Q(name__icontains=name,status__in=['Closed', 'closed'],owner_name=csm)
+            query = Q(name__icontains=name, status__in=['Closed', 'closed'],
+                      owner_name=csm)
 
             projects = Projects.objects.filter(query)
     else:
         week = today + datetime.timedelta(days=7)
-        if csm == "all" :
-            query = Q(name__icontains=name, status__in=['active', 'Active'], end_date_format__gte=today,end_date_format__lte=week)
+        if csm == "all":
+            query = Q(name__icontains=name, status__in=['active', 'Active'],
+                      end_date_format__gte=today, end_date_format__lte=week)
 
             projects = Projects.objects.filter(query)
         else:
-            query = Q(name__icontains=name,status__in=['active','Active'],owner_name=csm,end_date_format__gte=today,end_date_format__lte=week)
+            query = Q(name__icontains=name, status__in=['active', 'Active'],
+                      owner_name=csm, end_date_format__gte=today,
+                      end_date_format__lte=week)
             projects = Projects.objects.filter(query)
     response = []
     for pro in projects:
-        taks_open = pro.tasks_set.filter(status__in=['Open', 'In Progress', 'open', 'in progress'])
+        taks_open = pro.tasks_set.filter(
+            status__in=['Open', 'In Progress', 'open', 'in progress'])
         tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])
         total = len(taks_open) + len(tasks_close)
-        current_task, future_date_one_week, past_date_one_week, past_date_two_week = task_list_week_project(pro.id)
+        current_task, future_date_one_week, past_date_one_week, past_date_two_week = task_list_week_project(
+            pro.id)
         try:
             percent = len(tasks_close) / total
         except Exception:
             percent = 0
         today = datetime.datetime.now().date()
-        if pro.status in ["Active",'active'] and pro.end_date_format and pro.end_date_format < today:
+        if pro.status in ["Active",
+                          'active'] and pro.end_date_format and pro.end_date_format < today:
             color = "red"
-        elif pro.status in ["Active",'active'] and pro.end_date_format == None:
+        elif pro.status in ["Active",
+                            'active'] and pro.end_date_format == None:
             color = "red"
         else:
-            color='green'
+            color = 'green'
         try:
             datetime.datetime.strftime(pro.end_date_format, "%Y-%m-%d")
             if pro.end_date_format < today and pro.status == 'active':
@@ -245,13 +286,20 @@ def project_list_view_color(name, csm, color):
         except Exception:
             over_due = None
             color = "red"
+        try:
+            names = pro.owner_name
+            name_data = [n.capitalize() for n in names.split(".")]
+            name_list = " ".join(name_data)
+        except Exception:
+            name_list = ""
         milestone_closed = pro.milestone_set.filter(status='notcompleted')
         milestone_open = pro.milestone_set.filter(status='completed')
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
                     task_count_open=len(taks_open) + len(tasks_close),
-                    milestone_count_open=len(milestone_closed) + len(milestone_open),
+                    milestone_count_open=len(milestone_closed) + len(
+                        milestone_open),
                     task_count_close=len(tasks_close),
                     milestone_count_close=len(milestone_closed),
                     start_date=pro.start_date_format,
@@ -264,8 +312,365 @@ def project_list_view_color(name, csm, color):
                     past_date_two_week=past_date_two_week,
                     percent=round(percent, 2) * 100,
                     color=color,
-                    csm=pro.owner_name,
+                    csm=name_list,
                     overdue=over_due.days if over_due else None
+                    )
+        response.append(data)
+    return response
+
+
+def task_ux(project):
+    query_open = Q(project=project,task_name__icontains='Creative',
+                      status__in=["Open", "open",
+                    "In Progress",
+                    'in progress']) or Q(project=project,
+                                         task_name__icontains='creative',
+                                         status__in=["Open", "open",
+                                                     "In Progress",
+                                                     'in progress',
+                                                     "In progress"]) or Q(project=project,
+        task_name__icontains='creatives',
+        status__in=["Open", "open",
+                    "In Progress",
+                    'in progress',
+                    "In progress"]) or Q(project=project,
+                                         task_name__icontains='creatives',
+                                         status__in=["Open", "open",
+                                                     "In Progress",
+                                                     'in progress',
+                                                     "In progress"])
+    query_closed =  Q(
+        project=project,
+        task_name__icontains='Creative',
+        status__in=["Open", "open",
+                    "In Progress",
+                    'in progress',
+                    "In progress"]) or Q(project=project,
+                                         task_name__icontains='creative',
+                                         status__in=["Open", "open",
+                                                     "In Progress",
+                                                     'in progress',
+                                                     "In progress"]) or Q(
+        project=project,
+        task_name__icontains='Creatives',
+        status__in=["Open", "open",
+                    "In Progress",
+                    'in progress',
+                    "In progress"]) or Q(project=project,
+                                         task_name__icontains='creatives',
+                                         status__in=["Open", "open",
+                                                     "In Progress",
+                                                     'in progress',
+                                                     "In progress"])
+    tasks_open = Tasks.objects.filter(query_open).count()
+    tasks_closed = Tasks.objects.filter(query_closed).count()
+    print tasks_open, tasks_closed, project.name
+    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+
+
+def task_ui(project):
+    query_open = Q(project=project, task_name__icontains='ui',
+                   status__in=["Open", "open", "In Progress", 'in progress',
+                               "In progress"]) or Q(project=project,
+                                                    task_name__icontains='UI',
+                                                    status__in=["Open", "open",
+                                                                "In Progress",
+                                                                'in progress',
+                                                                "In progress"])
+    query_closed = Q(project=project, task_name__icontains='UI',
+                     status__in=["Closed", "closed"]) or Q(project=project,
+                                                           task_name__icontains='ui',
+                                                           status__in=[
+                                                               "Closed",
+                                                               "closed"])
+    tasks_open = Tasks.objects.filter(query_open).count()
+    tasks_closed = Tasks.objects.filter(query_closed).count()
+    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+
+
+def task_html(project):
+    query_open = Q(project=project, task_name__icontains='HTML',
+                   status__in=["Open", "open", "In Progress", 'in progress',
+                               "In progress"]) or Q(project=project,
+                                                    task_name__icontains='html',
+                                                    status__in=["Open", "open",
+                                                                "In Progress",
+                                                                'in progress',
+                                                                "In progress"])
+    query_closed = Q(project=project, task_name__icontains='HTML',
+                     status__in=["Closed", "closed"]) or Q(project=project,
+                                                           task_name__icontains='html',
+                                                           status__in=[
+                                                               "Closed",
+                                                               "closed"])
+    tasks_open = Tasks.objects.filter(query_open).count()
+    tasks_closed = Tasks.objects.filter(query_closed).count()
+    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+
+
+def task_api(project):
+    query_open = Q(project=project, task_name__icontains='API',
+                   status__in=["Open", "open", "In Progress", 'in progress',
+                               "In progress"]) or Q(project=project,
+                                                    task_name__icontains='api',
+                                                    status__in=["Open", "open",
+                                                                "In Progress",
+                                                                'in progress',
+                                                                "In progress"])
+    query_closed = Q(project=project, task_name__icontains='API',
+                     status__in=["Closed", "closed"]) or Q(project=project,
+                                                           task_name__icontains='api',
+                                                           status__in=[
+                                                               "Closed",
+                                                               "closed"])
+    tasks_open = Tasks.objects.filter(query_open).count()
+    tasks_closed = Tasks.objects.filter(query_closed).count()
+    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+
+
+def task_bee(project):
+    query_open = Q(project=project, task_name__icontains='backend',
+                   status__in=["Open", "open", "In Progress", 'in progress',
+                               "In progress"]) or Q(project=project,
+                                                    task_name__icontains='Backend',
+                                                    status__in=["Open", "open",
+                                                                "In Progress",
+                                                                'in progress',])
+    query_re = Q(project=project, task_name__icontains='Redeployment',
+                   status__in=["Open", "open", "In Progress", 'in progress',
+                               "In progress"]) or Q(project=project,
+                                                    task_name__icontains='redeployment',
+                                                    status__in=["Open", "open",
+                                                                "In Progress",
+                                                                'in progress',])
+    query_bug = Q(project=project, task_name__icontains='Bug',
+                   status__in=["Open", "open", "In Progress", 'in progress',
+                               "In progress"]) or Q(project=project,
+                                                    task_name__icontains='bug',
+                                                    status__in=["Open", "open",
+                                                                "In Progress",
+                                                                'in progress',])
+    query_closed = Q(project=project, task_name__icontains='backend',
+                     status__in=["Closed", "closed"]) or Q(project=project,
+                                                           task_name__icontains='Backend',
+                                                           status__in=[
+                                                               "Closed",
+                                                               "closed"])
+    query_closed_re = Q(project=project, task_name__icontains='Redeployment',
+                                                                              status__in=[
+                                                                                  "Closed",
+                                                                                  "closed"]) or Q(project=project,
+                                                    task_name__icontains='redeployment',
+                                                    status__in=[
+                                                        "Closed",
+                                                        "closed"])
+    query_closed_bug = Q(project=project, task_name__icontains='Bug',
+                                                                        status__in=[
+                                                                            "Closed",
+                                                                            "closed"]) or Q(project=project,
+                                                    task_name__icontains='bug',
+                                                    status__in=[
+                                                        "Closed",
+                                                        "closed"])
+
+    tasks_open = Tasks.objects.filter(query_open).count()
+    tasks_open_re = Tasks.objects.filter(query_re).count()
+    tasks_open_bug = Tasks.objects.filter(query_bug).count()
+    tasks_closed = Tasks.objects.filter(query_closed).count()
+    tasks_closed_re = Tasks.objects.filter(query_closed_re).count()
+    tasks_closed_bug = Tasks.objects.filter(query_closed_bug).count()
+    tasks_closed = tasks_closed+ tasks_closed_re + tasks_closed_bug
+    tasks_open = tasks_open + tasks_open_re + tasks_open_bug
+    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+
+
+def task_qc(project):
+    query_open = Q(project=project, task_name__icontains='qc',
+                   status__in=["Open", "open", "In Progress", 'in progress',
+                               "In progress"]) or Q(project=project,
+                                                    task_name__icontains='QC',
+                                                    status__in=["Open", "open",
+                                                                "In Progress",
+                                                                'in progress',
+                                                                "In progress"])
+    query_closed = Q(project=project, task_name__icontains='qc',
+                     status__in=["Closed", "closed"]) or Q(project=project,
+                                                           task_name__icontains='QC',
+                                                           status__in=[
+                                                               "Closed",
+                                                               "closed"])
+    tasks_open = Tasks.objects.filter(query_open).count()
+    tasks_closed = Tasks.objects.filter(query_closed).count()
+    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+
+
+def task_uat(project):
+    query_open = Q(project=project, task_name__icontains='testing',
+                   status__in=["Open", "open", "In Progress", 'in progress',
+                               "In progress"]) or Q(project=project,
+                                                    task_name__icontains='Testing',
+                                                    status__in=["Open", "open",
+                                                                "In Progress",
+                                                                'in progress',
+                                                                "In progress"])
+    query_closed = Q(project=project, task_name__icontains='testing',
+                     status__in=["Closed", "closed"]) or Q(project=project,
+                                                           task_name__icontains='Testing',
+                                                           status__in=[
+                                                               "Closed",
+                                                               "closed"])
+    tasks_open = Tasks.objects.filter(query_open).count()
+    tasks_closed = Tasks.objects.filter(query_closed).count()
+    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+
+
+def parse_project_data(csm):
+    if csm == "all":
+        projects = Projects.objects.all()
+    else:
+        projects = Projects.objects.filter(owner_name__icontains=csm)
+    response = []
+    for pro in projects:
+        taks_open = pro.tasks_set.filter(
+            status__in=['Open', 'In Progress', 'open', 'in progress'])
+        tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])
+        total = len(taks_open) + len(tasks_close)
+        try:
+            percent = len(tasks_close) / total
+        except Exception:
+            percent = 0
+        today = datetime.datetime.now().date()
+        if pro.status in ["Active",
+                          'active'] and pro.end_date_format and pro.end_date_format < today:
+            color = "red"
+        elif pro.status in ["Active",
+                            'active'] and pro.end_date_format == None:
+            color = "red"
+        elif pro.status in ["closed",
+                            'Closed'] and pro.end_date_format == None:
+            color = "red"
+        else:
+            color = 'green'
+        try:
+            datetime.datetime.strftime(pro.end_date_format, "%Y-%m-%d")
+            if pro.end_date_format < today and pro.status == 'active':
+                color = 'red'
+            else:
+                color = 'green'
+            over_due = datetime.datetime.now().date() - pro.end_date_format
+        except Exception:
+            over_due = None
+        milestone_closed = pro.milestone_set.filter(status='notcompleted')
+        milestone_open = pro.milestone_set.filter(status='completed')
+        try:
+            names = pro.owner_name
+            name_data1 = [n[0].capitalize() for n in names.split(".")]
+            name_data2 = [n[0].capitalize() for n in names.split(" ")]
+            if len(name_data1) > 1:
+                name_list = "".join(name_data1)
+            else:
+                name_list = "".join(name_data2)
+
+        except Exception:
+            name_list = ""
+        data = dict(name=pro.name,
+                    id=pro.id,
+                    end_date=pro.end_date_format,
+                    task_count_open=len(taks_open) + len(tasks_close),
+                    milestone_count_open=len(milestone_closed) + len(
+                        milestone_open),
+                    task_count_close=len(tasks_close),
+                    milestone_count_close=len(milestone_closed),
+                    start_date=pro.start_date_format,
+                    status=pro.status.capitalize(),
+                    created_date=pro.created_date_format,
+                    project_id=pro.project_id,
+                    percent=round(percent, 2) * 100,
+                    color=color,
+                    csm=name_list,
+                    overdue=over_due.days if over_due else None,
+                    task_api=task_api(pro),
+                    task_html=task_html(pro),
+                    task_uat=task_uat(pro),
+                    task_bee=task_bee(pro),
+                    task_ux=task_ux(pro),
+                    task_ui=task_ui(pro),
+                    task_qc=task_qc(pro),
+                    )
+        response.append(data)
+    return response
+
+
+def parse_project_data_project(project_name):
+
+    projects = Projects.objects.filter(name__icontains=project_name)
+    response = []
+    for pro in projects:
+        taks_open = pro.tasks_set.filter(
+            status__in=['Open', 'In Progress', 'open', 'in progress'])
+        tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])
+        total = len(taks_open) + len(tasks_close)
+        try:
+            percent = len(tasks_close) / total
+        except Exception:
+            percent = 0
+        today = datetime.datetime.now().date()
+        if pro.status in ["Active",
+                          'active'] and pro.end_date_format and pro.end_date_format < today:
+            color = "red"
+        elif pro.status in ["Active",
+                            'active'] and pro.end_date_format == None:
+            color = "red"
+        elif pro.status in ["closed",
+                            'Closed'] and pro.end_date_format == None:
+            color = "red"
+        else:
+            color = 'green'
+        try:
+            datetime.datetime.strftime(pro.end_date_format, "%Y-%m-%d")
+            if pro.end_date_format < today and pro.status == 'active':
+                color = 'red'
+            else:
+                color = 'green'
+            over_due = datetime.datetime.now().date() - pro.end_date_format
+        except Exception:
+            over_due = None
+        milestone_closed = pro.milestone_set.filter(status='notcompleted')
+        milestone_open = pro.milestone_set.filter(status='completed')
+        try:
+            names = pro.owner_name
+            name_data1 = [n[0].capitalize() for n in names.split(".")]
+            name_data2 = [n[0].capitalize() for n in names.split(" ")]
+            if len(name_data1) > 1:
+                name_list = "".join(name_data1)
+            else:
+                name_list = "".join(name_data2)
+
+        except Exception:
+            name_list = ""
+        data = dict(name=pro.name,
+                    id=pro.id,
+                    end_date=pro.end_date_format,
+                    task_count_open=len(taks_open) + len(tasks_close),
+                    milestone_count_open=len(milestone_closed) + len(
+                        milestone_open),
+                    task_count_close=len(tasks_close),
+                    milestone_count_close=len(milestone_closed),
+                    start_date=pro.start_date_format,
+                    status=pro.status.capitalize(),
+                    created_date=pro.created_date_format,
+                    project_id=pro.project_id,
+                    percent=round(percent, 2) * 100,
+                    color=color,
+                    csm=name_list,
+                    overdue=over_due.days if over_due else None,
+                    task_api=task_api(pro),
+                    task_html=task_html(pro),
+                    task_uat=task_uat(pro),
+                    task_bee=task_bee(pro),
+                    task_ux=task_ux(pro),
+                    task_ui=task_ui(pro),
+                    task_qc=task_qc(pro),
                     )
         response.append(data)
     return response
