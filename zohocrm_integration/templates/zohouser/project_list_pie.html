@@ -142,17 +142,17 @@
             <div class="col-lg-8">
               <ul class="projectwise_health_list m-0 p-0">
                 <li class="overdue">
-                  <span></span>
+                  <span style="background-color: #FF6600"></span>
                   <label class="lbl_val">Overdue {{ task_open }}</label>
                   <label class="lbl_txt"> >25% lag on delivery date</label>
                 </li>
                 <li class="pending">
-                  <span></span>
+                  <span style="background-color: #FF9E01"></span>
                   <label class="lbl_val">Pending {{ task_inprogress }}</label>
                   <label class="lbl_txt">Approval pending from client</label>
                 </li>
                 <li class="ontrack">
-                  <span></span>
+                  <span style="background-color: #FF0F00"></span>
                   <label class="lbl_val">Closed {{ task_closed }}</label>
                   <label class="lbl_txt">Delevires on track</label>
                 </li>
@@ -372,9 +372,10 @@ var chartData =  [] ;
          data: {},
          success: function (resp) {
              var data = JSON.parse(resp);
+             chartData.push({"Name": "Over Due", "Value": data.task_open});
+                          chartData.push({"Name": "Progress", "Value": data.task_inprogress, "color": "Yellow"});
+
              chartData.push({"Name": "Closed", "Value": data.task_closed});
-             chartData.push({"Name": "Open", "Value": data.task_open});
-             chartData.push({"Name": "In Progress", "Value": data.task_inprogress, "color": "Yellow"});
              var chart = new AmCharts.AmPieChart();
         chart.valueField = "Value";
         chart.titleField = "Name";
