@@ -176,7 +176,6 @@ def projects(request):
                 health = closed_task / (open_task + closed_task + progress_task)
             except Exception:
                 health = 0
-            print p.name, health
             if p.name not in pname:
                 pname.append(p.name)
                 response.append(dict(
@@ -205,19 +204,19 @@ def projects_grantt(request):
     try:
         # user = User.objects.get(username=user.username)
         if "hdfc" in user.username:
-            print 1
+
             project = Projects.objects.filter(name__icontains='hdfc', start_date_format__year__gte=
                                                datetime.datetime.now().year - 1).order_by(
                 "name")
         elif "indusind" in user.username:
-            print 2
+
 
             project = Projects.objects.filter(name__icontains='indusind',
                                               start_date_format__year__gte=
                                               datetime.datetime.now().year - 1).order_by(
                 "name")
         else:
-            print 3
+
             project = user.projects_set.filter(start_date_format__year__gte=
                                           datetime.datetime.now().year - 1).order_by("name")
         response = []
@@ -286,7 +285,6 @@ def projects_grantt(request):
                                      status=p.status,
                                      percent=round(percent * 100, 2),
                                      tasks=task_data))
-        print response
         return HttpResponse(json.dumps(dict(data=response)))
     except Exception:
         return redirect("/")
@@ -296,7 +294,6 @@ def project_detail(request, project_id):
     user = request.user
     if user.is_authenticated():
         project = project_detail_view(project_id)
-        print project
         return render(request, "zohouser/project_detail.html", {"project": project})
     else:
         return redirect("/")
@@ -896,7 +893,6 @@ def resource_utilization(request):
         time_users = user.timesheet_set.all().values_list("owner_name")
         user_set = [str(user[0]) for user in set(time_users)]
         week_days = []
-        print days_left
         for d in range(5):
             if d == 0:
                 days = datetime.datetime.strftime(week_start, "%b %d")
@@ -1130,7 +1126,6 @@ def task_weekly(request):
     user = request.user
     if user.is_authenticated():
         name = request.GET.get("name")
-        name = request.GET.get("name")
         date_today = datetime.datetime.now().date()
         week_day = date_today.weekday()
         begin_date = datetime.datetime.now().date() - datetime.timedelta(
@@ -1146,6 +1141,87 @@ def task_weekly(request):
     else:
         return redirect("/")
 
+
+def project_list_color(request):
+    user = request.user
+    if user.is_authenticated():
+        today = datetime.datetime.now().date()
+        color = request.GET.get('color')
+        csm_data = Projects.objects.all().values_list("owner_name")
+
+        csm_list = []
+        for c in csm_data:
+            names = str(c[0])
+            if names not in csm_data:
+                csm_list.append(names)
+        project = parse_project_data_color()
+
+        sorted(list(set(csm_list)))
+        total_projects = len(project)
+        red_project = []
+        yellow_project = []
+        green_project = []
+        for pro in project:
+            print pro['name'], pro['color']
+            percent = pro['color']
+            if percent == "green":
+                green_project.append(pro)
+            elif percent == "red":
+                red_project.append(pro)
+            else:
+                yellow_project.append(pro)
+        print len(red_project), len(yellow_project), len(green_project)
+        if color == "red":
+            return render(request, "zohouser/filter_new.html",
+                      {"projects": red_project,
+                       "csm": list(set(csm_list)),
+                       "date": today,
+                       "user_name": user.email,
+                       "total_projects": total_projects,
+                       "color": color
+
+                       })
+        elif color == "yellow":
+            return render(request, "zohouser/filter_new.html",
+                          {"projects": yellow_project,
+                           "csm": list(set(csm_list)),
+                           "date": today,
+                           "user_name": user.email,
+                           "total_projects": total_projects,
+                           "color": color
+
+                           })
+        else:
+            return render(request, "zohouser/filter_new.html",
+                      {"projects": green_project,
+                       "csm": list(set(csm_list)),
+                       "date": today,
+                       "user_name": user.email,
+                       "total_projects": total_projects,
+                       "color": color
+
+                       })
+
+    else:
+        return redirect("/")
+
+
+# def csm_data(request):
+#     user =request.user
+#     if user.is_authenticated():
+#         csm_data = Projects.objects.all().values_list("owner_name")
+#         csm_list = []
+#         for c in csm_data:
+#             names = str(c[0])
+#             if names not in csm_data:
+#                 csm_list.append(names)
+#         response = []
+#         for c in csm_list:
+#             project_closed = Projects.objects.filter(owner_name=c, status__in=['closed', 'Closed'])
+#             project_open = Projects.objects.filter(owner_name=c, status__in=['Active', 'active'])
+#
+#     else:
+#         return redirect("/")
 
 def home(request):
     user = request.user

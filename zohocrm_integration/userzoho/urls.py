@@ -57,6 +57,7 @@ urlpatterns = [
     url(r'^client_tasks_week/', task_weekly, name='task_weekly'),
     url(r'^project_filter/', project_filter, name='project_filter'),
     url(r'^status_check/', intermediate, name="intermediate"),
+    url(r'^project_list_color/', project_list_color, name="project_list_color"),
     url(r'^', home),
 
 ]

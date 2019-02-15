@@ -162,7 +162,7 @@ def project_all_milestone(project_id):
         user = ""
         for t in tasks:
             user_list = t.zohousers_set.all()
-            user = ",".join(list(set([u.username for u in user_list])))
+            user = ",".join(list(set([str(u.username) for u in user_list])))
         response.append(dict(
             project=project.name,
             owner_name=m.owner_name,
@@ -172,6 +172,7 @@ def project_all_milestone(project_id):
             end_date=m.end_date,
             sequence=m.sequence,
             flag=m.flag,
-            users=user
+            users=user,
+            id=m.id
         ))
     return response
