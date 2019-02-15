@@ -10,6 +10,8 @@ from milestone import *
 from time_sheet import *
 from django.contrib.auth.models import User
 from task_list import all_project_task_list
+from task_wise_list import *
+
 utc=pytz.UTC
 
 scope = "ZohoProjects.portals.READ,ZohoProjects.projects.READ,ZohoProjects.tasklists.READ," \
@@ -1222,6 +1224,83 @@ def project_list_color(request):
 #
 #     else:
 #         return redirect("/")
+
+
+def project_ux(request, project_id):
+    user = request.user
+    if user.is_authenticated():
+        project = Projects.objects.get(id=project_id)
+        ux_task = task_ux(project)
+        return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,"task_type": "UX"})
+    else:
+        return redirect("/")
+
+
+def project_ui(request, project_id):
+    user = request.user
+    if user.is_authenticated():
+        project = Projects.objects.get(id=project_id)
+        ux_task = task_ui(project)
+        return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,
+                                                                "task_type": "UI"})
+    else:
+        return redirect("/")
+
+
+def project_html(request, project_id):
+    user = request.user
+    if user.is_authenticated():
+        project = Projects.objects.get(id=project_id)
+        ux_task = task_html(project)
+        return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,
+                                                                "task_type": "HTML"})
+    else:
+        return redirect("/")
+
+
+def project_api(request, project_id):
+    user = request.user
+    if user.is_authenticated():
+        project = Projects.objects.get(id=project_id)
+        ux_task = task_api(project)
+        return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,
+                                                                "task_type": "API"})
+    else:
+        return redirect("/")
+
+
+def project_bee(request, project_id):
+    user = request.user
+    if user.is_authenticated():
+        project = Projects.objects.get(id=project_id)
+        ux_task = task_bee(project)
+        return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,
+                                                                "task_type": "BEE"})
+    else:
+        return redirect("/")
+
+
+def project_qc(request, project_id):
+    user = request.user
+    if user.is_authenticated():
+        project = Projects.objects.get(id=project_id)
+        ux_task = task_qc(project)
+        return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,
+                                                                "task_type": "QC"})
+    else:
+        return redirect("/")
+
+
+def project_uat(request, project_id):
+    user = request.user
+    if user.is_authenticated():
+        project = Projects.objects.get(id=project_id)
+        ux_task = task_uat(project)
+        return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,
+                                                                "task_type": "UAT"})
+    else:
+        return redirect("/")
+
 
 def home(request):
     user = request.user

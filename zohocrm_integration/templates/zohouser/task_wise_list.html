@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <title>Zoho</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-dark">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#" style="color: white">Projects View</a>
+    </div>
+    <ul class="nav navbar-nav pull-right" >
+        <li><a href="#" style="color: white; padding-right: 20px;">{{ user|upper }}</a></li>
+      <li><a href="/logout_user/" style="color: white">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+<div class="space" style="padding-top: 10px;"></div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/project_filter/?csm=all">Projects</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">CSMs</a>
+      </li>
+
+    </ul>
+  </div>
+</nav>
+
+<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-warning">{{ task_type }} Task</label>
+
+    <table class="table table-bordered table-sm ">
+        <thead class="thead-dark">
+            <tr>
+                <th>SNo</th>
+                <th>Description</th>
+{#                <th>Task ID</th>#}
+{#                <th>Milestone ID</th>#}
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Subtasks</th>
+                <th>Task Name</th>
+{#                <th>Timesheet</th>#}
+{#                <th>Owners</th>#}
+                <th>Created Person</th>
+                <th>Created Time</th>
+                <th>Completed</th>
+                <th>Percent Complete</th>
+                <th>Completed Time</th>
+            </tr>
+        </thead>
+        <tbody>
+             {% for t in tasks %}
+            <tr>
+                            <td>{{forloop.counter}}</td>
+
+                <td>{% if t.description == None or t.description == "" %} No Description {% else %}{{t.description}}{% endif %}</td>
+{#                <td>{{t.task_id}}</td>#}
+{#                <td>{{t.milestone_id}}</td>#}
+                <td>{{t.start_date}}</td>
+                <td>{{t.end_date}}</td>
+                <td>{% if t.status == 'Closed' %} <label class="text-success">{{t.status}}</label>
+                    {% elif t.status == 'Open' %} <label class="text-warning">{{t.status}}</label>
+                    {% else %} <label class="text-danger">{{t.status}}</label>
+                    {% endif %}
+                </td>
+                <td>{{t.subtasks}}</td>
+                <td>{{t.task_name}}</td>
+{#                <td><a href="/time_sheet/{{t.project.id}}">Timesheet</a> </td>#}
+{#                <td>{{ t.created_person }}#}
+                </td>
+                <td>{{t.created_person}}</td>
+                <td>{{t.created_time}}</td>
+                <td>{{t.completed}}</td>
+                <td>{{t.percent_complete}}</td>
+                <td>{{t.completed_time}}</td>
+
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+</div>
+
+</body>
+</html>

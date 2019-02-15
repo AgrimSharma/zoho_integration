@@ -36,6 +36,13 @@ urlpatterns = [
     # URL for auth request
     url(r'^task/(?P<project_id>\w+)', task_project),
     url(r'^milestone/(?P<project_id>\w+)', milestone_data),
+    url(r'^project_ux/(?P<project_id>\w+)', project_ux),
+    url(r'^project_ui/(?P<project_id>\w+)', project_ui),
+    url(r'^project_html/(?P<project_id>\w+)', project_html),
+    url(r'^project_api/(?P<project_id>\w+)', project_api),
+    url(r'^project_bee/(?P<project_id>\w+)', project_bee),
+    url(r'^project_qc/(?P<project_id>\w+)', project_qc),
+    url(r'^project_uat/(?P<project_id>\w+)', project_uat),
     url(r'^auth_request/', auth_request),
     url(r'^clients/', client_list,name="clients"),
     url(r'^projects/', projects, name="projects"),

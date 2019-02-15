@@ -1,6 +1,7 @@
 from __future__ import division
 
 import json
+from dateutil.relativedelta import relativedelta
 
 import requests
 from django.http import HttpResponse
@@ -9,6 +10,23 @@ from django.conf import settings
 import datetime
 from .task_list import *
 from django.utils.html import strip_tags
+
+
+def get_month_day_range(date):
+    """
+    For a date 'date' returns the start and end date for the month of 'date'.
+    Month with 31 days:
+    >>> date = datetime.date(2011, 7, 27)
+    >>> get_month_day_range(date)
+    (datetime.date(2011, 7, 1), datetime.date(2011, 7, 31))
+    Month with 28 days:
+    >>> date = datetime.date(2011, 2, 15)
+    >>> get_month_day_range(date)
+    (datetime.date(2011, 2, 1), datetime.date(2011, 2, 28))
+    """
+    last_day = date + relativedelta(day=1, months=+1, days=-1)
+    first_day = date + relativedelta(day=1)
+    return first_day, last_day
 
 
 def all_projects(user):
@@ -123,23 +141,26 @@ def project_detail_view(project_id):
 
 
 def project_list_view(name, status, csm):
+    today = datetime.datetime.now()
+    first,last = get_month_day_range(today)
+
     if csm == "all":
         if status == "all":
-            projects = Projects.objects.filter(name__icontains=name)
+            projects = Projects.objects.filter(name__icontains=name, end_date_format__range=[first, last])
         elif status == 'open':
             projects = Projects.objects.filter(name__icontains=name,
-                                               status__in=['active', 'Active'])
+                                               status__in=['active', 'Active'],end_date_format__range=[first, last])
         else:
             projects = Projects.objects.filter(name__icontains=name,
                                                status__in=['Closed', 'closed'])
     else:
         if status == "all":
             projects = Projects.objects.filter(name__icontains=name,
-                                               owner_name=csm)
+                                               owner_name=csm,end_date_format__range=[first, last])
         elif status == 'open':
             projects = Projects.objects.filter(name__icontains=name,
                                                status__in=['active', 'Active'],
-                                               owner_name=csm)
+                                               owner_name=csm,end_date_format__range=[first, last])
         else:
             projects = Projects.objects.filter(name__icontains=name,
                                                status__in=['Closed', 'closed'],
@@ -748,8 +769,8 @@ def parse_project_data_project(project_name):
 
 
 def parse_project_data_color():
-    # today = datetime.datetime.now()
-    # next_date = today + datetime.timedelta(days=7)
+    today = datetime.datetime.now()
+    next_date = today + datetime.timedelta(days=7)
     #
     # if color == 1:
     #     query = Q(end_date_format=None) or Q(end_date_format__lte=today, status__in=['active', 'Active'])

@@ -90,17 +90,17 @@
 										<div class="form-inline justify-content-center custom-checkbox d-flex filetrcheck">
 											<div class="form-check form-check-inline">
 
-													<input type="radio" id="1" name="optradio" value="red">
+													<input type="checkbox" id="1" name="optradio" value="red" >
 													<label for="1">&nbsp;</label>
 												</div>
 
 												<div class="form-check form-check-inline" >
-													<input type="radio" id="2" name="optradio" value="yellow">
+													<input type="checkbox" id="2" name="optradio" value="yellow" >
 													<label for="2">&nbsp;</label>
 												</div>
 
 												<div class="form-check form-check-inline">
-													<input type="radio" id="3" name="optradio" value="green">
+													<input type="checkbox" id="3" name="optradio" value="green" >
 													<label for="3">&nbsp;</label>
 												</div>
 										</div>
@@ -177,21 +177,21 @@
 									   <td >{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>
      <td >{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
                                     {%  if project.end_date > today or project.status == "Closed" %}
-									   <td class="lbordermain"><span class="green-text">{{ project.task_ux }}<br><font>On Track</font></span></td>
-									   <td><span class="green-text">{{ project.task_ui }}<br><font> On Track</font></span></td>
-									   <td><span class="green-text">{{ project.task_html }}<br><font> On Track</font></span></td>
-									   <td><span class="green-text">{{ project.task_api }}<br><font> On Track</font></span></td>
-									   <td><span class="green-text">{{ project.task_bee }}<br><font> On Track</font></span></td>
-									   <td><span class="green-text">{{ project.task_qc }}<br><font> On Track</font></span></td>
-									   <td><span class="green-text">{{ project.task_uat }}<br><font> On Track</font></span></td>
+									   <td class="lbordermain"><span class="green-text">{%  if project.task_ux != "0/0" %}<a href="/project_ux/{{ project.id }}"> {{ project.task_ux }}{%  else %}{{ project.task_ux }}{%  endif %}</a><br><font>On Track</font></span></td>
+									   <td><span class="green-text">{%  if project.task_ux != "0/0" %}<a href="/project_ui/{{ project.id }}"> {{ project.task_ui }}{%  else %}{{ project.task_ui }}{%  endif %}</a><br><font> On Track</font></span></td>
+									   <td><span class="green-text">{%  if project.task_html != "0/0" %}<a href="/project_html/{{ project.id }}"> {{ project.task_html }}{%  else %}{{ project.task_html }}{%  endif %}</a><br><font> On Track</font></span></td>
+									   <td><span class="green-text">{%  if project.task_api != "0/0" %}<a href="/project_api/{{ project.id }}"> {{ project.task_api }}{%  else %}{{ project.task_api }}{%  endif %}</a><br><font> On Track</font></span></td>
+									   <td><span class="green-text">{%  if project.task_bee != "0/0" %}<a href="/project_bee/{{ project.id }}"> {{ project.task_bee }}{%  else %}{{ project.task_bee }}{%  endif %}</a><br><font> On Track</font></span></td>
+									   <td><span class="green-text">{%  if project.task_bqc != "0/0" %}<a href="/project_qc/{{ project.id }}"> {{ project.task_qc }}{%  else %}{{ project.task_qc }}{%  endif %}</a><br><font> On Track</font></span></td>
+									   <td><span class="green-text">{%  if project.task_uat != "0/0" %}<a href="/project_uat/{{ project.id }}"> {{ project.task_uat }}{%  else %}{{ project.task_uat }}{%  endif %}</a><br><font> On Track</font></span></td>
                                         {%  else %}
-                                        <td class="lbordermain"><span class="red-text">{{ project.task_ux }}<br><font>Over Due</font></span></td>
-									   <td><span class="red-text">{{ project.task_ui }}<br><font> Over Due</font></span></td>
-									   <td><span class="red-text">{{ project.task_html }}<br><font> Over Due</font></span></td>
-									   <td><span class="red-text">{{ project.task_api }}<br><font> Over Due</font></span></td>
-									   <td><span class="red-text">{{ project.task_bee }}<br><font> Over Due</font></span></td>
-									   <td><span class="red-text">{{ project.task_qc }}<br><font> Over Due</font></span></td>
-									   <td><span class="red-text">{{ project.task_uat }}<br><font> Over Due</font></span></td>
+                                        <td class="lbordermain"><span class="red-text">{%  if project.task_ux != "0/0" %}<a href="/project_ux/{{ project.id }}"> {{ project.task_ux }}{%  else %}{{ project.task_ux }}{%  endif %}<br><font>Over Due</font></span></td>
+									   <td><span class="red-text">{%  if project.task_ui != "0/0" %}<a href="/project_ui/{{ project.id }}"> {{ project.task_ui }}{%  else %}{{ project.task_ui }}{%  endif %}</a><br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{%  if project.task_html != "0/0" %}<a href="/project_html/{{ project.id }}"> {{ project.task_html }}{%  else %}{{ project.task_html }}{%  endif %}</a><br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{%  if project.task_api != "0/0" %}<a href="/project_api/{{ project.id }}"> {{ project.task_api }}{%  else %}{{ project.task_api }}{%  endif %}</a><br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{%  if project.task_bee != "0/0" %}<a href="/project_bee/{{ project.id }}"> {{ project.task_bee }}{%  else %}{{ project.task_bee }}{%  endif %}</a><br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{%  if project.task_bqc != "0/0" %}<a href="/project_qc/{{ project.id }}"> {{ project.task_qc }}{%  else %}{{ project.task_qc }}{%  endif %}</a><br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{%  if project.task_uat != "0/0" %}<a href="/project_uat/{{ project.id }}"> {{ project.task_uat }}{%  else %}{{ project.task_uat }}{%  endif %}</a><br><font> Over Due</font></span></td>
                                     {%  endif %}
 									</tr>{%  endfor %}
                                  {%  else %}
@@ -225,11 +225,54 @@
             }
 
         });
-        $("input[type='radio']").click(function(){
+        $("input[type='checkbox']").click(function(){
             var radioValue = $("input[name='optradio']:checked").val();
             window.location.href = "/project_list_color/?color=" + radioValue;
 
         });
+
       </script>
+   <script>
+    $( document ).ready(function() {
+                var getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
+        };
+
+        var tech = getUrlParameter('color');
+        alert(tech);
+        if(tech === 'red'){
+            $("#1").prop('checked', true);
+            $("#2").prop('checked', false);
+            $("#3").prop('checked', false);
+
+        }
+        else if(tech === 'yellow'){
+            $("#2").prop('checked', true);
+             $("#1").prop('checked', false);
+            $("#3").prop('checked', false);
+        }
+        else if(tech === 'green'){
+            $("#3").prop('checked', true);
+             $("#1").prop('checked', false);
+            $("#2").prop('checked', false);
+        }
+        else {
+            window.location.href = "/project_filter/?csm=all";
+        }
+
+
+    });
+   </script>
    </body>
 </html>
