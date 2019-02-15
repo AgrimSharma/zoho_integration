@@ -616,6 +616,7 @@ def project_list(request):
         color = request.GET.get('color')
         csm_data = Projects.objects.all().values_list("owner_name")
         csm_list = []
+        first,last=get_month_day_range(today)
         for c in csm_data:
             names = str(c[0])
             if names not in csm_data:
@@ -628,8 +629,8 @@ def project_list(request):
         sorted(list(set(csm_list)))
         total_projects = len(project)
         if name == "hdfc":
-            active = Projects.objects.filter(name__icontains=name, status__in=['active', 'Active']).count()
-            closed = Projects.objects.filter(name__icontains=name, status__in=['Closed', 'closed']).count()
+            active = Projects.objects.filter(name__icontains=name, status__in=['active', 'Active'], end_date_format__range=[first, last]).count()
+            closed = Projects.objects.filter(name__icontains=name, status__in=['Closed', 'closed'], end_date_format__range=[first, last]).count()
             task_open = Tasks.objects.filter(project__name__icontains=name,
                                              status__in=['open',
                                                          'Open']).count()
