@@ -1,166 +1,3 @@
-{% comment %}<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
-          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-    <title>Zoho</title>
-    <style>
-        .rTable {
-            display: table;
-            width: 100%;
-        }
-
-        .rTableRow {
-            display: table-row;
-        }
-
-        .rTableHeading {
-            display: table-header-group;
-            background-color: #ddd;
-        }
-
-        .rTableCell, .rTableHead {
-            display: table-cell;
-            padding: 3px 10px;
-            border: 1px solid #999999;
-        }
-
-        .rTableHeading {
-            display: table-header-group;
-            background-color: #ddd;
-            font-weight: bold;
-        }
-
-        .rTableFoot {
-            display: table-footer-group;
-            font-weight: bold;
-            background-color: #ddd;
-        }
-
-        .rTableBody {
-            display: table-row-group;
-        }
-    </style>
-</head>
-<body>
-<nav class="navbar navbar-expand-lg bg-dark">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#" style="color: white">Projects View</a>
-    </div>
-    <ul class="nav navbar-nav pull-right" >
-        <li><a href="#" style="color: white; padding-right: 20px;">{{ user|upper }}</a></li>
-      <li><a href="/logout_user/" style="color: white">Logout</a></li>
-    </ul>
-  </div>
-</nav>
-
-<div style="padding-top: 20px">
-    <div class="col-md-12" style="text-align: center;padding-top: 20px;"><label class="text-success"> {{ project }} </label> Tasks
-        <div class="rTable">
-            <div class="rTableRow">
-                <div class="rTableHead"><strong>SNo</strong></div>
-                <div class="rTableHead"><span style="font-weight: bold;">Modules</span></div>
-                <div class="rTableHead"><span style="font-weight: bold;">UX</span></div>
-                <div class="rTableHead"><span style="font-weight: bold;">UI</span></div>
-                <div class="rTableHead"><span style="font-weight: bold;">HTML</span></div>
-                <div class="rTableHead"><span style="font-weight: bold;">API</span></div>
-                <div class="rTableHead"><span style="font-weight: bold;">BEE</span></div>
-                <div class="rTableHead"><span style="font-weight: bold;">FEE</span></div>
-                <div class="rTableHead"><span style="font-weight: bold;">QC</span></div>
-                <div class="rTableHead"><span style="font-weight: bold;">UAT</span></div>
-            </div>
-
-
-            {% for t in tasks %}
-
-                <div class="rTableRow">
-                    <div class="rTableCell">{{ forloop.counter }}</div>
-                    <div class="rTableCell" style="text-align: left;"><strong>{{ t.task_name }}</strong></div>
-                {%  if t.completed == "False" or t.completed == "false"%}
-
-                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-danger"><span style="font-weight: bold;"></span></div>
-                    {% else %}
-
-                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
-                <div class="rTableCell text-success"><span style="font-weight: bold;"></span></div>
-                {%  endif %}
-
-                </div>
-                                {%  for s in t.tasks %}
-                                    {%  if "html" in s.name %}{{ s.name|lower }}{%  endif %}
-                    {% if s.color == 'red' %}
-
-                             <div class="rTableRow text-danger">
-                                <div class="rTableCell"></div>
-                                <div class="rTableCell" style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;{{ s.name }}</div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }} <br>{%  if s.days_left > 0 %}-{{ s.days_left }} Days {%  endif %}</span></div>
-                                        </div>
-
-                    {%  elif  s.color == 'green' %}
-                             <div class="rTableRow text-success">
-                                <div class="rTableCell"></div>
-                                <div class="rTableCell" style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;{{ s.name }}</div>
-                                <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                        </div>
-                    {%  else %}
-                     <div class="rTableRow text-warning">
-                                <div class="rTableCell"></div>
-                                <div class="rTableCell" style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;{{ s.name }}</div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                 <div class="rTableCell"><span style="font-weight: bold;" >{{ s.status }}</span></div>
-                                        </div>
-                    {%  endif %}
-
-
-                                {%  endfor %}
-            {% endfor %}
-
-        </div>
-    </div>
-</div>
-
-</body>
-</html>{%  endcomment %}
-
 {%  load static %}<!doctype html>
 <html lang="en">
    <head>
@@ -191,17 +28,112 @@
 </nav>
 
       <div class="space" style="padding-top: 10px;"></div>
-    <ul class="list-inline nav" style="padding-left: 20px;">
-        <li class="list-inline-item nav-item"><a href="/project_list/?name=hdfc&status=all&csm=all" class="active nav-link"> Dash Board</a></li>
-        <li class="list-inline-item nav-item"><a href="/project_filter/?csm=all" class="nav-link" > Projects</a></li>
-        <li class="list-inline-item nav-item"><a href="/customer_managers/" class="nav-link"> CSMs</a></li>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item ">
+        <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard </a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/project_filter/?csm=all">Projects<span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">CSMs</a>
+      </li>
+
     </ul>
+  </div>
+</nav>
+{#    <ul class="list-inline nav" style="padding-left: 20px;">#}
+{#        <li class="list-inline-item nav-item"><a href="/project_list/?name=hdfc&status=all&csm=all" class="nav-link"> Dash Board</a></li>#}
+{#        <li class="list-inline-item nav-item"><a href="/project_filter/?csm=all" class="nav-link active" > Projects</a></li>#}
+{#        <li class="list-inline-item nav-item"><a href="/customer_managers/" class="nav-link"> CSMs</a></li>#}
+{#    </ul>#}
 <hr>
+
          <section class="container-fluid">
                <div class="row">
                   <div class="col-xs-12 w-100">
+                     <div class="container-fluid">
+						<div class="filterpanel">
+						<div class="row">
+							<div class="col-md-4">
+								<div class="row align-items-center">
+									<div class="col-md-4 filter-padd">FILTER BY CSM:</div>
+									<div class="col-md-7">
+									<div class="custom_select">
+										<select id="csms">
+										   <option value="">Select</option>
+                                            {%  if name == "all" %}
+                                            {%  for c in csm %}
+										   <option value="{{ c }}">{{ c }}</option>
+                                            {%  endfor %}
+                                            {%  else %}
+                                                {%  for c in csm %}
+                                                    {%  if c == name %}
+										                <option value="{{ c }}" selected>{{ c }}</option>
+                                                    {%  else %}
+                                                        <option value="{{ c }}" >{{ c }}</option>
 
+                                                    {%  endif %}
+                                            {%  endfor %}
+                                        {%  endif %}
+										</select>
+									 </div>
+									 </div>
 
+								 </div></div>
+							<div class="col-md-5">
+								<div class="row align-items-center">
+									<div class="col-md-4 filter-padd">FILTER BY HEALTH:</div>
+										<div class="form-inline justify-content-center custom-checkbox d-flex filetrcheck">
+											<div class="form-check form-check-inline">
+
+													<input type="radio" id="1" name="optradio" value="red">
+													<label for="1">&nbsp;</label>
+												</div>
+
+												<div class="form-check form-check-inline" >
+													<input type="radio" id="2" name="optradio" value="yellow">
+													<label for="2">&nbsp;</label>
+												</div>
+
+												<div class="form-check form-check-inline">
+													<input type="radio" id="3" name="optradio" value="green">
+													<label for="3">&nbsp;</label>
+												</div>
+										</div>
+								 </div>
+							</div>
+							<div class="col-md-3">
+							<div class="row align-items-right">
+									<div class="col-md-3 filter-padd">SEARCH</div>
+									<div class="col-md-9">
+									<div class="custom_input">
+                                        <input type="text" value="" id="project_name" placeholder="Project Name" class="inputstyle-exch">
+									 </div>
+									 </div>
+
+								 </div>
+
+							</div>
+						</div>
+					 </div>
+						<div class="sortby_showing">
+						   <div class="row align-items-center">
+							  <div class="col-md-9">
+								 <div class="sortby_row">
+									 <div class="showing_page">
+										Showing {{ total }} Projects
+									 </div>
+								 </div>
+							  </div>
+							  <div class="col-md-3">
+
+							  </div>
+						   </div>
+						</div>
 
 						   <div class="table-wrap">
 							  <table class="common_table w-100">
@@ -237,12 +169,12 @@
                     {%  elif project.color == 'red' %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
                     {%  else %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
                     {%  endif %}
-                    </td>
+                </td>
 									   <td class="text-center"><span class="circletxt">{{ project.csm }}</span></td>
 									   <td class="text-center">{{ project.name }}</td>
 									   <td class="text-center">{{ project.start_date }}<br>{{ project.end_date }}</td>
 									   <td >{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>
-                    <td >{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
+     <td >{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
                                     {%  if project.end_date > today or project.status == "Closed" %}
 									   <td class="lbordermain"><span class="green-text">{{ project.task_ux }}<br><font>On Track</font></span></td>
 									   <td><span class="green-text">{{ project.task_ui }}<br><font> On Track</font></span></td>
@@ -290,6 +222,11 @@
             }else {
                 window.location.href = "/project_filter/?csm=" + csm;
             }
+
+        });
+        $("input[type='radio']").click(function(){
+            var radioValue = $("input[name='optradio']:checked").val();
+            window.location.href = "/project_list_color/?color=" + radioValue;
 
         });
       </script>
