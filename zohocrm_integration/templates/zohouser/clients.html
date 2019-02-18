@@ -11,41 +11,35 @@
     <title>Zoho</title>
 </head>
 <body>
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">Zoho Dashboard</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="{%  url 'clients' %}">Home <span class="sr-only">(current)</span></a>
-      </li>
-              <li class="nav-item ">
-
-                <a class="nav-link" href="/grant_view/?name={{ user.username }}">Project Gantt</a>
-              </li>
-         <li class="nav-item ">
-
-                <a class="nav-link" href="/resource_utilization/?name={{ user.username }}">Resource Utilization</a>
-              </li>
-        <li>
-        <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
-    </li>
+<nav class="navbar navbar-expand-lg bg-dark">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#" style="color: white">Projects View</a>
+    </div>
+    <ul class="nav navbar-nav pull-right" >
+        <li><a href="#" style="color: white; padding-right: 20px;">{{ user|upper }}</a></li>
+      <li><a href="/logout_user/" style="color: white">Logout</a></li>
     </ul>
-      <div style="display: flex">
-          <a class="text-success" href="#">Welcome {{ request.user|upper }}</a>
-          <a class="text-danger" href="/logout_user/" style="padding-left: 10px;">Logout</a>
-        </div>
-
   </div>
 </nav>
+<div class="space" style="padding-top: 10px;"></div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
 
-<div style="padding-top: 60px">
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/project_filter/?csm=all">Projects</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">CSMs</a>
+      </li>
+
+    </ul>
+  </div>
+</nav>
 <div class="col-md-12" style="text-align: center;padding-top: 20px;">
     <table class="table table-bordered">
         <thead class="thead-dark">

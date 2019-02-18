@@ -391,10 +391,10 @@ var chartData =  [] ;
          data: {},
          success: function (resp) {
              var data = JSON.parse(resp);
-                          chartData.push({"Name": "Closed", "Value": data.task_closed, "Color": "#00ff00"});
-                                                    chartData.push({"Name": "Overdue", "Value": data.task_open, "Color": "##FF0F00"});
+                          chartData.push({"Name": "Closed", "Value": data.task_closed, "id":"close"});
+                                                    chartData.push({"Name": "Overdue", "Value": data.task_open, "id":"open"});
 
-                        chartData.push({"Name": "Pending", "Value": data.task_inprogress, "Color": "#FF9E01"});
+                        chartData.push({"Name": "Pending", "Value": data.task_inprogress,"Id":"progress"});
 
              var chart = new AmCharts.AmPieChart();
         chart.valueField = "Value";
