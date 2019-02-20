@@ -226,7 +226,7 @@
 							  <div class="col-md-9 pull-right">
 								 <div class="sortby_row">
 									 <div class="showing_page ">
-										 Projects nearing end date {{ total_projects }}
+										 Projects nearing end date {{ total_projects }} for {{month}}
 									 </div>
 								 </div>
 							  </div>
@@ -277,7 +277,7 @@
                 </td>
     </tr>{%  endfor %}
     {%  else %}
-  <tr><td colspan="7">No Data found</td></tr>
+  <tr><td colspan="8" style="text-align:center;">No Data found</td></tr>
   {%  endif %}
   </tbody>
 </table>

@@ -676,6 +676,7 @@ def project_list(request):
                 days=6 - week_day)
             this_week = Tasks.objects.filter(end_date__gte=begin_date,
                                              end_date__lte=end_date).count()
+        month = datetime.datetime.strftime(today, "%B")
 
         return render(request, "zohouser/project_list_pie.html",
                           {"projects": project,
@@ -690,7 +691,8 @@ def project_list(request):
                            "task_closed": task_closed,
                            "task_open": task_open,
                            "task_inprogress": task_inprogress,
-                           "this_week": this_week
+                           "this_week": this_week,
+                           "month": month
                            })
             # return render(request, "zohouser/project_list.html",
             #               {"projects": project,
@@ -1437,7 +1439,7 @@ def home(request):
     elif "indusind" in user.username:
         return redirect("/clients/")
     elif "indigo" in user.username:
-        return redirect("/projects/")
+        return redirect("/project_list/?csm=all&name=all&status=all")
     else:
         return render(request, "zohouser/home.html")
     # return redirect("/")
