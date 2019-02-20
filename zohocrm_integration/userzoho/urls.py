@@ -32,6 +32,10 @@ urlpatterns = [
     url(r'^mile_stone_task/(?P<milestone>\w+)', mile_stone_tasks),
     url(r'^client_tasks/(?P<name>\w+)', client_tasks),
     url(r'^project_list/', project_list),
+    url(r'^closed_tasks/', closed_tasks),
+    url(r'^pending_task/', pending_task),
+    url(r'^over_due_task/', over_due_task),
+
 
     # URL for auth request
     url(r'^task/(?P<project_id>\w+)', task_project),

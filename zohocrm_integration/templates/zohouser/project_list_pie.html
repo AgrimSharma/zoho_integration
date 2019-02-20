@@ -100,10 +100,19 @@
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item active">
-        <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
+          {% if "hdfc" in request.user.email %}
+            <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
+          {% else %}
+                      <a class="nav-link" href="/project_list/?name=all&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
+        {% endif %}
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/project_filter/?csm=all">Projects</a>
+          {% if "hdfc" in request.user.email %}
+        <a class="nav-link" href="/project_filter/?csm=all&project_name=hdfc">Projects</a>
+          {% else %}
+                    <a class="nav-link" href="/project_filter/?csm=all&project_name=all">Projects</a>
+          {% endif %}
+
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">CSMs</a>
@@ -112,11 +121,6 @@
     </ul>
   </div>
 </nav>
-{#    <ul class="list-inline nav" style="padding-left: 20px;">#}
-{#        <li class="list-inline-item nav-item"><a href="/project_list/?name=hdfc&status=all&csm=all" class="active nav-link"> Dash Board</a></li>#}
-{#        <li class="list-inline-item nav-item"><a href="/project_filter/?csm=all" class="nav-link" > Projects</a></li>#}
-{#        <li class="list-inline-item nav-item"><a href="/customer_managers/" class="nav-link"> CSMs</a></li>#}
-{#    </ul>#}
 <hr>
 
 <div class="container-fluid">
@@ -157,22 +161,39 @@
             <div class="col-lg-4"><div id="chartdiv" ></div></div>
             <div class="col-lg-8">
               <ul class="projectwise_health_list m-0 p-0">
-                <li class="overdue">
-                  <span style="background-color: #FF6600"></span>
-                  <label class="lbl_val">Overdue {{ task_open }}</label>
-                  <label class="lbl_txt"> >25% lag on delivery date</label>
-                </li>
-                <li class="pending">
-                  <span style="background-color: #FF9E01"></span>
-                  <label class="lbl_val">Pending {{ task_inprogress }}</label>
-                  <label class="lbl_txt">Approval pending from client</label>
-                </li>
-                <li class="ontrack">
-                  <span style="background-color: #FF0F00"></span>
-                  <label class="lbl_val">Closed {{ task_closed }}</label>
-                  <label class="lbl_txt">Delevires on track</label>
-                </li>
-
+                  {% if "hdfc" in request.user.email %}
+                    <li class="overdue">
+                      <span style="background-color: #FF6600"></span>
+                      <label class="lbl_val"><a href="/over_due_task/?project_name=hdfc">Overdue {{ task_open }}</a></label>
+                      <label class="lbl_txt"> >25% lag on delivery date</label>
+                    </li>
+                    <li class="pending">
+                      <span style="background-color: #FF9E01"></span>
+                      <label class="lbl_val"><a href="/pending_task/?project_name=hdfc">Pending {{ task_inprogress }}</a></label>
+                      <label class="lbl_txt">Approval pending from client</label>
+                    </li>
+                    <li class="ontrack">
+                      <span style="background-color: #FF0F00"></span>
+                      <label class="lbl_val"><a href="/closed_tasks/?project_name=hdfc"> Closed {{ task_closed }}</a></label>
+                      <label class="lbl_txt">Delevires on track</label>
+                    </li>
+                  {% else %}
+                    <li class="overdue">
+                      <span style="background-color: #FF6600"></span>
+                      <label class="lbl_val"><a href="/over_due_task/?project_name=all">Overdue {{ task_open }}</a></label>
+                      <label class="lbl_txt"> >25% lag on delivery date</label>
+                    </li>
+                    <li class="pending">
+                      <span style="background-color: #FF9E01"></span>
+                      <label class="lbl_val"><a href="/pending_task/?project_name=all">Pending {{ task_inprogress }}</a></label>
+                      <label class="lbl_txt">Approval pending from client</label>
+                    </li>
+                    <li class="ontrack">
+                      <span style="background-color: #FF0F00"></span>
+                      <label class="lbl_val"><a href="/closed_tasks/?project_name=all"> Closed {{ task_closed }}</a></label>
+                      <label class="lbl_txt">Delevires on track</label>
+                    </li>
+                  {% endif %}
               </ul>
             </div>
 
@@ -205,11 +226,16 @@
 							  <div class="col-md-9 pull-right">
 								 <div class="sortby_row">
 									 <div class="showing_page ">
-										Showing {{ total_projects }} Projects
+										 Projects nearing end date {{ total_projects }}
 									 </div>
 								 </div>
 							  </div>
-							  <div class="col-md-3">
+							  <div class="col-md-3" style="text-align: right;">
+                                     {% if "hdfc" in request.user.email %}
+                                        <a class="nav-link" href="/project_filter/?csm=all&project_name=hdfc">Show All</a>
+                                     {% else %}
+                                        <a class="nav-link" href="/project_filter/?csm=all&project_name=all">Show All</a>
+                                      {% endif %}
 
 							  </div>
 						   </div>
@@ -258,127 +284,6 @@
     </div>
   </div>
 </div>
-{%  comment %}
-{#<div class="container-fluid">#}
-{#    <div class="row" >#}
-{#        <div style="padding-right: 10px;padding-left: 20px;" class="col-md-3">#}
-{#            <div class="card" style="    height: 100%;    padding-top: 65px; text-align: center">#}
-{#              <div class="card-body">#}
-{#                <h6 class="card-title">No. of Projects</h6>#}
-{#                  <div style="display: inline-flex">#}
-{#                    <div><h5 class="text-center">{{ total_projects }}<br>Total</h5></div>#}
-{#                      <div class="vl"></div>#}
-{#                    <div><h5 class="text-warning text-center">{{ active }}<br>Active</h5></div>#}
-{#                      <div class="vl"></div>#}
-{#                    <div><h5 class="text-success text-center">{{ closed }}<br>Closed</h5></div></div>#}
-{##}
-{#              </div>#}
-{#            </div>#}
-{##}
-{#        </div>#}
-{#        <div style="padding-right: 10px;" class="col-md-6">#}
-{#             <div class="card" >#}
-{#  <div class="card-body">#}
-{#    <h6 class="card-title">Project Wise Health</h6>#}
-{#    <div style="display: inline-flex">#}
-{#        <div id="chartdiv" ></div>#}
-{#        <div style="margin-top: 30px;">#}
-{#            <div style="display: flex"><i class="fas fa-square" style="color: #FF0F00;padding-top: 5px;"></i>&nbsp;&nbsp;&nbsp;<span class="text-danger"><strong>Overdue {{ task_open }}</strong></span> <p> &nbsp;&nbsp;&nbsp;> 25% lag on delivery</p></div>#}
-{#            <div class="hl"></div>#}
-{#            <div style="display: inline-flex"><i class="fas fa-square" style="color: #FF9E01;padding-top: 5px;"></i>&nbsp;&nbsp;&nbsp;<span class="text-warning"><strong>Pending {{ task_inprogress }}</strong> </span>&nbsp;&nbsp;&nbsp;<p> Approval pending from client</p></div>#}
-{#            <div class="hl"></div>#}
-{#            <div style="display: inline-flex"><i class="fas fa-square" style="color: #FF6600;padding-top: 5px;"></i>&nbsp;&nbsp;&nbsp;<span class="text-danger"><strong>Closed {{ task_closed }}</strong></span> &nbsp;&nbsp;&nbsp;<p> Delevires on track</p></div>#}
-{#        </div>#}
-{##}
-{#    </div>#}
-{#  </div>#}
-{#</div>#}
-{#        </div>#}
-{#        <div class="col-md-3">#}
-{#             <div class="card" style="    height: 100%;    padding-top: 65px;text-align: center"">#}
-{#  <div class="card-body">#}
-{#    <h6 class="card-title">Deliverable this week</h6>#}
-{#    <div>#}
-{#        <strong>{{ this_week }}</strong>#}
-{#    </div>#}
-{#  </div>#}
-{#</div>#}
-{#    </div>#}
-{#    </div>#}
-{#</div>#}
-{#<div class="col-md-12" style="text-align: center;padding-top: 70px;">#}
-{#<div style="text-align: center; display: inline-flex"><div><label class="text-success"><strong>Projects </strong></label></div>#}
-{#          {%  if projects %}#}
-{#  <div style="padding-left: 20px;">#}
-{#        <div class="dropdown">#}
-{#  <button class="dropbtn">CSM's <i class="fas fa-angle-down" style="font-size: 20px;"></i></button>#}
-{#  <div class="dropdown-content">#}
-{##}
-{#    <a href="/project_list/?name={{ name }}&status={{ status }}&csm=all">All</a>#}
-{#      {%  for c in  csm %}#}
-{#          <a href="/project_list/?name={{ name }}&status={{ status }}&csm={{ c }}">{{ c }}</a>#}
-{##}
-{#      {%  endfor %}#}
-{#  </div>#}
-{#</div>#}
-{#    </div>#}
-{#{%  endif %}#}
-{#</div>#}
-{#    <table class="table table-bordered">#}
-{#        <thead class="thead-dark">#}
-{#            <tr>#}
-{#                <th>SNo</th>#}
-{#                <th>CSM</th>#}
-{#                <th>Project Name</th>#}
-{#                <th>End Date</th>#}
-{#                <th>Start Date </th>#}
-{#                <th>Status</th>#}
-{#                <th>Milestone</th>#}
-{#                <th>Task</th>#}
-{#                <th>CW - 2 Task</th>#}
-{#                <th>CW - 1 Task</th>#}
-{#                <th>Current Task</th>#}
-{#                <th>NW Task</th>#}
-{#                <th>Project Health</th>#}
-{##}
-{#            </tr>#}
-{#        </thead>#}
-{#        <tbody>#}
-{#        {%  if projects %}#}
-{#            <tr>#}
-{#                {%  for project in projects %}#}
-{#                <td>{{forloop.counter}}</td>#}
-{#                <td >{{project.csm}}</td>#}
-{##}
-{#                <td ><a href="/project_task_list/{{ project.id }}"> {% if  project.color == "red"%}<span class="text-danger">{{project.name}}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.name}}{%  else %}<span class="text-success">{{project.name}}</span> {%  endif %}</a></td>#}
-{#                <td >{{project.end_date}}</td>#}
-{#                <td >{{project.start_date}}</td>#}
-{##}
-{#                <td >{% if  project.color == "red"%}<span class="text-danger">{{project.status}}<br> {%  if project.overdue %}-{{project.overdue}} Days{%  endif %}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.status}}</span>{%  else %}<span class="text-success">{{project.status}}</span> {%  endif %}#}
-{#                </td>#}
-{#                                    <td >{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>#}
-{##}
-{#                <td >{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>#}
-{##}
-{##}
-{##}
-{#                    <td >{%  if project.past_date_two_week == "0/0" %}{{project.past_date_two_week}}{%  else %}<a href="/task_bifurcate/{{ project.id }}/?task=past_two">{{project.past_date_two_week}}</a>{%  endif %}</td>#}
-{#                    <td >{%  if project.past_date_one_week == "0/0" %}{{project.past_date_one_week}}{%  else %} <a href="/task_bifurcate/{{ project.id }}/?task=past_one">{{project.past_date_one_week}}</a>{%  endif %}</td>#}
-{##}
-{#                <td >{%  if project.current_task == "0/0" %}{{project.current_task}}  {%  else %}<a href="/task_bifurcate/{{ project.id }}/?task=present"> {{project.current_task}}  </a>{%  endif %}</td>#}
-{#                    <td > {%  if project.future_date_one_week == "0/0" %}{{project.future_date_one_week}}{%  else %}<a href="/task_bifurcate/{{ project.id }}/?task=future">{{project.future_date_one_week}}</a>{%  endif %}</td>#}
-{##}
-{#                    <td style="text-align: center" >#}
-{#                    {%  if project.percent >= 85.0 %}    <i class="fas fa-square" style="color: green;font-size: 30px;"></i>#}
-{#                    {%  elif 75.0 <= project.percent and project.percent < 85.0 %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>#}
-{#                    {%  else %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>#}
-{#                    {%  endif %}#}
-{#                </td>#}
-{#            </tr>{%  endfor %}#}
-{#        {%  else %}<tr><td colspan="12">No Data found</td></tr>{%  endif %}#}
-{#        </tbody>#}
-{#    </table>#}
-{#</div>#}{%  endcomment %}
 <input type="text" value="{{ name }}" id="name" style="display: none">
 
 <script>

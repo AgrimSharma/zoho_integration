@@ -145,26 +145,31 @@ def project_list_view(name, status, csm):
     first,last = get_month_day_range(today)
 
     if csm == "all":
-        if status == "all":
-            projects = Projects.objects.filter(name__icontains=name, end_date_format__range=[first, last])
-        elif status == 'open':
-            projects = Projects.objects.filter(name__icontains=name,
-                                               status__in=['active', 'Active'],end_date_format__range=[first, last])
+        if status == "all" and name == 'all':
+            projects = Projects.objects.filter(end_date_format__range=[first, last])
         else:
-            projects = Projects.objects.filter(name__icontains=name,
+            if status == "all":
+                projects = Projects.objects.filter(name__icontains=name,
+                    end_date_format__range=[first, last])
+            elif status == 'open':
+                projects = Projects.objects.filter(name__icontains=name,
+                                                   status__in=['active', 'Active'],end_date_format__range=[first, last])
+            else:
+                projects = Projects.objects.filter(name__icontains=name,
                                                status__in=['Closed', 'closed'])
     else:
-        if status == "all":
-            projects = Projects.objects.filter(name__icontains=name,
-                                               owner_name=csm,end_date_format__range=[first, last])
-        elif status == 'open':
-            projects = Projects.objects.filter(name__icontains=name,
-                                               status__in=['active', 'Active'],
-                                               owner_name=csm,end_date_format__range=[first, last])
+        if status == "all" and name == 'all':
+            projects = Projects.objects.filter(end_date_format__range=[first, last])
         else:
-            projects = Projects.objects.filter(name__icontains=name,
-                                               status__in=['Closed', 'closed'],
-                                               owner_name=csm)
+            if status == "all":
+                projects = Projects.objects.filter(name__icontains=name,
+                    end_date_format__range=[first, last])
+            elif status == 'open':
+                projects = Projects.objects.filter(name__icontains=name,
+                                                   status__in=['active', 'Active'],end_date_format__range=[first, last])
+            else:
+                projects = Projects.objects.filter(name__icontains=name,
+                                               status__in=['Closed', 'closed'])
     response = []
     for pro in projects:
         taks_open = pro.tasks_set.filter(
@@ -545,11 +550,17 @@ def task_uat(project):
     return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
 
 
-def parse_project_data(csm):
-    if csm == "all":
-        projects = Projects.objects.all()
+def parse_project_data(csm, user=None):
+    if not user:
+        if csm == "all":
+            projects = Projects.objects.all()
+        else:
+            projects = Projects.objects.filter(owner_name__icontains=csm)
     else:
-        projects = Projects.objects.filter(owner_name__icontains=csm)
+        if csm == "all":
+            projects = user.projects_set.all()
+        else:
+            projects = user.projects_set.filter(owner_name__icontains=csm)
     response = []
     for pro in projects:
         taks_open = pro.tasks_set.filter(
@@ -693,9 +704,12 @@ def project_data_parse(project_id):
     return data
 
 
-def parse_project_data_project(project_name):
+def parse_project_data_project(project_name, user=None):
+    if not user:
+        projects = Projects.objects.filter(name__icontains=project_name)
+    else:
+        projects = user.projects_set.filter(name__icontains=project_name)
 
-    projects = Projects.objects.filter(name__icontains=project_name)
     response = []
     for pro in projects:
         taks_open = pro.tasks_set.filter(

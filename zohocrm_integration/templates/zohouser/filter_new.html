@@ -1,4 +1,5 @@
-{%  load static %}<!doctype html>
+{%  load static %}
+<!doctype html>
 <html lang="en">
    <head>
       <meta charset="utf-8">
@@ -11,7 +12,6 @@
       <title>Projects</title>
 	   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
       <link href="{%  static 'css/bootstrap.min.css' %}" rel="stylesheet">
-      <!--<link href="assets/css/style.css" rel="stylesheet">-->
    </head>
    <body>
       
@@ -26,17 +26,25 @@
     </ul>
   </div>
 </nav>
-
-      <div class="space" style="padding-top: 10px;"></div>
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+<div class="space" style="padding-top: 10px;"></div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
 
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item ">
-        <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard </a>
+          {% if "hdfc" in request.user.email %}
+            <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard </a>
+          {% else %}
+                      <a class="nav-link" href="/project_list/?name=all&status=all&csm=all">Dashboard</a>
+        {% endif %}
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="/project_filter/?csm=all">Projects<span class="sr-only">(current)</span></a>
+          {% if "hdfc" in request.user.email %}
+        <a class="nav-link" href="/project_filter/?csm=all&project_name=hdfc">Projects <span class="sr-only">(current)</span></a>
+          {% else %}
+                    <a class="nav-link" href="/project_filter/?csm=all">Projects <span class="sr-only">(current)</span></a>
+          {% endif %}
+
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">CSMs</a>
@@ -45,13 +53,7 @@
     </ul>
   </div>
 </nav>
-{#    <ul class="list-inline nav" style="padding-left: 20px;">#}
-{#        <li class="list-inline-item nav-item"><a href="/project_list/?name=hdfc&status=all&csm=all" class="nav-link"> Dash Board</a></li>#}
-{#        <li class="list-inline-item nav-item"><a href="/project_filter/?csm=all" class="nav-link active" > Projects</a></li>#}
-{#        <li class="list-inline-item nav-item"><a href="/customer_managers/" class="nav-link"> CSMs</a></li>#}
-{#    </ul>#}
 <hr>
-
          <section class="container-fluid">
                <div class="row">
                   <div class="col-xs-12 w-100">
@@ -232,46 +234,5 @@
         });
 
       </script>
-{#   <script>#}
-{#    $( document ).ready(function() {#}
-{#                var getUrlParameter = function getUrlParameter(sParam) {#}
-{#            var sPageURL = window.location.search.substring(1),#}
-{#                sURLVariables = sPageURL.split('&'),#}
-{#                sParameterName,#}
-{#                i;#}
-{##}
-{#            for (i = 0; i < sURLVariables.length; i++) {#}
-{#                sParameterName = sURLVariables[i].split('=');#}
-{##}
-{#                if (sParameterName[0] === sParam) {#}
-{#                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);#}
-{#                }#}
-{#            }#}
-{#        };#}
-{##}
-{#        var tech = getUrlParameter('color');#}
-{#        if(tech === 'red'){#}
-{#            $("#1").prop('checked', true);#}
-{#            $("#2").prop('checked', false);#}
-{#            $("#3").prop('checked', false);#}
-{##}
-{#        }#}
-{#        else if(tech === 'yellow'){#}
-{#            $("#2").prop('checked', true);#}
-{#             $("#1").prop('checked', false);#}
-{#            $("#3").prop('checked', false);#}
-{#        }#}
-{#        else if(tech === 'green'){#}
-{#            $("#3").prop('checked', true);#}
-{#             $("#1").prop('checked', false);#}
-{#            $("#2").prop('checked', false);#}
-{#        }#}
-{#        else {#}
-{#            window.location.href = "/project_filter/?csm=all";#}
-{#        }#}
-{##}
-{##}
-{#    });#}
-{#   </script>#}
    </body>
 </html>
