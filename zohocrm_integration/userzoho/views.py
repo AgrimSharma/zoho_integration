@@ -1434,7 +1434,7 @@ def over_due_task(request):
                                                          'Open'])
 
         else:
-            tasks = Tasks.objects.filter(project_name__icontains = name,
+            tasks = Tasks.objects.filter(project__name__icontains = name,
                                          status__in=['open',
                                                          'Open'])
         tasks = task_filter_all(tasks)
