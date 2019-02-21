@@ -754,8 +754,50 @@ def projects_pull(request):
 
         if port:
             projects = all_projects(user)
-            return redirect("/tasks_pull/")
-        # return HttpResponse("Success")
+            # return redirect("/tasks_pull/")
+        return HttpResponse("Success")
+    else:
+        return redirect("/")
+
+
+def tasks_list_pull(request):
+    user = request.user
+    if user.is_authenticated:
+        code = request.GET.get("code", "")
+        url = "https://accounts.zoho.com/oauth/v2/token"
+
+        querystring = {
+            "code": code,
+            "redirect_uri": settings.REDIRECT_URL,
+            "client_id": settings.CLIENT_ID,
+            "client_secret": settings.CLIENT_SECRET,
+            "grant_type": "authorization_code"}
+
+        headers = {
+            'cache-control': "no-cache",
+            'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
+        }
+
+        response = requests.request("POST", url, headers=headers,
+                                    params=querystring)
+        try:
+            vals = response.json()
+            vals['code'] = code
+            access = Tokens.objects.latest("id")
+            access.access_token = vals['access_token']
+            access.created_at = datetime.datetime.now()
+            access.code = code
+            access.save()
+            port = settings.PORTAL_ID
+
+        except Exception:
+
+            port = settings.PORTAL_ID
+
+        if port:
+            tasks = all_project_task_list(user)
+            return HttpResponse("success")
+            # return redirect("/time_sheet_pull/")
     else:
         return redirect("/")
 
@@ -795,15 +837,59 @@ def tasks_pull(request):
             port = settings.PORTAL_ID
 
         if port:
-            tasks = all_project_task_list(user)
-            # return HttpResponse("success")
-            return redirect("/time_sheet_pull/")
+            tasks = all_projects_task(user)
+            return HttpResponse("success")
+            # return redirect("/time_sheet_pull/")
+    else:
+        return redirect("/")
+
+
+def sub_tasks_pull(request):
+    user = request.user
+    if user.is_authenticated:
+        code = request.GET.get("code", "")
+        url = "https://accounts.zoho.com/oauth/v2/token"
+
+        querystring = {
+            "code": code,
+            "redirect_uri": settings.REDIRECT_URL,
+            "client_id": settings.CLIENT_ID,
+            "client_secret": settings.CLIENT_SECRET,
+            "grant_type": "authorization_code"}
+
+        headers = {
+            'cache-control': "no-cache",
+            'postman-token': "4627606a-4fa6-897d-01c9-3f41002504e2"
+        }
+
+        response = requests.request("POST", url, headers=headers,
+                                    params=querystring)
+        try:
+            vals = response.json()
+            vals['code'] = code
+            access = Tokens.objects.latest("id")
+            access.access_token = vals['access_token']
+            access.created_at = datetime.datetime.now()
+            access.code = code
+            access.save()
+            port = settings.PORTAL_ID
+
+        except Exception:
+
+            port = settings.PORTAL_ID
+
+        if port:
+            tasks = user.tasks_set.all()
+            for t in tasks:
+                pull_subtasks(t, user)
+            return HttpResponse("success")
+            # return redirect("/time_sheet_pull/")
     else:
         return redirect("/")
 
 
 def milestone_pull(request):
-    user =request.user
+    user = request.user
     if user.is_authenticated:
         code = request.GET.get("code", "")
         url = "https://accounts.zoho.com/oauth/v2/token"
@@ -838,7 +924,7 @@ def milestone_pull(request):
 
         if port:
             milestone = all_projects_milestone(user=user,)
-            return redirect("/projects/")
+            return HttpResponse("success")
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
 
@@ -887,7 +973,7 @@ def time_sheet_pull(request):
 
         if port:
             timesheet = all_project_time_sheet(user=user,)
-            return redirect("/milestone_pull/")
+            return HttpResponse("success")
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
 
