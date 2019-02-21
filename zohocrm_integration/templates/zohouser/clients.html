@@ -23,23 +23,31 @@
   </div>
 </nav>
 <div class="space" style="padding-top: 10px;"></div>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<!--<nav class="navbar navbar-expand-lg navbar-light bg-light">-->
 
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/project_filter/?csm=all">Projects</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">CSMs</a>
-      </li>
+  <!--<div class="collapse navbar-collapse" id="navbarNav">-->
+    <!--<ul class="navbar-nav">-->
+      <!--<li class="nav-item active">-->
+        <!--<a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>-->
+      <!--</li>-->
+      <!--<li class="nav-item">-->
+        <!--<a class="nav-link" href="/project_filter/?csm=all">Projects</a>-->
+      <!--</li>-->
+      <!--<li class="nav-item">-->
+        <!--<a class="nav-link" href="#">CSMs</a>-->
+      <!--</li>-->
 
-    </ul>
-  </div>
-</nav>
+    <!--</ul>-->
+  <!--</div>-->
+<!--</nav>-->
+
+<div class="container-fluid" style="text-align:center;">
+    {% if "hdfc" in request.user.email %}
+    <img src="https://qph.fs.quoracdn.net/main-qimg-bf85560f3dd7ddaddd5e48f1463c244b.webp">
+    {% else %}
+        <img src="https://cdn.i.haymarketmedia.asia/?n=campaign-india%2Fcontent%2Findigo.jpg&h=570&w=855&q=100&v=20170226&c=1">
+{% endif %}
+</div>
 <div class="col-md-12" style="text-align: center;padding-top: 20px;">
     <table class="table table-bordered">
         <thead class="thead-dark">

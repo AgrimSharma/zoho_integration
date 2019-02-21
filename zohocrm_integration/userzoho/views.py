@@ -1348,7 +1348,7 @@ def over_due_task(request):
                                          status__in=['open',
                                                          'Open'])
         tasks = task_filter_all(tasks)
-
+        tasks.sort(key=lambda hotel: hotel['created_time'], reverse=True)
         date_today = datetime.datetime.now().date()
 
         return render(request, "zohouser/tasks/project_tasks.html", {
@@ -1373,6 +1373,7 @@ def pending_task(request):
                 status__in=['in progress',
                             'In Progress'])
         tasks = task_filter_all(tasks)
+        tasks.sort(key=lambda hotel: hotel['created_time'], reverse=True)
 
         date_today = datetime.datetime.now().date()
 
@@ -1398,6 +1399,7 @@ def closed_tasks(request):
                                                            'Closed'])
         tasks = task_filter_all(tasks)
         date_today = datetime.datetime.now().date()
+        tasks.sort(key=lambda hotel: hotel['created_time'], reverse=True)
 
         return render(request, "zohouser/tasks/project_tasks.html", {
             "date_today": date_today,
