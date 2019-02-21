@@ -654,7 +654,6 @@ def project_list(request):
                 days=6 - week_day)
             this_week = Tasks.objects.filter(project__name__icontains=name, end_date__gte=begin_date, end_date__lte=end_date).count()
 
-
         else:
             active = Projects.objects.filter(status__in=['active', 'Active'],
                                              end_date_format__range=[first,
