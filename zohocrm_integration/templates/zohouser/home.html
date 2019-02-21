@@ -88,7 +88,7 @@
         success: function(resp) {
           var data = JSON.parse(resp);
           if (data.message === 'success' &&  data.redirect === 'auth') {
-              window.location.href = "/status_check/";
+              window.location.href = "/auth_request/";
           }else if(data.message === 'success' &&  data.redirect === 'client'){
               window.location.href = "/clients/";
           } else {

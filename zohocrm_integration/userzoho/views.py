@@ -95,7 +95,7 @@ def callback(request):
 
         if port:
 
-            return redirect("/projects_pull/")
+            return render(request, "zohouser/intermediate.html")
     else:
         return redirect("/")
 
@@ -1519,7 +1519,6 @@ def task_filter_all(tasks):
     return response
 
 
-
 def home(request):
     user = request.user
     if "hdfc" in user.username:
@@ -1527,7 +1526,7 @@ def home(request):
     elif "indusind" in user.username:
         return redirect("/clients/")
     elif "indigo" in user.username:
-        return redirect("/project_list/?csm=all&name=all&status=all")
+        return redirect("/auth_request/")
     else:
         return render(request, "zohouser/home.html")
     # return redirect("/")
