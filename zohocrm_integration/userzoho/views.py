@@ -1253,7 +1253,11 @@ def task_weekly(request):
             days=week_day)
         end_date = datetime.datetime.now().date() + datetime.timedelta(
             days=6 - week_day)
-        this_week = Tasks.objects.filter(project__name__icontains=name,
+        if name == "all":
+            this_week = Tasks.objects.filter(end_date__gte=begin_date,
+                                             end_date__lte=end_date)
+        else:
+            this_week = Tasks.objects.filter(project__name__icontains=name,
                                          end_date__gte=begin_date,
                                          end_date__lte=end_date)
         return render(request, "zohouser/tasks/project_tasks.html",{
@@ -1522,11 +1526,11 @@ def task_filter_all(tasks):
 def home(request):
     user = request.user
     if "hdfc" in user.username:
-        return redirect("/clients/")
+        return redirect("/project_list/?csm=all&name=hdfc&status=all")
     elif "indusind" in user.username:
-        return redirect("/clients/")
+        return redirect("/project_list/?csm=all&name=indusind&status=all")
     elif "indigo" in user.username:
-        return redirect("/auth_request/")
+        return redirect("/project_list/?csm=all&name=all&status=all")
     else:
         return render(request, "zohouser/home.html")
     # return redirect("/")
