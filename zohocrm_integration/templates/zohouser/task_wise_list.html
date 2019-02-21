@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+      <link href="{%  static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <title>Zoho</title>
 </head>
 <body>
@@ -15,7 +15,12 @@
       <a class="navbar-brand" href="#" style="color: white">Projects View</a>
     </div>
     <ul class="nav navbar-nav pull-right" >
-        <li><a href="#" style="color: white; padding-right: 20px;">{{ user|upper }}</a></li>
+        {% if "hdfc" in request.user.email %}
+        <li style="padding-right: 10px;"><a href=""><img src="data:image/png;base64,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" height="25px"></a></li>
+
+        {% else %}
+            <li style="padding-right: 10px;"><a href="#" style="color: white; padding-right: 20px;">{{ user|upper }}</a></li>
+        {% endif %}
       <li><a href="/logout_user/" style="color: white">Logout</a></li>
     </ul>
   </div>
@@ -25,8 +30,8 @@
 
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
+      <li class="nav-item ">
+        <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="/project_filter/?csm=all">Projects</a>
@@ -38,13 +43,15 @@
     </ul>
   </div>
 </nav>
+<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-success"><strong>{{ name }}</strong></label>
 
-<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <label class="text-warning">{{ task_type }} Task</label>
 
-    <table class="table table-bordered table-sm ">
+    <table class="table table-bordered table-sm">
         <thead class="thead-dark">
             <tr>
-                <th>SNo</th>
+                <th>SNo.</th>
+                <th>Task Name</th>
+
                 <th>Description</th>
 {#                <th>Task ID</th>#}
 {#                <th>Milestone ID</th>#}
@@ -52,49 +59,61 @@
                 <th>End Date</th>
                 <th>Status</th>
                 <th>Subtasks</th>
-                <th>Task Name</th>
 {#                <th>Timesheet</th>#}
-{#                <th>Owners</th>#}
-                <th>Created Person</th>
+{#                <th>Assigned To</th>#}
                 <th>Created Time</th>
                 <th>Completed</th>
                 <th>Percent Complete</th>
-                <th>Completed Time</th>
+{#                <th>Completed Time</th>#}
             </tr>
         </thead>
         <tbody>
+        {% if tasks %}
              {% for t in tasks %}
             <tr>
                             <td>{{forloop.counter}}</td>
+                <td>{{t.name}}</td>
 
                 <td>{% if t.description == None or t.description == "" %} No Description {% else %}{{t.description}}{% endif %}</td>
-{#                <td>{{t.task_id}}</td>#}
+{#                <td><a href="https://projects.zoho.com/portal/indigoconsulting#taskdetail/{{ t.project_id }}/{{ t.task_list_id }}/{{ t.task_id }}#}
+{#">{{t.task_id}}</a> </td>#}
 {#                <td>{{t.milestone_id}}</td>#}
                 <td>{{t.start_date}}</td>
                 <td>{{t.end_date}}</td>
                 <td>{% if t.status == 'Closed' %} <label class="text-success">{{t.status}}</label>
-                    {% elif t.status == 'Open' %} <label class="text-warning">{{t.status}}</label>
+                    {% elif t.status == 'Open' and date_today < t.end_date %} <label class="text-success">{{t.status}}</label>
+                    {% elif t.status == 'Open' and t.end_date == None %} <label class="text-danger">{{t.status}}</label>
+
                     {% else %} <label class="text-danger">{{t.status}}</label>
                     {% endif %}
                 </td>
                 <td>{{t.subtasks}}</td>
-                <td>{{t.task_name}}</td>
-{#                <td><a href="/time_sheet/{{t.project.id}}">Timesheet</a> </td>#}
-{#                <td>{{ t.created_person }}#}
-                </td>
-                <td>{{t.created_person}}</td>
+{#                <td><a href="/time_sheet_task/{{t.id}}">Timesheet</a> </td>#}
+{#                <td>{{ t.owner }}</td>#}
                 <td>{{t.created_time}}</td>
                 <td>{{t.completed}}</td>
                 <td>{{t.percent_complete}}</td>
-                <td>{{t.completed_time}}</td>
-
+{#                <td>{{t.completed_time}}</td>#}
             </tr>
             {% endfor %}
-
+        {% else %}
+        <tr>
+        <td colspan="14"style="text-align: center">No Data Found</td>
+        </tr>
+        {% endif %}
         </tbody>
     </table>
-</div>
-</div>
 
+<hr>
+</div></div>
+
+<script>
+    $(".shipment_sold").click(function(){
+    //  alert("Invalid Shipment Number");
+        var task_id=$(this).attr("task_id");
+
+        $("#" + task_id ).toggle();
+    });
+</script>
 </body>
 </html>

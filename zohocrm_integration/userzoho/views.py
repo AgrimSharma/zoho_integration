@@ -419,7 +419,7 @@ def all_tasks(request, project_id):
     if user.is_authenticated():
         project = Projects.objects.get(id=project_id)
         tasks = project_all_tasks(project_id)
-
+        tasks.sort(key=lambda hotel: hotel['status'], reverse=True)
         date_today = datetime.datetime.now().date()
 
         return render(request, "zohouser/tasks/project_tasks.html", {
@@ -467,6 +467,7 @@ def all_milestone(request, project_id):
     if user.is_authenticated():
         project = Projects.objects.get(id=project_id)
         tasks = project_all_milestone(project_id)
+        tasks.sort(key=lambda hotel: hotel['status'], reverse=True)
 
         date_today = datetime.datetime.now().date()
 
@@ -1353,6 +1354,8 @@ def project_ux(request, project_id):
     if user.is_authenticated():
         project = Projects.objects.get(id=project_id)
         ux_task = task_ux(project)
+        ux_task = task_filter_all(ux_task)
+        ux_task.sort(key=lambda hotel: hotel['status'], reverse=True)
         return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,"task_type": "UX"})
     else:
         return redirect("/")
@@ -1363,6 +1366,8 @@ def project_ui(request, project_id):
     if user.is_authenticated():
         project = Projects.objects.get(id=project_id)
         ux_task = task_ui(project)
+        ux_task = task_filter_all(ux_task)
+        ux_task.sort(key=lambda hotel: hotel['status'], reverse=True)
         return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,
                                                                 "task_type": "UI"})
     else:
@@ -1374,6 +1379,8 @@ def project_html(request, project_id):
     if user.is_authenticated():
         project = Projects.objects.get(id=project_id)
         ux_task = task_html(project)
+        ux_task = task_filter_all(ux_task)
+        ux_task.sort(key=lambda hotel: hotel['status'], reverse=True)
         return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,
                                                                 "task_type": "HTML"})
     else:
@@ -1385,6 +1392,8 @@ def project_api(request, project_id):
     if user.is_authenticated():
         project = Projects.objects.get(id=project_id)
         ux_task = task_api(project)
+        ux_task = task_filter_all(ux_task)
+        ux_task.sort(key=lambda hotel: hotel['status'], reverse=True)
         return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,
                                                                 "task_type": "API"})
     else:
@@ -1396,6 +1405,8 @@ def project_bee(request, project_id):
     if user.is_authenticated():
         project = Projects.objects.get(id=project_id)
         ux_task = task_bee(project)
+        ux_task = task_filter_all(ux_task)
+        ux_task.sort(key=lambda hotel: hotel['status'], reverse=True)
         return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,
                                                                 "task_type": "BEE"})
     else:
@@ -1407,6 +1418,8 @@ def project_qc(request, project_id):
     if user.is_authenticated():
         project = Projects.objects.get(id=project_id)
         ux_task = task_qc(project)
+        ux_task = task_filter_all(ux_task)
+        ux_task.sort(key=lambda hotel: hotel['status'], reverse=True)
         return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,
                                                                 "task_type": "QC"})
     else:
@@ -1418,6 +1431,8 @@ def project_uat(request, project_id):
     if user.is_authenticated():
         project = Projects.objects.get(id=project_id)
         ux_task = task_uat(project)
+        ux_task = task_filter_all(ux_task)
+        ux_task.sort(key=lambda hotel: hotel['status'], reverse=True)
         return render(request, "zohouser/task_wise_list.html", {"tasks":ux_task,
                                                                 "task_type": "UAT"})
     else:
@@ -1431,7 +1446,6 @@ def over_due_task(request):
         if name == "all":
             tasks = Tasks.objects.filter(status__in=['open',
                                                          'Open'])
-
         else:
             tasks = Tasks.objects.filter(project__name__icontains=name,
                                          status__in=['open',

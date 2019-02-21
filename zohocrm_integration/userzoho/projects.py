@@ -368,26 +368,14 @@ def task_ux(project):
     query_closed =  Q(
         project=project,
         task_name__icontains='Creative',
-        status__in=["Open", "open",
-                    "In Progress",
-                    'in progress',
-                    "In progress"]) or Q(project=project,
+        status__in=["closed","closed"]) or Q(project=project,
                                          task_name__icontains='creative',
-                                         status__in=["Open", "open",
-                                                     "In Progress",
-                                                     'in progress',
-                                                     "In progress"]) or Q(
+                                         status__in=["closed","closed"]) or Q(
         project=project,
         task_name__icontains='Creatives',
-        status__in=["Open", "open",
-                    "In Progress",
-                    'in progress',
-                    "In progress"]) or Q(project=project,
+        status__in=["closed","closed"]) or Q(project=project,
                                          task_name__icontains='creatives',
-                                         status__in=["Open", "open",
-                                                     "In Progress",
-                                                     'in progress',
-                                                     "In progress"])
+                                         status__in=["closed","closed"])
     tasks_open = Tasks.objects.filter(query_open).count()
     tasks_closed = Tasks.objects.filter(query_closed).count()
     print tasks_open, tasks_closed, project.name
