@@ -227,9 +227,8 @@ def all_projects_task(user):
 
                     subtasks = d['subtasks']
 
-                    if subtasks in ["true", "True", True]:
-                        print p.name
-                        pull_subtasks(task, user)
+                    # if subtasks in ["true", "True", True]:
+                    #     pull_subtasks(task, user)
                     try:
                         description = d['description']
                     except Exception:

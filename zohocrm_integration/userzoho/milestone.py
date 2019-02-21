@@ -41,7 +41,7 @@ def all_projects_milestone(user):
                                                      id_string=d['id_string'])
                     except Exception:
                         miles = Milestone.objects.create(user=user,project=p, id_string=d['id_string'])
-                    task = Milestone.objects.get(project=p,
+                    task = Milestone.objects.get(project=p,user=user,
                                                  id_string=d['id_string'])
 
                     task.owner_name=d['owner_name']

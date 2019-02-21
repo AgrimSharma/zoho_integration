@@ -48,8 +48,8 @@ def all_projects(user):
                 pro = Projects.objects.get(user=user, project_id=p['id'])
             except Exception:
                 pro = Projects.objects.create(user=user,
-                                              project_id=p.get('id', ""),
-                                              name=p.get('name', ""))
+                                              project_id=p.get('id'),
+                                              name=p.get('name'))
             pro = Projects.objects.get(user=user, project_id=p['id'])
             try:
                 start_time = p.get('start_date', "")

@@ -186,7 +186,7 @@
 									   <td><span class="green-text">{%  if project.task_html != "0/0" %}<a href="/project_html/{{ project.id }}"> {{ project.task_html }}{%  else %}{{ project.task_html }}{%  endif %}</a><br><font> On Track</font></span></td>
 									   <td><span class="green-text">{%  if project.task_api != "0/0" %}<a href="/project_api/{{ project.id }}"> {{ project.task_api }}{%  else %}{{ project.task_api }}{%  endif %}</a><br><font> On Track</font></span></td>
 									   <td><span class="green-text">{%  if project.task_bee != "0/0" %}<a href="/project_bee/{{ project.id }}"> {{ project.task_bee }}{%  else %}{{ project.task_bee }}{%  endif %}</a><br><font> On Track</font></span></td>
-									   <td><span class="green-text">{%  if project.task_bqc != "0/0" %}<a href="/project_qc/{{ project.id }}"> {{ project.task_qc }}{%  else %}{{ project.task_qc }}{%  endif %}</a><br><font> On Track</font></span></td>
+									   <td><span class="green-text">{%  if project.task_qc != "0/0" %}<a href="/project_qc/{{ project.id }}"> {{ project.task_qc }}{%  else %}{{ project.task_qc }}{%  endif %}</a><br><font> On Track</font></span></td>
 									   <td><span class="green-text">{%  if project.task_uat != "0/0" %}<a href="/project_uat/{{ project.id }}"> {{ project.task_uat }}{%  else %}{{ project.task_uat }}{%  endif %}</a><br><font> On Track</font></span></td>
                                         {%  else %}
                                         <td class="lbordermain"><span class="red-text">{%  if project.task_ux != "0/0" %}<a href="/project_ux/{{ project.id }}"> {{ project.task_ux }}{%  else %}{{ project.task_ux }}{%  endif %}<br><font>Over Due</font></span></td>
@@ -194,7 +194,7 @@
 									   <td><span class="red-text">{%  if project.task_html != "0/0" %}<a href="/project_html/{{ project.id }}"> {{ project.task_html }}{%  else %}{{ project.task_html }}{%  endif %}</a><br><font> Over Due</font></span></td>
 									   <td><span class="red-text">{%  if project.task_api != "0/0" %}<a href="/project_api/{{ project.id }}"> {{ project.task_api }}{%  else %}{{ project.task_api }}{%  endif %}</a><br><font> Over Due</font></span></td>
 									   <td><span class="red-text">{%  if project.task_bee != "0/0" %}<a href="/project_bee/{{ project.id }}"> {{ project.task_bee }}{%  else %}{{ project.task_bee }}{%  endif %}</a><br><font> Over Due</font></span></td>
-									   <td><span class="red-text">{%  if project.task_bqc != "0/0" %}<a href="/project_qc/{{ project.id }}"> {{ project.task_qc }}{%  else %}{{ project.task_qc }}{%  endif %}</a><br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{%  if project.task_qc != "0/0" %}<a href="/project_qc/{{ project.id }}"> {{ project.task_qc }}{%  else %}{{ project.task_qc }}{%  endif %}</a><br><font> Over Due</font></span></td>
 									   <td><span class="red-text">{%  if project.task_uat != "0/0" %}<a href="/project_uat/{{ project.id }}"> {{ project.task_uat }}{%  else %}{{ project.task_uat }}{%  endif %}</a><br><font> Over Due</font></span></td>
                                     {%  endif %}
 									</tr>{%  endfor %}

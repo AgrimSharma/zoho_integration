@@ -25,7 +25,7 @@ def task_filter(tasks):
 
 
 def all_project_task_list(user):
-    project = user.projects_set.all()
+    project = Projects.objects.filter(user=user)
     print len(project)
     for p in project:
         if p.tasklist_url == None or p.tasklist_url == "":
@@ -47,15 +47,18 @@ def all_project_task_list(user):
             else:
                 data = response.json()
                 data = data['tasklists']
+
                 for d in data:
                     try:
-                        task_list = TaskList.objects.get(task_list_id=d['id_string'])
+                        task_list = TaskList.objects.get(user=user, task_list_id=d['id_string'])
+                        print 1
                     except Exception:
                         task_list = TaskList.objects.create(user=user, task_list_id=d['id_string'],
                                                             project=p)
+                        print 2
 
-                    task_list = TaskList.objects.get(task_list_id=d['id_string'],
-                        project=p)
+                    task_list = TaskList.objects.get(user=user, task_list_id=d['id_string'],
+                                                    project=p)
 
                     try:
                         created_time=datetime.datetime.strptime(d['created_time'], "%Y-%m-%d")
@@ -230,8 +233,8 @@ def task_list_week_project(project_id):
                                                     end_date__lte=begin_date, status__in=['closed', 'Closed']).count()
 
     past_date_two_week_total = Tasks.objects.filter(project=project,
-                                              end_date__gte=past_date_two,
-                                              end_date__lte=past_date_one).count()
+                                                    end_date__gte=past_date_two,
+                                                    end_date__lte=past_date_one).count()
 
     past_date_two_week_closed=Tasks.objects.filter(project=project,
                                               end_date__gte=past_date_two,
