@@ -76,8 +76,8 @@
                 <td>{{t.start_date}}</td>
                 <td>{{t.end_date}}</td>
                 <td>{% if t.status == 'Closed' %} <label class="text-success">{{t.status}}</label>
-                    {% elif t.status == 'Open' and date_today < t.end_date%} <label class="text-success">{{t.status}}</label>
-                    {% elif t.status == 'Open' and t.end_date == None %} <label class="text-warning">{{t.status}}</label>
+                    {% elif t.status == 'Open' and date_today < t.end_date %} <label class="text-success">{{t.status}}</label>
+                    {% elif t.status == 'Open' and t.end_date == None %} <label class="text-danger">{{t.status}}</label>
 
                     {% else %} <label class="text-danger">{{t.status}}</label>
                     {% endif %}

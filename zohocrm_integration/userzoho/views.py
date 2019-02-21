@@ -644,8 +644,8 @@ def project_list(request):
                 status__in=['in progress',
                             'In Progress']).count()
             task_closed = Tasks.objects.filter(project__name__icontains=name,
-                                               status__in=['open',
-                                                           'Open']).count()
+                                               status__in=['closed',
+                                                           'Closed']).count()
             date_today = datetime.datetime.now().date()
             week_day = date_today.weekday()
             begin_date = datetime.datetime.now().date() - datetime.timedelta(
@@ -666,8 +666,8 @@ def project_list(request):
                                                          'Open']).count()
             task_inprogress = Tasks.objects.filter(status__in=['in progress',
                             'In Progress']).count()
-            task_closed = Tasks.objects.filter(status__in=['open',
-                                                           'Open']).count()
+            task_closed = Tasks.objects.filter(status__in=['Closed',
+                                                           'closed']).count()
             date_today = datetime.datetime.now().date()
             week_day = date_today.weekday()
             begin_date = datetime.datetime.now().date() - datetime.timedelta(
@@ -1434,7 +1434,7 @@ def over_due_task(request):
                                                          'Open'])
 
         else:
-            tasks = Tasks.objects.filter(project__name__icontains = name,
+            tasks = Tasks.objects.filter(project__name__icontains=name,
                                          status__in=['open',
                                                          'Open'])
         tasks = task_filter_all(tasks)
