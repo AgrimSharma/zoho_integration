@@ -313,6 +313,7 @@ def project_all_tasks(project_id):
             percent_complete = t.percent_complete,
             completed_time=t.last_updated_time,
             subtasks=t.subtasks,
+            project=t.project,
             owner=",".join(list(set([o.username for o in users])))
         ))
     return response
