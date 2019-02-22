@@ -50,6 +50,7 @@
         <thead class="thead-dark">
             <tr>
                 <th>SNo.</th>
+                <th>Project</th>
                 <th>Task Name</th>
 
                 <th>Description</th>
@@ -72,6 +73,7 @@
              {% for t in tasks %}
             <tr>
                             <td>{{forloop.counter}}</td>
+                            <td>{{t.project}}</td>
                 <td>{{t.name}}</td>
 
                 <td>{% if t.description == None or t.description == "" %} No Description {% else %}{{t.description}}{% endif %}</td>
