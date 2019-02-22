@@ -1,4 +1,5 @@
-{%  load static %}<!doctype html>
+{%  load static %}
+<!doctype html>
 <html lang="en">
    <head>
       <meta charset="utf-8">
@@ -11,7 +12,6 @@
       <title>Projects</title>
 	   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
       <link href="{%  static 'css/bootstrap.min.css' %}" rel="stylesheet">
-      <!--<link href="assets/css/style.css" rel="stylesheet">-->
    </head>
    <body>
       
@@ -58,9 +58,7 @@
     </ul>
   </div>
 </nav>
-
 <hr>
-     
          <section class="container-fluid">
                <div class="row">
                   <div class="col-xs-12 w-100">
@@ -104,7 +102,7 @@
 												</div>
 
 												<div class="form-check form-check-inline" >
-													<input type="checkbox" id="2" name="optradio" value="yellow" checked>
+													<input type="checkbox" id="2" name="optradio" value="yellow" >
 													<label for="2">&nbsp;</label>
 												</div>
 
@@ -128,7 +126,7 @@
 
 							</div>
 						</div>
-					 </div> 
+					 </div>
 						<div class="sortby_showing">
 						   <div class="row align-items-center">
 							  <div class="col-md-9">
@@ -143,7 +141,7 @@
 							  </div>
 						   </div>
 						</div>
-			
+
 						   <div class="table-wrap">
 							  <table class="common_table w-100">
 								 <thead>
@@ -191,7 +189,7 @@
 									   <td><span class="green-text">{%  if project.task_html != "0/0" %}<a href="/project_html/{{ project.id }}"> {{ project.task_html }}{%  else %}{{ project.task_html }}{%  endif %}</a><br><font> On Track</font></span></td>
 									   <td><span class="green-text">{%  if project.task_api != "0/0" %}<a href="/project_api/{{ project.id }}"> {{ project.task_api }}{%  else %}{{ project.task_api }}{%  endif %}</a><br><font> On Track</font></span></td>
 									   <td><span class="green-text">{%  if project.task_bee != "0/0" %}<a href="/project_bee/{{ project.id }}"> {{ project.task_bee }}{%  else %}{{ project.task_bee }}{%  endif %}</a><br><font> On Track</font></span></td>
-									   <td><span class="green-text">{%  if project.task_qc != "0/0" %}<a href="/project_qc/{{ project.id }}"> {{ project.task_qc }}{%  else %}{{ project.task_qc }}{%  endif %}</a><br><font> On Track</font></span></td>
+									   <td><span class="green-text">{%  if project.task_bqc != "0/0" %}<a href="/project_qc/{{ project.id }}"> {{ project.task_qc }}{%  else %}{{ project.task_qc }}{%  endif %}</a><br><font> On Track</font></span></td>
 									   <td><span class="green-text">{%  if project.task_uat != "0/0" %}<a href="/project_uat/{{ project.id }}"> {{ project.task_uat }}{%  else %}{{ project.task_uat }}{%  endif %}</a><br><font> On Track</font></span></td>
                                         {%  else %}
                                         <td class="lbordermain"><span class="red-text">{%  if project.task_ux != "0/0" %}<a href="/project_ux/{{ project.id }}"> {{ project.task_ux }}{%  else %}{{ project.task_ux }}{%  endif %}<br><font>Over Due</font></span></td>
@@ -199,24 +197,24 @@
 									   <td><span class="red-text">{%  if project.task_html != "0/0" %}<a href="/project_html/{{ project.id }}"> {{ project.task_html }}{%  else %}{{ project.task_html }}{%  endif %}</a><br><font> Over Due</font></span></td>
 									   <td><span class="red-text">{%  if project.task_api != "0/0" %}<a href="/project_api/{{ project.id }}"> {{ project.task_api }}{%  else %}{{ project.task_api }}{%  endif %}</a><br><font> Over Due</font></span></td>
 									   <td><span class="red-text">{%  if project.task_bee != "0/0" %}<a href="/project_bee/{{ project.id }}"> {{ project.task_bee }}{%  else %}{{ project.task_bee }}{%  endif %}</a><br><font> Over Due</font></span></td>
-									   <td><span class="red-text">{%  if project.task_qc != "0/0" %}<a href="/project_qc/{{ project.id }}"> {{ project.task_qc }}{%  else %}{{ project.task_qc }}{%  endif %}</a><br><font> Over Due</font></span></td>
+									   <td><span class="red-text">{%  if project.task_bqc != "0/0" %}<a href="/project_qc/{{ project.id }}"> {{ project.task_qc }}{%  else %}{{ project.task_qc }}{%  endif %}</a><br><font> Over Due</font></span></td>
 									   <td><span class="red-text">{%  if project.task_uat != "0/0" %}<a href="/project_uat/{{ project.id }}"> {{ project.task_uat }}{%  else %}{{ project.task_uat }}{%  endif %}</a><br><font> Over Due</font></span></td>
                                     {%  endif %}
 									</tr>{%  endfor %}
                                  {%  else %}
 									<tr>
-                                        <td colspan="14"> NO data found</td>
+                                        <td colspan="14" style="text-align:center;"> No data found</td>
                                     </tr>
                                  {%  endif %}
 								 </tbody>
 							  </table>
 						   </div>
-						
+
                       </div>
                   </div>
                </div>
          </section>
-      
+
 
       <script>
         $("#project_name").on('keyup', function (e) {
@@ -244,7 +242,6 @@
             window.location.href = "/project_list_color/?color=" + energy;
 
         });
-
       </script>
    <script>
 

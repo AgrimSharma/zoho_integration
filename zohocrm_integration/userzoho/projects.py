@@ -547,6 +547,9 @@ def parse_project_data(csm, user=None):
     else:
         if csm == "all":
             projects = user.projects_set.all()
+        elif "hdfc" in user.email:
+            projects = Projects.objects.filter(owner_name__icontains=csm, name__icontains='hdfc')
+
         else:
             projects = user.projects_set.filter(owner_name__icontains=csm)
     response = []
@@ -770,7 +773,7 @@ def parse_project_data_project(project_name, user=None):
     return response
 
 
-def parse_project_data_color():
+def parse_project_data_color(user):
     today = datetime.datetime.now()
     next_date = today + datetime.timedelta(days=7)
     #
@@ -783,7 +786,10 @@ def parse_project_data_color():
     #     query = Q(end_date_format__gte=next_date,
     #                                   status__in=['active', 'Active','Closed', 'closed'])
     # projects = Projects.objects.filter(query)
-    projects = Projects.objects.all()
+    if "hdfc" in user.email:
+        projects = Projects.objects.filter(name__icontains="hdfc")
+    else:
+        projects = Projects.objects.all()
 
     response = []
     for pro in projects:

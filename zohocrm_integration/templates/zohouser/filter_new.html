@@ -14,7 +14,6 @@
       <link href="{%  static 'css/bootstrap.min.css' %}" rel="stylesheet">
    </head>
    <body>
-      
       <nav class="navbar navbar-expand-lg bg-dark">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -95,19 +94,19 @@
 								<div class="row align-items-center">
 									<div class="col-md-4 filter-padd">FILTER BY HEALTH:</div>
 										<div class="form-inline justify-content-center custom-checkbox d-flex filetrcheck">
-											<div class="form-check form-check-inline">
 
-													<input type="checkbox" id="1" name="optradio" value="red" >
+												<div class="form-check form-check-inline">
+													<input type="checkbox" id="1" name="optradio" value="red" checked>
 													<label for="1">&nbsp;</label>
 												</div>
 
 												<div class="form-check form-check-inline" >
-													<input type="checkbox" id="2" name="optradio" value="yellow" >
+													<input type="checkbox" id="2" name="optradio" value="yellow" checked>
 													<label for="2">&nbsp;</label>
 												</div>
 
 												<div class="form-check form-check-inline">
-													<input type="checkbox" id="3" name="optradio" value="green" >
+													<input type="checkbox" id="3" name="optradio" value="green" checked>
 													<label for="3">&nbsp;</label>
 												</div>
 										</div>
@@ -232,12 +231,20 @@
             }
 
         });
-        $("input[type='checkbox']").click(function(){
-            var radioValue = $("input[name='optradio']:checked").val();
-            window.location.href = "/project_list_color/?color=" + radioValue;
+         $("input[type='checkbox']").click(function(){
+        	var favorite = [];
+            $.each($("input[name='optradio']:checked"), function(){
+                favorite.push($(this).val());
+            });
+            var energy = favorite.join();
+			alert(energy);
+            window.location.href = "/project_list_color/?color=" + energy;
 
         });
 
       </script>
+   <script>
+
+   </script>
    </body>
 </html>

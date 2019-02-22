@@ -1204,20 +1204,23 @@ def task_filter(tasks):
 def project_filter(request):
     user = request.user
     if user.is_authenticated():
-        csm_data = Projects.objects.all().values_list("owner_name")
+
         csm_list = []
         csm = request.GET.get("csm", "all")
         project_name = request.GET.get("project_name", "all")
         if "indigo" in user.email:
             if project_name == "all":
-                projects = parse_project_data(csm)
+                projects = parse_project_data(csm,user)
             else:
                 projects = parse_project_data_project(project_name)
+            csm_data = Projects.objects.all().values_list("owner_name")
         else:
             if project_name == "all":
-                projects = parse_project_data(csm)
+                projects = parse_project_data(csm, user)
             else:
                 projects = parse_project_data_project(project_name)
+            csm_data = Projects.objects.filter(name__icontains="hdfc").values_list("owner_name")
+
         for c in csm_data:
             names = str(c[0])
             if names not in csm_data:
@@ -1272,22 +1275,23 @@ def project_list_color(request):
     if user.is_authenticated():
         today = datetime.datetime.now().date()
         color = request.GET.get('color')
-        csm_data = Projects.objects.all().values_list("owner_name")
+        if "hdfc" in user.email:
+            csm_data = Projects.objects.filter(name__icontains="hdfc").values_list("owner_name")
+        else:
+            csm_data = Projects.objects.all().values_list("owner_name")
 
         csm_list = []
         for c in csm_data:
             names = str(c[0])
             if names not in csm_data:
                 csm_list.append(names)
-        project = parse_project_data_color()
-
+        project = parse_project_data_color(user)
         sorted(list(set(csm_list)))
         total_projects = len(project)
         red_project = []
         yellow_project = []
         green_project = []
         for pro in project:
-            print pro['name'], pro['color']
             percent = pro['color']
             if percent == "green":
                 green_project.append(pro)
@@ -1295,9 +1299,9 @@ def project_list_color(request):
                 red_project.append(pro)
             else:
                 yellow_project.append(pro)
-        print len(red_project), len(yellow_project), len(green_project)
+        # color = color.split(",")
         if color == "red":
-            return render(request, "zohouser/filter_new.html",
+            return render(request, "zohouser/filter_new_red.html",
                       {"projects": red_project,
                        "csm": list(set(csm_list)),
                        "date": today,
@@ -1307,7 +1311,7 @@ def project_list_color(request):
 
                        })
         elif color == "yellow":
-            return render(request, "zohouser/filter_new.html",
+            return render(request, "zohouser/filter_new_orange.html",
                           {"projects": yellow_project,
                            "csm": list(set(csm_list)),
                            "date": today,
@@ -1316,9 +1320,53 @@ def project_list_color(request):
                            "color": color
 
                            })
+        elif color == "green":
+            return render(request, "zohouser/filter_new_green.html",
+                          {"projects": yellow_project,
+                           "csm": list(set(csm_list)),
+                           "date": today,
+                           "user_name": user.email,
+                           "total_projects": total_projects,
+                           "color": color
+
+                           })
+        elif color == "red,green":
+
+            return render(request, "zohouser/filter_new_red_green.html",
+                          {"projects": red_project + green_project,
+                           "csm": list(set(csm_list)),
+                           "date": today,
+                           "user_name": user.email,
+                           "total_projects": total_projects,
+                           "color": color
+
+                           })
+        elif color == "red,yellow":
+
+            return render(request, "zohouser/filter_new_red_yellow.html",
+                          {"projects": red_project + yellow_project,
+                           "csm": list(set(csm_list)),
+                           "date": today,
+                           "user_name": user.email,
+                           "total_projects": total_projects,
+                           "color": color
+
+                           })
+        elif color == "yellow,green":
+            print 1
+            return render(request, "zohouser/filter_new_yellow_green.html",
+                          {"projects": yellow_project + green_project,
+                           "csm": list(set(csm_list)),
+                           "date": today,
+                           "user_name": user.email,
+                           "total_projects": total_projects,
+                           "color": color
+
+                           })
+
         else:
             return render(request, "zohouser/filter_new.html",
-                      {"projects": green_project,
+                      {"projects": red_project + yellow_project + green_project,
                        "csm": list(set(csm_list)),
                        "date": today,
                        "user_name": user.email,
