@@ -1261,8 +1261,9 @@ def task_weekly(request):
                                              end_date__lte=end_date)
         else:
             this_week = Tasks.objects.filter(project__name__icontains=name,
-                                         end_date__gte=begin_date,
-                                         end_date__lte=end_date)
+                                             end_date__gte=begin_date,
+                                             end_date__lte=end_date)
+        tasks  = filter_tasks(this_week)
         return render(request, "zohouser/tasks/project_tasks.html",{
             "current_task": this_week
         })
