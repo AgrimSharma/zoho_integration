@@ -682,7 +682,7 @@ def project_list(request):
             this_week = Tasks.objects.filter(end_date__gte=begin_date,
                                              end_date__lte=end_date).count()
         month = datetime.datetime.strftime(today, "%B")
-        project.sort(key=lambda hotel: hotel['name'])
+        # project.sort(key=lambda hotel: hotel['name'])
 
         return render(request, "zohouser/project_list_pie.html",
                           {"projects": project,
