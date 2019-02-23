@@ -26,7 +26,6 @@ def task_filter(tasks):
 
 def all_project_task_list(user):
     project = Projects.objects.filter(user=user)
-    print len(project)
     for p in project:
         if p.tasklist_url == None or p.tasklist_url == "":
             pass
@@ -41,7 +40,6 @@ def all_project_task_list(user):
             result = []
             response = requests.request("GET", p.tasklist_url, headers=headers,
                                         params=querystring)
-            print p, response.status_code
             if response.status_code in [204, 400, 401, 404]:
                 pass
             else:
@@ -51,11 +49,9 @@ def all_project_task_list(user):
                 for d in data:
                     try:
                         task_list = TaskList.objects.get(user=user, task_list_id=d['id_string'])
-                        print 1
                     except Exception:
                         task_list = TaskList.objects.create(user=user, task_list_id=d['id_string'],
                                                             project=p)
-                        print 2
 
                     task_list = TaskList.objects.get(user=user, task_list_id=d['id_string'],
                                                     project=p)

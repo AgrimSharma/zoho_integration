@@ -37,7 +37,10 @@ def all_projects(user):
     headers = {
         'authorization': "Bearer {}".format(access_token),
     }
-    projects = requests.request("GET", url, headers=headers)
+    querystring = {"range": "2000"}
+
+    projects = requests.request("GET", url, headers=headers,
+                                params=querystring)
     if projects.status_code in [204, 400, 401, 404]:
         pass
     else:

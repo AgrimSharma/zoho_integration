@@ -175,9 +175,9 @@
                                         <td scope="row">{{ forloop.counter }}</td>
 
 									   <td style="text-align: center" >
-                    {%  if project.color == 'green' %}    <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
-                    {%  elif project.color == 'red' %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
-                    {%  else %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
+                    {%  if project.percent >= 85.0 %}    <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
+                    {%  elif 75.0 <= project.percent and project.percent < 85.0 %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
+                    {%  else %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
                     {%  endif %}
                 </td>
 									   <td class="text-center"><span class="circletxt">{{ project.csm }}</span></td>

@@ -617,13 +617,14 @@ def project_list(request):
     user = request.user
     if user.is_authenticated():
         today = datetime.datetime.now().date()
+        first,last=get_month_day_range(today)
+
         name = request.GET.get('name')
         status = request.GET.get('status')
         csms = request.GET.get('csm')
         color = request.GET.get('color')
         csm_data = Projects.objects.all().values_list("owner_name")
         csm_list = []
-        first,last=get_month_day_range(today)
         for c in csm_data:
             names = str(c[0])
             if names not in csm_data:
@@ -639,14 +640,16 @@ def project_list(request):
             closed = Projects.objects.filter(name__icontains=name, status__in=['Closed', 'closed'], end_date_format__range=[first, last]).count()
             task_open = Tasks.objects.filter(project__name__icontains=name,
                                              status__in=['open',
-                                                         'Open']).count()
+                                                         'Open'],
+                                             end_date__range=[first, last]).count()
             task_inprogress = Tasks.objects.filter(
                 project__name__icontains=name,
                 status__in=['in progress',
-                            'In Progress']).count()
+                            'In Progress'],end_date__range=[first, last]).count()
             task_closed = Tasks.objects.filter(project__name__icontains=name,
                                                status__in=['closed',
-                                                           'Closed']).count()
+                                                           'Closed'],
+                                               end_date__range=[first, last]).count()
             date_today = datetime.datetime.now().date()
             week_day = date_today.weekday()
             begin_date = datetime.datetime.now().date() - datetime.timedelta(
@@ -663,11 +666,13 @@ def project_list(request):
                                              end_date_format__range=[first,
                                                                      last]).count()
             task_open = Tasks.objects.filter(status__in=['open',
-                                                         'Open']).count()
+                                                         'Open'],
+                                             end_date__range=[first, last]).count()
             task_inprogress = Tasks.objects.filter(status__in=['in progress',
-                            'In Progress']).count()
+                            'In Progress'],end_date__range=[first, last]).count()
             task_closed = Tasks.objects.filter(status__in=['Closed',
-                                                           'closed']).count()
+                                                           'closed'],
+                                               end_date__range=[first, last]).count()
             date_today = datetime.datetime.now().date()
             week_day = date_today.weekday()
             begin_date = datetime.datetime.now().date() - datetime.timedelta(
@@ -677,6 +682,7 @@ def project_list(request):
             this_week = Tasks.objects.filter(end_date__gte=begin_date,
                                              end_date__lte=end_date).count()
         month = datetime.datetime.strftime(today, "%B")
+        projects.sort(key=lambda hotel: hotel['name'])
 
         return render(request, "zohouser/project_list_pie.html",
                           {"projects": project,
@@ -1227,6 +1233,8 @@ def project_filter(request):
                 csm_list.append(names)
         csm_list = list(set(csm_list))
         today = datetime.datetime.now()
+        projects.sort(key=lambda hotel: hotel['name'])
+
         return render(request, "zohouser/filter.html",
                   dict(projects=projects,
                        csm=csm_list,
@@ -1491,14 +1499,16 @@ def project_uat(request, project_id):
 def over_due_task(request):
     user = request.user
     name = request.GET.get("project_name")
+    today = datetime.datetime.now().date()
+    first, last = get_month_day_range(today)
     if user.is_authenticated():
         if name == "all":
             tasks = Tasks.objects.filter(status__in=['open',
-                                                         'Open'])
+                                                         'Open'], end_date__range=[first,last])
         else:
             tasks = Tasks.objects.filter(project__name__icontains=name,
                                          status__in=['open',
-                                                         'Open'])
+                                                         'Open'], end_date__range=[first,last])
         tasks = task_filter_all(tasks)
         tasks.sort(key=lambda hotel: hotel['created_time'], reverse=True)
         date_today = datetime.datetime.now().date()
@@ -1515,15 +1525,17 @@ def pending_task(request):
     user = request.user
     name = request.GET.get("project_name")
     if user.is_authenticated():
+        today = datetime.datetime.now().date()
+        first, last = get_month_day_range(today)
         if name == 'all':
             tasks = Tasks.objects.filter(
                 status__in=['in progress',
-                            'In Progress'])
+                            'In Progress'], end_date__range=[first,last])
         else:
             tasks = Tasks.objects.filter(
                 project__name__icontains=name,
                 status__in=['in progress',
-                            'In Progress'])
+                            'In Progress'], end_date__range=[first,last])
         tasks = task_filter_all(tasks)
         tasks.sort(key=lambda hotel: hotel['created_time'], reverse=True)
 
@@ -1540,15 +1552,16 @@ def pending_task(request):
 def closed_tasks(request):
     user = request.user
     name = request.GET.get("project_name")
-
+    today = datetime.datetime.now().date()
+    first, last = get_month_day_range(today)
     if user.is_authenticated():
         if name == 'all':
             tasks = Tasks.objects.filter(status__in=['closed',
-                                                       'Closed'])
+                                                       'Closed'], end_date__range=[first,last])
         else:
             tasks = Tasks.objects.filter(project__name__icontains=name,
                                                status__in=['closed',
-                                                           'Closed'])
+                                                           'Closed'], end_date__range=[first,last])
         tasks = task_filter_all(tasks)
         date_today = datetime.datetime.now().date()
         tasks.sort(key=lambda hotel: hotel['created_time'], reverse=True)
