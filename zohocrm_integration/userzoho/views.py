@@ -1271,9 +1271,11 @@ def task_weekly(request):
             this_week = Tasks.objects.filter(project__name__icontains=name,
                                              end_date__gte=begin_date,
                                              end_date__lte=end_date)
-        tasks  = filter_tasks(this_week)
-        return render(request, "zohouser/tasks/project_tasks.html",{
-            "current_task": this_week
+        tasks = filter_tasks(this_week)
+        tasks.sort(key=lambda hotel: hotel['status'], reverse=True)
+
+        return render(request, "zohouser/task_wise_list.html",{
+            "tasks": tasks
         })
     else:
         return redirect("/")

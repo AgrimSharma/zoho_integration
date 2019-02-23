@@ -381,7 +381,6 @@ def task_ux(project):
                                          status__in=["closed","closed"])
     tasks_open = Tasks.objects.filter(query_open).count()
     tasks_closed = Tasks.objects.filter(query_closed).count()
-    print tasks_open, tasks_closed, project.name
     return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
 
 

@@ -136,7 +136,8 @@ def filter_tasks(tasks):
             completed=t.completed,
             percent=t.percent_complete,
             color=color,
-            days_left=days_left
+            days_left=days_left,
+            project=t.project
         ))
     return response
 
