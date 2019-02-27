@@ -171,8 +171,7 @@ def project_list_view(name, status, csm):
                 projects = Projects.objects.filter(name__icontains=name,
                                                    status__in=['active', 'Active'],end_date_format__range=[first, last])
             else:
-                projects = Projects.objects.filter(name__icontains=name,
-                                               status__in=['Closed', 'closed'])
+                projects = Projects.objects.filter(name__icontains=name,status__in=['Closed', 'closed'])
     response = []
     for pro in projects:
         taks_open = pro.tasks_set.filter(
@@ -237,6 +236,97 @@ def project_list_view(name, status, csm):
                     )
         response.append(data)
     return response
+
+
+def project_list_view_all(name, status, csm):
+    if csm == "all":
+        if status == "all" and name == 'all':
+            projects = Projects.objects.all()
+        else:
+            if status == "all":
+                projects = Projects.objects.filter(name__icontains=name,)
+            elif status == 'open':
+                projects = Projects.objects.filter(name__icontains=name,
+                                                   status__in=['active', 'Active'])
+            else:
+                projects = Projects.objects.filter(name__icontains=name,
+                                               status__in=['Closed', 'closed'])
+    else:
+        if status == "all" and name == 'all':
+            projects = Projects.objects.all()
+        else:
+            if status == "all":
+                projects = Projects.objects.filter(name__icontains=name,)
+            elif status == 'open':
+                projects = Projects.objects.filter(name__icontains=name,
+                                                   status__in=['active', 'Active'])
+            else:
+                projects = Projects.objects.filter(name__icontains=name,status__in=['Closed', 'closed'])
+    response = []
+    for pro in projects:
+        taks_open = pro.tasks_set.filter(
+            status__in=['Open', 'In Progress', 'open', 'in progress'])
+        tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])
+        total = len(taks_open) + len(tasks_close)
+        current_task, future_date_one_week, past_date_one_week, past_date_two_week = task_list_week_project(
+            pro.id)
+        try:
+            percent = len(tasks_close) / total
+        except Exception:
+            percent = 0
+        today = datetime.datetime.now().date()
+        if pro.status in ["Active",
+                          'active'] and pro.end_date_format and pro.end_date_format < today:
+            color = "red"
+        elif pro.status in ["Active",
+                            'active'] and pro.end_date_format == None:
+            color = "red"
+        elif pro.status in ["closed",
+                            'Closed'] and pro.end_date_format == None:
+            color = "red"
+        else:
+            color = 'green'
+        try:
+            datetime.datetime.strftime(pro.end_date_format, "%Y-%m-%d")
+            if pro.end_date_format < today and pro.status == 'active':
+                color = 'red'
+            else:
+                color = 'green'
+            over_due = datetime.datetime.now().date() - pro.end_date_format
+        except Exception:
+            over_due = None
+        milestone_closed = pro.milestone_set.filter(status='notcompleted')
+        milestone_open = pro.milestone_set.filter(status='completed')
+        try:
+            names = pro.owner_name
+            name_data = [n.capitalize() for n in names.split(".")]
+            name_list = " ".join(name_data)
+        except Exception:
+            name_list = ""
+        data = dict(name=pro.name,
+                    id=pro.id,
+                    end_date=pro.end_date_format,
+                    task_count_open=len(taks_open) + len(tasks_close),
+                    milestone_count_open=len(milestone_closed) + len(
+                        milestone_open),
+                    task_count_close=len(tasks_close),
+                    milestone_count_close=len(milestone_closed),
+                    start_date=pro.start_date_format,
+                    status=pro.status.capitalize(),
+                    created_date=pro.created_date_format,
+                    project_id=pro.project_id,
+                    current_task=current_task,
+                    future_date_one_week=future_date_one_week,
+                    past_date_one_week=past_date_one_week,
+                    past_date_two_week=past_date_two_week,
+                    percent=round(percent, 2) * 100,
+                    color=color,
+                    csm=name_list,
+                    overdue=over_due.days if over_due else None
+                    )
+        response.append(data)
+    return response
+
 
 
 def project_list_view_color(name, csm, color):
@@ -381,7 +471,7 @@ def task_ux(project):
                                          status__in=["closed","closed"])
     tasks_open = Tasks.objects.filter(query_open).count()
     tasks_closed = Tasks.objects.filter(query_closed).count()
-    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+    return tasks_closed, tasks_open + tasks_closed
 
 
 def task_ui(project):
@@ -401,7 +491,7 @@ def task_ui(project):
                                                                "closed"])
     tasks_open = Tasks.objects.filter(query_open).count()
     tasks_closed = Tasks.objects.filter(query_closed).count()
-    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+    return tasks_closed, tasks_open + tasks_closed
 
 
 def task_html(project):
@@ -421,7 +511,7 @@ def task_html(project):
                                                                "closed"])
     tasks_open = Tasks.objects.filter(query_open).count()
     tasks_closed = Tasks.objects.filter(query_closed).count()
-    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+    return tasks_closed, tasks_open + tasks_closed
 
 
 def task_api(project):
@@ -441,7 +531,7 @@ def task_api(project):
                                                                "closed"])
     tasks_open = Tasks.objects.filter(query_open).count()
     tasks_closed = Tasks.objects.filter(query_closed).count()
-    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+    return tasks_closed, tasks_open + tasks_closed
 
 
 def task_bee(project):
@@ -497,7 +587,7 @@ def task_bee(project):
     tasks_closed_bug = Tasks.objects.filter(query_closed_bug).count()
     tasks_closed = tasks_closed+ tasks_closed_re + tasks_closed_bug
     tasks_open = tasks_open + tasks_open_re + tasks_open_bug
-    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+    return tasks_closed, tasks_open + tasks_closed
 
 
 def task_qc(project):
@@ -517,7 +607,7 @@ def task_qc(project):
                                                                "closed"])
     tasks_open = Tasks.objects.filter(query_open).count()
     tasks_closed = Tasks.objects.filter(query_closed).count()
-    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+    return tasks_closed, tasks_open + tasks_closed
 
 
 def task_uat(project):
@@ -537,7 +627,7 @@ def task_uat(project):
                                                                "closed"])
     tasks_open = Tasks.objects.filter(query_open).count()
     tasks_closed = Tasks.objects.filter(query_closed).count()
-    return "{}/{}".format(tasks_closed, tasks_open + tasks_closed)
+    return tasks_closed, tasks_open + tasks_closed
 
 
 def parse_project_data(csm, user=None):
@@ -598,6 +688,13 @@ def parse_project_data(csm, user=None):
 
         except Exception:
             name_list = ""
+        task_api_closed,task_api_total  = task_api(pro)
+        task_html_closed, task_html_total = task_html(pro)
+        task_uat_closed,task_uat_total  = task_uat(pro)
+        task_bee_closed, task_bee_total = task_bee(pro)
+        task_ux_closed, task_ux_total = task_ux(pro)
+        task_ui_closed, task_ui_total = task_ui(pro)
+        task_qc_closed,task_qc_total  = task_qc(pro)
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
@@ -614,13 +711,20 @@ def parse_project_data(csm, user=None):
                     color=color,
                     csm=name_list,
                     overdue=over_due.days if over_due else None,
-                    task_api=task_api(pro),
-                    task_html=task_html(pro),
-                    task_uat=task_uat(pro),
-                    task_bee=task_bee(pro),
-                    task_ux=task_ux(pro),
-                    task_ui=task_ui(pro),
-                    task_qc=task_qc(pro),
+                    task_api_closed=task_api_closed,
+                    task_api_total=task_api_total,
+                    task_html_closed=task_html_closed,
+                    task_html_total=task_html_total,
+                    task_uat_closed=task_uat_closed,
+                    task_uat_total=task_uat_total,
+                    task_bee_closed=task_bee_closed,
+                    task_bee_total=task_bee_total,
+                    task_ux_closed=task_ux_closed,
+                    task_ux_total=task_ux_total,
+                    task_ui_closed=task_ui_closed,
+                    task_ui_total=task_ui_total,
+                    task_qc_closed=task_qc_closed,
+                    task_qc_total=task_qc_total
                     )
         response.append(data)
     return response
@@ -670,6 +774,13 @@ def project_data_parse(project_id):
 
     except Exception:
         name_list = ""
+    task_api_closed, task_api_total = task_api(pro)
+    task_html_closed, task_html_total = task_html(pro)
+    task_uat_closed, task_uat_total = task_uat(pro)
+    task_bee_closed, task_bee_total = task_bee(pro)
+    task_ux_closed, task_ux_total = task_ux(pro)
+    task_ui_closed, task_ui_total = task_ui(pro)
+    task_qc_closed, task_qc_total = task_qc(pro)
     data = dict(name=pro.name,
                 id=pro.id,
                 end_date=pro.end_date_format,
@@ -686,13 +797,20 @@ def project_data_parse(project_id):
                 color=color,
                 csm=name_list,
                 overdue=over_due.days if over_due else None,
-                task_api=task_api(pro),
-                task_html=task_html(pro),
-                task_uat=task_uat(pro),
-                task_bee=task_bee(pro),
-                task_ux=task_ux(pro),
-                task_ui=task_ui(pro),
-                task_qc=task_qc(pro),
+                task_api_closed=task_api_closed,
+                task_api_total=task_api_total,
+                task_html_closed=task_html_closed,
+                task_html_total=task_html_total,
+                task_uat_closed=task_uat_closed,
+                task_uat_total=task_uat_total,
+                task_bee_closed=task_bee_closed,
+                task_bee_total=task_bee_total,
+                task_ux_closed=task_ux_closed,
+                task_ux_total=task_ux_total,
+                task_ui_closed=task_ui_closed,
+                task_ui_total=task_ui_total,
+                task_qc_closed=task_qc_closed,
+                task_qc_total=task_qc_total
                 )
     return data
 
@@ -747,6 +865,13 @@ def parse_project_data_project(project_name, user=None):
 
         except Exception:
             name_list = ""
+        task_api_closed, task_api_total = task_api(pro)
+        task_html_closed, task_html_total = task_html(pro)
+        task_uat_closed, task_uat_total = task_uat(pro)
+        task_bee_closed, task_bee_total = task_bee(pro)
+        task_ux_closed, task_ux_total = task_ux(pro)
+        task_ui_closed, task_ui_total = task_ui(pro)
+        task_qc_closed, task_qc_total = task_qc(pro)
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
@@ -763,13 +888,20 @@ def parse_project_data_project(project_name, user=None):
                     color=color,
                     csm=name_list,
                     overdue=over_due.days if over_due else None,
-                    task_api=task_api(pro),
-                    task_html=task_html(pro),
-                    task_uat=task_uat(pro),
-                    task_bee=task_bee(pro),
-                    task_ux=task_ux(pro),
-                    task_ui=task_ui(pro),
-                    task_qc=task_qc(pro),
+                    task_api_closed=task_api_closed,
+                    task_api_total=task_api_total,
+                    task_html_closed=task_html_closed,
+                    task_html_total=task_html_total,
+                    task_uat_closed=task_uat_closed,
+                    task_uat_total=task_uat_total,
+                    task_bee_closed=task_bee_closed,
+                    task_bee_total=task_bee_total,
+                    task_ux_closed=task_ux_closed,
+                    task_ux_total=task_ux_total,
+                    task_ui_closed=task_ui_closed,
+                    task_ui_total=task_ui_total,
+                    task_qc_closed=task_qc_closed,
+                    task_qc_total=task_qc_total
                     )
         response.append(data)
     return response
@@ -838,6 +970,13 @@ def parse_project_data_color(user):
         except Exception:
             name_list = ""
 
+        task_api_closed, task_api_total = task_api(pro)
+        task_html_closed, task_html_total = task_html(pro)
+        task_uat_closed, task_uat_total = task_uat(pro)
+        task_bee_closed, task_bee_total = task_bee(pro)
+        task_ux_closed, task_ux_total = task_ux(pro)
+        task_ui_closed, task_ui_total = task_ui(pro)
+        task_qc_closed, task_qc_total = task_qc(pro)
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
@@ -854,13 +993,20 @@ def parse_project_data_color(user):
                     color=color,
                     csm=name_list,
                     overdue=over_due.days if over_due else None,
-                    task_api=task_api(pro),
-                    task_html=task_html(pro),
-                    task_uat=task_uat(pro),
-                    task_bee=task_bee(pro),
-                    task_ux=task_ux(pro),
-                    task_ui=task_ui(pro),
-                    task_qc=task_qc(pro),
+                    task_api_closed=task_api_closed,
+                    task_api_total=task_api_total,
+                    task_html_closed=task_html_closed,
+                    task_html_total=task_html_total,
+                    task_uat_closed=task_uat_closed,
+                    task_uat_total=task_uat_total,
+                    task_bee_closed=task_bee_closed,
+                    task_bee_total=task_bee_total,
+                    task_ux_closed=task_ux_closed,
+                    task_ux_total=task_ux_total,
+                    task_ui_closed=task_ui_closed,
+                    task_ui_total=task_ui_total,
+                    task_qc_closed=task_qc_closed,
+                    task_qc_total=task_qc_total
                     )
         response.append(data)
     return response
