@@ -15,7 +15,7 @@
    </head>
    <body>
       
-      <nav class="navbar navbar-expand-lg bg-dark">
+     <nav class="navbar navbar-expand-lg bg-dark">
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand" href="#" style="color: white">Projects View</a>
@@ -34,20 +34,20 @@
 <div class="space" style="padding-top: 10px;"></div>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
+  <div class="container-fluid" >
+    <ul class="navbar-nav" style="display: contents;">
       <li class="nav-item ">
           {% if "hdfc" in request.user.email %}
             <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard </a>
           {% else %}
-                      <a class="nav-link" href="/project_list/?name=all&status=all&csm=all">Dashboard</a>
+                      <a class="nav-link" href="/project_list/?name=all&status=all&csm=all">Dashboard </a>
         {% endif %}
       </li>
       <li class="nav-item active">
           {% if "hdfc" in request.user.email %}
         <a class="nav-link" href="/project_filter/?csm=all&project_name=hdfc">Projects <span class="sr-only">(current)</span></a>
           {% else %}
-                    <a class="nav-link" href="/project_filter/?csm=all">Projects <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="/project_filter/?csm=all&project_name=all">Projects <span class="sr-only">(current)</span></a>
           {% endif %}
 
       </li>
@@ -167,43 +167,33 @@
 									</tr>
 								 </thead>
 								 <tbody>
-                                 {%  if projects %}
+                                {%  if projects %}
                                      {%  for project in projects %}
 									<tr>
                                         <td scope="row">{{ forloop.counter }}</td>
 
 									   <td style="text-align: center" >
-                    {%  if project.color == 'green' %}    <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
-                    {%  elif project.color == 'red' %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
-                    {%  else %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
+                    {%  if project.percent >= 85.0 %}    <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
+                    {%  elif 75.0 <= project.percent and project.percent < 85.0 %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
+                    {%  else %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
                     {%  endif %}
                 </td>
 									   <td class="text-center"><span class="circletxt">{{ project.csm }}</span></td>
-									   <td class="text-center">{{ project.name }}</td>
+									   <td class="text-left">{{ project.name }} {{project.task_ux_closed}}</td>
 									   <td class="text-center">{{ project.start_date }}<br>{{ project.end_date }}</td>
-									   <td >{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>
-     <td >{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
-                                    {%  if project.end_date > today or project.status == "Closed" %}
-									   <td class="lbordermain"><span class="green-text">{%  if project.task_ux != "0/0" %}<a href="/project_ux/{{ project.id }}"> {{ project.task_ux }}{%  else %}{{ project.task_ux }}{%  endif %}</a><br><font>On Track</font></span></td>
-									   <td><span class="green-text">{%  if project.task_ux != "0/0" %}<a href="/project_ui/{{ project.id }}"> {{ project.task_ui }}{%  else %}{{ project.task_ui }}{%  endif %}</a><br><font> On Track</font></span></td>
-									   <td><span class="green-text">{%  if project.task_html != "0/0" %}<a href="/project_html/{{ project.id }}"> {{ project.task_html }}{%  else %}{{ project.task_html }}{%  endif %}</a><br><font> On Track</font></span></td>
-									   <td><span class="green-text">{%  if project.task_api != "0/0" %}<a href="/project_api/{{ project.id }}"> {{ project.task_api }}{%  else %}{{ project.task_api }}{%  endif %}</a><br><font> On Track</font></span></td>
-									   <td><span class="green-text">{%  if project.task_bee != "0/0" %}<a href="/project_bee/{{ project.id }}"> {{ project.task_bee }}{%  else %}{{ project.task_bee }}{%  endif %}</a><br><font> On Track</font></span></td>
-									   <td><span class="green-text">{%  if project.task_bqc != "0/0" %}<a href="/project_qc/{{ project.id }}"> {{ project.task_qc }}{%  else %}{{ project.task_qc }}{%  endif %}</a><br><font> On Track</font></span></td>
-									   <td><span class="green-text">{%  if project.task_uat != "0/0" %}<a href="/project_uat/{{ project.id }}"> {{ project.task_uat }}{%  else %}{{ project.task_uat }}{%  endif %}</a><br><font> On Track</font></span></td>
-                                        {%  else %}
-                                        <td class="lbordermain"><span class="red-text">{%  if project.task_ux != "0/0" %}<a href="/project_ux/{{ project.id }}"> {{ project.task_ux }}{%  else %}{{ project.task_ux }}{%  endif %}<br><font>Over Due</font></span></td>
-									   <td><span class="red-text">{%  if project.task_ui != "0/0" %}<a href="/project_ui/{{ project.id }}"> {{ project.task_ui }}{%  else %}{{ project.task_ui }}{%  endif %}</a><br><font> Over Due</font></span></td>
-									   <td><span class="red-text">{%  if project.task_html != "0/0" %}<a href="/project_html/{{ project.id }}"> {{ project.task_html }}{%  else %}{{ project.task_html }}{%  endif %}</a><br><font> Over Due</font></span></td>
-									   <td><span class="red-text">{%  if project.task_api != "0/0" %}<a href="/project_api/{{ project.id }}"> {{ project.task_api }}{%  else %}{{ project.task_api }}{%  endif %}</a><br><font> Over Due</font></span></td>
-									   <td><span class="red-text">{%  if project.task_bee != "0/0" %}<a href="/project_bee/{{ project.id }}"> {{ project.task_bee }}{%  else %}{{ project.task_bee }}{%  endif %}</a><br><font> Over Due</font></span></td>
-									   <td><span class="red-text">{%  if project.task_bqc != "0/0" %}<a href="/project_qc/{{ project.id }}"> {{ project.task_qc }}{%  else %}{{ project.task_qc }}{%  endif %}</a><br><font> Over Due</font></span></td>
-									   <td><span class="red-text">{%  if project.task_uat != "0/0" %}<a href="/project_uat/{{ project.id }}"> {{ project.task_uat }}{%  else %}{{ project.task_uat }}{%  endif %}</a><br><font> Over Due</font></span></td>
-                                    {%  endif %}
+									   <td  class="text-center">{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>
+     									<td  class="text-center">{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
+										<td class="lbordermain text-center">{%  if project.task_ux_total > 0 and project.task_ux_total > project.task_ux_closed %}<span class="red-text"><a href="/project_ux/{{ project.id }}"> {{ project.task_ux_closed }}/{{project.task_ux_total}}</a><br><font>Over Due</font></span>{%  elif project.task_ux_total > 0 and project.task_ux_total == project.task_ux_closed %}<span class="green-text"><a href="/project_ux/{{ project.id }}"> {{ project.task_ux_closed }}/{{project.task_ux_total}}</a><br><font>Completed</font></span>{%  else %}{{ project.task_ux_closed }}/{{project.task_ux_total}}{%  endif %}</td>
+									   <td class="text-center">{%  if project.task_ui_total > 0 and project.task_ui_total > project.task_ui_closed %}<span class="red-text"><a href="/project_ui/{{ project.id }}"> {{ project.task_ui_closed }}/{{project.task_ui_total}}</a><br><font> Over Due</font></span>{%  elif project.task_ui_total > 0 and project.task_ui_total == project.task_ui_closed %}<span class="green-text"><a href="/project_ui/{{ project.id }}"> {{ project.task_ui_closed }}/{{project.task_ui_total}}</a><br><font>Completed</font></span>{%  else %}{{ project.task_ui_closed }}/{{project.task_ui_total}}{%  endif %}</td>
+									   <td class="text-center">{%  if project.task_html_total > 0 and project.task_html_total > project.task_html_closed %}<span class="red-text"><a href="/project_html/{{ project.id }}"> {{ project.task_html_closed }}/{{project.task_html_total}}</a><br><font> Over Due</font></span>{%  elif project.task_html_total > 0 and project.task_html_total == project.task_html_closed %}<span class="green-text"><a href="/project_html/{{ project.id }}"> {{ project.task_html_closed }}/{{project.task_html_total}}</a><br><font>Completed</font></span>{%  else %}{{ project.task_html_closed }}/{{project.task_html_total}}{%  endif %}</td>
+									   <td class="text-center">{%  if project.task_api_total > 0 and project.task_api_total > project.task_api_closed %}<span class="red-text"><a href="/project_api/{{ project.id }}"> {{ project.task_api_closed }}/{{project.task_api_total}}</a><br><font> Over Due</font></span>{%  elif project.task_api_total > 0 and project.task_api_total == project.task_api_closed %}<span class="green-text"><a href="/project_api/{{ project.id }}"> {{ project.task_api_closed }}/{{project.task_api_total}}</a><br><font>Completed</font></span>{%  else %}{{ project.task_api_closed }}/{{project.task_api_total}}{%  endif %}</td>
+									   <td class="text-center">{%  if project.task_bee_total > 0 and project.task_bee_total > project.task_bee_closed %}<span class="red-text"><a href="/project_bee/{{ project.id }}"> {{ project.task_bee_closed }}/{{project.task_bee_total}}</a><br><font> Over Due</font></span>{%  elif project.task_bee_total > 0 and project.task_bee_total == project.task_bee_closed %}<span class="green-text"><a href="/project_bee/{{ project.id }}"> {{ project.task_bee_closed }}/{{project.task_bee_total}}</a><br><font>Completed</font></span>{%  else %}{{ project.task_bee_closed }}/{{project.task_bee_total}}{%  endif %}</td>
+									   <td class="text-center">{%  if project.task_qc_total > 0 and project.task_qc_total > project.task_qc_closed %}<span class="red-text"><a href="/project_qc/{{ project.id }}"> {{ project.task_qc_closed }}/{{project.task_qc_total}}</a><br><font> Over Due</font></span>{%  elif project.task_qc_total > 0 and project.task_qc_total == project.task_qc_closed %}<span class="green-text"><a href="/project_qc/{{ project.id }}"> {{ project.task_qc_closed }}/{{project.task_qc_total}}</a><br><font>Completed</font></span>{%  else %}{{ project.task_qc_closed }}/{{project.task_qc_total}}{%  endif %}</td>
+										<td class ="text-center" > {% if project.task_uat_total > 0 and project.task_uat_total > project.task_uat_closed %} <span class ="red-text"> <a href="/project_uat/{{ project.id }}" > {{project.task_uat_closed}}/{{project.task_uat_total}} </a> <br> <font> Over Due </font> </span> {% elif project.task_uat_total > 0 and project.task_uat_total == project.task_uat_closed %} <span class ="green-text" > <a href="/project_uat/{{ project.id }}"> {{project.task_uat_closed}}/{{project.task_uat_total}} </a> <br> <font> Completed </font> </span> {% else %}{{project.task_uat_closed}} / {{project.task_uat_total}}{% endif %} </td>
 									</tr>{%  endfor %}
                                  {%  else %}
 									<tr>
-                                        <td colspan="14" style="text-align:center;"> No data found</td>
+                                        <td colspan="14"> No data found</td>
                                     </tr>
                                  {%  endif %}
 								 </tbody>
