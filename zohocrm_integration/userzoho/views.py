@@ -1232,7 +1232,7 @@ def project_filter(request):
                 csm_list.append(names)
         csm_list = list(set(csm_list))
         today = datetime.datetime.now()
-        projects.sort(key=lambda hotel: hotel['name '])
+        # projects.sort(key=lambda hotel: hotel['name '])
 
         return render(request, "zohouser/filter.html",
                   dict(projects=projects,
