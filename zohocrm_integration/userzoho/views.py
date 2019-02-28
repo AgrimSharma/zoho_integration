@@ -638,7 +638,7 @@ def project_list(request):
         total_projects = len(project)
         if name == "hdfc":
             active = Projects.objects.filter(name__icontains=name, status__in=['active', 'Active'], end_date_format__range=[first, last]).count()
-            closed = Projects.objects.filter(name__icontains=name, status__in=['Closed', 'closed'], end_date_format__range=[first, last]).count()
+            closed = Projects.objects.filter(name__icontains=name, status__in=['Completed', 'completed'], end_date_format__range=[first, last]).count()
             task_open = Tasks.objects.filter(project__name__icontains=name,
                                              status__in=['open','Open','in progress','In Progress'],end_date__gte=first,end_date__lt= today).count()
             task_inprogress = Tasks.objects.filter(
@@ -662,7 +662,7 @@ def project_list(request):
             active = Projects.objects.filter(status__in=['active', 'Active'],
                                              end_date_format__range=[first,
                                                                      last]).count()
-            closed = Projects.objects.filter(status__in=['Closed', 'closed'],
+            closed = Projects.objects.filter(status__in=['Completed', 'completed'],
                                              end_date_format__range=[first,
                                                                      last]).count()
             task_open = Tasks.objects.filter(status__in=['open','Open','in progress','In Progress'],end_date__gte=first,end_date__lt= today).count()
@@ -1652,7 +1652,7 @@ def show_all(request):
             active = Projects.objects.filter(name__icontains=name,
                                              status__in=['active', 'Active'],).count()
             closed = Projects.objects.filter(name__icontains=name,
-                                             status__in=['Closed', 'closed'],).count()
+                                             status__in=['Completed', 'completed'],).count()
             task_open = Tasks.objects.filter(project__name__icontains=name,
                                              status__in=['open', 'Open',
                                                          'in progress',
@@ -1678,7 +1678,7 @@ def show_all(request):
 
         else:
             active = Projects.objects.filter(status__in=['active', 'Active']).count()
-            closed = Projects.objects.filter(status__in=['Closed', 'closed'],).count()
+            closed = Projects.objects.filter(status__in=['Completed', 'completed'],).count()
             task_open = Tasks.objects.filter(
                 status__in=['open', 'Open', 'in progress', 'In Progress']).count()
             task_inprogress = Tasks.objects.filter(status__in=['in progress',
