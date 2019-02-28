@@ -602,7 +602,7 @@ def client_tasks(request, name):
         task_open = Tasks.objects.filter(status__in=['open', 'Open', 'in progress','In Progress'], end_date__range=[first,today]).count()
         task_inprogress = Tasks.objects.filter(status__in=['in progress',
                                                            'In Progress'], end_date__range=[today,last]).count()
-        task_closed = Tasks.objects.filter(status__in=['Closed', 'closed',"close", "close"], end_date__range=[first, last]).count()
+        task_closed = Tasks.objects.filter(status__in=['Closed', 'closed',"close", "close"], last_updated_time__range=[first, last]).count()
     else:
         task_open = Tasks.objects.filter(project__name__icontains=name,
                                          status__in=['open', 'Open', 'in progress','In Progress'], end_date__gte=first, end_date__lt=today).count()
@@ -610,7 +610,7 @@ def client_tasks(request, name):
                                                status__in=['in progress',
                                                            'In Progress'], end_date__range=[today,last]).count()
         task_closed = Tasks.objects.filter(project__name__icontains=name,
-                                           status__in=['Closed', 'closed',"close", "close"], end_date__range=[first, last]).count()
+                                           status__in=['Closed', 'closed',"close", "close"], last_updated_time__range=[first, last]).count()
 
     return HttpResponse(json.dumps(dict(task_open=task_open, task_inprogress=task_inprogress,task_closed=task_closed)))
 
@@ -648,7 +648,7 @@ def project_list(request):
             task_closed = Tasks.objects.filter(project__name__icontains=name,
                                                status__in=['closed',
                                                            'Closed'],
-                                               end_date__range=[first, last]).count()
+                                               last_updated_time__range=[first, last]).count()
             date_today = datetime.datetime.now().date()
             week_day = date_today.weekday()
             begin_date = datetime.datetime.now().date() - datetime.timedelta(
@@ -670,7 +670,7 @@ def project_list(request):
                             'In Progress'],end_date__gte=today,end_date__lte=last).count()
             task_closed = Tasks.objects.filter(status__in=['Closed',
                                                            'closed'],
-                                               end_date__range=[first, last]).count()
+                                               last_updated_time__range=[first, last]).count()
             date_today = datetime.datetime.now().date()
             week_day = date_today.weekday()
             begin_date = datetime.datetime.now().date() - datetime.timedelta(
@@ -1587,12 +1587,12 @@ def closed_tasks(request):
             if name == 'all':
                 tasks = Tasks.objects.filter(status__in=['closed',
                                                      'Closed'],
-                                         end_date__range=[first, last])
+                                             last_updated_time__range=[first, last])
             else:
                 tasks = Tasks.objects.filter(project__name__icontains=name,
                                          status__in=['closed',
                                                      'Closed'],
-                                         end_date__range=[first, last])
+                                             last_updated_time__range=[first, last])
         tasks = task_filter_all(tasks)
         date_today = datetime.datetime.now().date()
         tasks.sort(key=lambda hotel: hotel['created_time'], reverse=True)
