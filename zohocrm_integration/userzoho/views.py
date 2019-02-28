@@ -601,14 +601,14 @@ def client_tasks(request, name):
     if name == "all":
         task_open = Tasks.objects.filter(status__in=['open', 'Open', 'in progress','In Progress'], end_date__gte=first, end_date__lt=today).count()
         task_inprogress = Tasks.objects.filter(status__in=['in progress',
-                                                           'In Progress'], end_date__gt=today, end_date__lte=last).count()
+                                                           'In Progress'], end_date__range=[today,last]).count()
         task_closed = Tasks.objects.filter(status__in=['Closed', 'closed',"close", "close"], end_date__range=[first, last]).count()
     else:
         task_open = Tasks.objects.filter(project__name__icontains=name,
                                          status__in=['open', 'Open', 'in progress','In Progress'], end_date__gte=first, end_date__lt=today).count()
         task_inprogress = Tasks.objects.filter(project__name__icontains=name,
                                                status__in=['in progress',
-                                                           'In Progress'], end_date__gt=today, end_date__lte=last).count()
+                                                           'In Progress'], end_date__range=[today,last]).count()
         task_closed = Tasks.objects.filter(project__name__icontains=name,
                                            status__in=['Closed', 'closed',"close", "close"], end_date__range=[first, last]).count()
 
@@ -1502,14 +1502,21 @@ def over_due_task(request):
     name = request.GET.get("project_name")
     today = datetime.datetime.now().date()
     first, last = get_month_day_range(today)
+    tasks_data = request.GET.get("tasks")
     if user.is_authenticated():
-        if name == "all":
-            tasks = Tasks.objects.filter(status__in=['open',
-                                                         'Open'], end_date__range=[first,last])
+        if tasks_data:
+            if name == "all":
+                tasks = Tasks.objects.filter(status__in=['open',
+                                                             'Open','in progress','In Progress'])
+            else:
+                tasks = Tasks.objects.filter(project__name__icontains=name,
+                                             status__in=['open','Open','in progress','In Progress'])
         else:
-            tasks = Tasks.objects.filter(project__name__icontains=name,
-                                         status__in=['open',
-                                                         'Open'], end_date__range=[first,last])
+            if name == "all":
+                tasks = Tasks.objects.filter(status__in=['open','Open','in progress','In Progress'], end_date__gte=first, end_date__lt=today)
+            else:
+                tasks = Tasks.objects.filter(project__name__icontains=name,
+                                             status__in=['open','Open', 'in progress','In Progress'],  end_date__gte=first, end_date__lt=today)
         tasks = task_filter_all(tasks)
         tasks.sort(key=lambda hotel: hotel['created_time'], reverse=True)
         date_today = datetime.datetime.now().date()
@@ -1525,18 +1532,29 @@ def over_due_task(request):
 def pending_task(request):
     user = request.user
     name = request.GET.get("project_name")
+    tasks_data = request.GET.get("tasks")
     if user.is_authenticated():
         today = datetime.datetime.now().date()
         first, last = get_month_day_range(today)
-        if name == 'all':
-            tasks = Tasks.objects.filter(
-                status__in=['in progress',
-                            'In Progress'], end_date__range=[first,last])
+        if tasks_data:
+            if name == 'all':
+                tasks = Tasks.objects.filter(
+                    status__in=['in progress',
+                                'In Progress'])
+            else:
+                tasks = Tasks.objects.filter(
+                    project__name__icontains=name,
+                    status__in=['in progress',
+                                'In Progress'])
         else:
-            tasks = Tasks.objects.filter(
-                project__name__icontains=name,
-                status__in=['in progress',
-                            'In Progress'], end_date__range=[first,last])
+            if name == 'all':
+                tasks = Tasks.objects.filter(
+                    status__in=['in progress','In Progress'],  end_date__gte=today, end_date__lt=last)
+            else:
+                tasks = Tasks.objects.filter(
+                    project__name__icontains=name,
+                    status__in=['in progress',
+                                'In Progress'], end_date__gte=today, end_date__lt=last)
         tasks = task_filter_all(tasks)
         tasks.sort(key=lambda hotel: hotel['created_time'], reverse=True)
 
@@ -1553,16 +1571,28 @@ def pending_task(request):
 def closed_tasks(request):
     user = request.user
     name = request.GET.get("project_name")
+    tasks_data = request.GET.get("tasks")
     today = datetime.datetime.now().date()
     first, last = get_month_day_range(today)
     if user.is_authenticated():
-        if name == 'all':
-            tasks = Tasks.objects.filter(status__in=['closed',
-                                                       'Closed'], end_date__range=[first,last])
+        if tasks_data:
+            if name == 'all':
+                tasks = Tasks.objects.filter(status__in=['closed',
+                                                           'Closed'])
+            else:
+                tasks = Tasks.objects.filter(project__name__icontains=name,
+                                                   status__in=['closed',
+                                                               'Closed'])
         else:
-            tasks = Tasks.objects.filter(project__name__icontains=name,
-                                               status__in=['closed',
-                                                           'Closed'], end_date__range=[first,last])
+            if name == 'all':
+                tasks = Tasks.objects.filter(status__in=['closed',
+                                                     'Closed'],
+                                         end_date__range=[first, last])
+            else:
+                tasks = Tasks.objects.filter(project__name__icontains=name,
+                                         status__in=['closed',
+                                                     'Closed'],
+                                         end_date__range=[first, last])
         tasks = task_filter_all(tasks)
         date_today = datetime.datetime.now().date()
         tasks.sort(key=lambda hotel: hotel['created_time'], reverse=True)
@@ -1663,7 +1693,6 @@ def show_all(request):
                 days=4 - week_day)
             this_week = Tasks.objects.filter(end_date__gte=begin_date,
                                              end_date__lte=end_date).count()
-        # project.sort(key=lambda hotel: hotel['name'])
 
         return render(request, "zohouser/project_list_pie_all.html",
                       {"projects": project,
@@ -1697,7 +1726,6 @@ def client_tasks_all(request, name):
                                            status__in=['Closed', 'closed',"close", "close"]).count()
 
     return HttpResponse(json.dumps(dict(task_open=task_open, task_inprogress=task_inprogress,task_closed=task_closed)))
-
 
 
 def home(request):

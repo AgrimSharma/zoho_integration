@@ -173,28 +173,28 @@
                   {% if "hdfc" in request.user.email %}
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/over_due_task/?project_name=hdfc">Overdue Tasks {{ task_open }}</a></label>
+                      <label class="lbl_val"><a href="/over_due_task/?project_name=hdfc&tasks=all">Overdue Tasks {{ task_open }}</a></label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/pending_task/?project_name=hdfc">Pending Tasks {{ task_inprogress }}</a></label>
+                      <label class="lbl_val"><a href="/pending_task/?project_name=hdfc&tasks=all">Pending Tasks {{ task_inprogress }}</a></label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/closed_tasks/?project_name=hdfc"> Closed Tasks {{ task_closed }}</a></label>
+                      <label class="lbl_val"><a href="/closed_tasks/?project_name=hdfc&tasks=all"> Closed Tasks {{ task_closed }}</a></label>
                     </li>
                   {% else %}
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/over_due_task/?project_name=all">Overdue Tasks {{ task_open }}</a></label>
+                      <label class="lbl_val"><a href="/over_due_task/?project_name=all&tasks=all">Overdue Tasks {{ task_open }}</a></label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/pending_task/?project_name=all">Pending Tasks {{ task_inprogress }}</a></label>
+                      <label class="lbl_val"><a href="/pending_task/?project_name=all&tasks=all">Pending Tasks {{ task_inprogress }}</a></label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/closed_tasks/?project_name=all"> Closed Tasks {{ task_closed }}</a></label>
+                      <label class="lbl_val"><a href="/closed_tasks/?project_name=all&tasks=all"> Closed Tasks {{ task_closed }}</a></label>
                     </li>
                   {% endif %}
               </ul>
