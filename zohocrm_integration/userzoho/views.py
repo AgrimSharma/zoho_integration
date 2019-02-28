@@ -620,7 +620,6 @@ def project_list(request):
     if user.is_authenticated():
         today = datetime.datetime.now().date()
         first,last=get_month_day_range(today)
-
         name = request.GET.get('name')
         status = request.GET.get('status')
         csms = request.GET.get('csm')
@@ -682,6 +681,7 @@ def project_list(request):
                                              end_date__lte=end_date).count()
         month = datetime.datetime.strftime(today, "%B")
         # project.sort(key=lambda hotel: hotel['name'])
+        project.sort(key=lambda hotel: hotel['csm'])
 
         return render(request, "zohouser/project_list_pie.html",
                           {"projects": project,
@@ -1232,7 +1232,7 @@ def project_filter(request):
                 csm_list.append(names)
         csm_list = list(set(csm_list))
         today = datetime.datetime.now()
-        projects.sort(key=lambda hotel: hotel['name'])
+        projects.sort(key=lambda hotel: hotel['name '])
 
         return render(request, "zohouser/filter.html",
                   dict(projects=projects,
@@ -1693,6 +1693,7 @@ def show_all(request):
                 days=4 - week_day)
             this_week = Tasks.objects.filter(end_date__gte=begin_date,
                                              end_date__lte=end_date).count()
+        project.sort(key=lambda hotel: hotel['csm'])
 
         return render(request, "zohouser/project_list_pie_all.html",
                       {"projects": project,
