@@ -82,10 +82,10 @@
              {% for t in current_task %}
             <tr>
                             <td>{{forloop.counter}}</td>
-                <td>{{t.project.name}}</td>
-                <td>{{t.task_name}}</td>
+                <td  style="text-align:left;">{{t.project.name}}</td>
+                <td  style="text-align:left;">{{t.task_name}}</td>
 
-                <td>{% if t.description == None or t.description == "" %} No Description {% else %}{{t.description}}{% endif %}</td>
+                <td  style="text-align:left;">{% if t.description == None or t.description == "" %} No Description {% else %}{{t.description}}{% endif %}</td>
 {#                <td><a href="https://projects.zoho.com/portal/indigoconsulting#taskdetail/{{ t.project_id }}/{{ t.task_list_id }}/{{ t.task_id }}#}
 {#">{{t.task_id}}</a> </td>#}
 {#                <td>{{t.milestone_id}}</td>#}
