@@ -47,12 +47,14 @@ def all_projects(user):
         projects = projects.json()
         projects_data = projects['projects']
         for p in projects_data:
+            print p['name']
+
             try:
-                pro = Projects.objects.get(user=user, project_id=p['id'])
+                pro = Projects.objects.get(user=user, project_id=p['id'],name=p['name'])
             except Exception:
                 pro = Projects.objects.create(user=user,
                                               project_id=p.get('id'),
-                                              name=p.get('name'))
+                                              name=p['name'])
             pro = Projects.objects.get(user=user, project_id=p['id'])
             try:
                 start_time = p.get('start_date', "")
@@ -638,7 +640,7 @@ def parse_project_data(csm, user=None):
             projects = Projects.objects.filter(owner_name__icontains=csm)
     else:
         if csm == "all":
-            projects = user.projects_set.all()
+            projects = Projects.objects.all()
         elif "hdfc" in user.email:
             projects = Projects.objects.filter(owner_name__icontains=csm, name__icontains='hdfc')
 

@@ -1215,7 +1215,7 @@ def project_filter(request):
         project_name = request.GET.get("project_name", "all")
         if "indigo" in user.email:
             if project_name == "all":
-                projects = parse_project_data(csm,user)
+                    projects = parse_project_data(csm,user)
             else:
                 projects = parse_project_data_project(project_name)
             csm_data = Projects.objects.all().values_list("owner_name")
