@@ -599,7 +599,7 @@ def client_tasks(request, name):
     today = datetime.datetime.now().date()
     first, last = get_month_day_range(today)
     if name == "all":
-        task_open = Tasks.objects.filter(status__in=['open', 'Open', 'in progress','In Progress'], end_date__gte=first, end_date__lt=today).count()
+        task_open = Tasks.objects.filter(status__in=['open', 'Open', 'in progress','In Progress'], end_date__range=[first,today]).count()
         task_inprogress = Tasks.objects.filter(status__in=['in progress',
                                                            'In Progress'], end_date__range=[today,last]).count()
         task_closed = Tasks.objects.filter(status__in=['Closed', 'closed',"close", "close"], end_date__range=[first, last]).count()
@@ -1549,12 +1549,12 @@ def pending_task(request):
         else:
             if name == 'all':
                 tasks = Tasks.objects.filter(
-                    status__in=['in progress','In Progress'],  end_date__gte=today, end_date__lt=last)
+                    status__in=['in progress','In Progress'],  end_date__range=[today,last])
             else:
                 tasks = Tasks.objects.filter(
                     project__name__icontains=name,
                     status__in=['in progress',
-                                'In Progress'], end_date__gte=today, end_date__lt=last)
+                                'In Progress'], end_date__range=[today,last])
         tasks = task_filter_all(tasks)
         tasks.sort(key=lambda hotel: hotel['created_time'], reverse=True)
 

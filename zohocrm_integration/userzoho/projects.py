@@ -37,8 +37,7 @@ def all_projects(user):
     headers = {
         'authorization': "Bearer {}".format(access_token),
     }
-    querystring = {"range": "2000"}
-
+    querystring = {"range": "300"}
     projects = requests.request("GET", url, headers=headers,
                                 params=querystring)
     if projects.status_code in [204, 400, 401, 404]:
@@ -46,8 +45,8 @@ def all_projects(user):
     else:
         projects = projects.json()
         projects_data = projects['projects']
+        print len(projects_data)
         for p in projects_data:
-            print p['name']
 
             try:
                 pro = Projects.objects.get(user=user, project_id=p['id'],name=p['name'])
