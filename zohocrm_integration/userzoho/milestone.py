@@ -37,11 +37,11 @@ def all_projects_milestone(user):
                     except Exception:
                         start_date = None
                     try:
-                        task = Milestone.objects.get(user=user,project=p,
+                        task = Milestone.objects.get(project=p,
                                                      id_string=d['id_string'])
                     except Exception:
-                        miles = Milestone.objects.create(user=user,project=p, id_string=d['id_string'])
-                    task = Milestone.objects.get(project=p,user=user,
+                        miles = Milestone.objects.create(project=p, id_string=d['id_string'])
+                    task = Milestone.objects.get(project=p,
                                                  id_string=d['id_string'])
 
                     task.owner_name=d['owner_name']

@@ -41,7 +41,7 @@ class Portal(models.Model):
 
 
 class Projects(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     project_id = models.CharField(max_length=100, unique=True, blank=False, null=False)
     name = models.CharField(max_length=100)
     owner_name = models.CharField(max_length=100,null=True,blank=True)
@@ -83,7 +83,7 @@ class Projects(models.Model):
 
 
 class Tasks(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     project = models.ForeignKey(to=Projects, on_delete=models.CASCADE)
     milestone_id = models.CharField(max_length=100, blank=False, null=False)
     self_url = models.URLField(null=True, blank=True)
@@ -138,7 +138,7 @@ class ZohoUsers(models.Model):
 
 
 class TimeSheet(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     project = models.ForeignKey(to=Projects, on_delete=models.CASCADE)
     task = models.ForeignKey(to=Tasks, on_delete=models.CASCADE)
     last_modified_date = models.DateField(null=True, blank=True)
@@ -167,7 +167,7 @@ class TimeSheet(models.Model):
 
 
 class Milestone(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     project = models.ForeignKey(to=Projects, on_delete=models.CASCADE)
     owner_name = models.CharField(max_length=100, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
@@ -212,7 +212,7 @@ class ZohoAllUsers(models.Model):
 
 
 class SubTasks(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     tasks = models.ForeignKey(to=Tasks, on_delete=models.CASCADE, related_name="task_fk")
     sub_task_id = models.CharField(max_length=1000,null=True,blank=True)
     depth = models.CharField(max_length=100, null=True, blank=True)
@@ -239,7 +239,7 @@ class SubTasks(models.Model):
 
 
 class TaskList(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    # user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     project = models.ForeignKey(to=Projects, on_delete=models.CASCADE)
     task_list_id = models.CharField(max_length=1000, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)

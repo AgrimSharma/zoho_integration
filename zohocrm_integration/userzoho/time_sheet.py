@@ -28,7 +28,7 @@ def all_project_time_sheet(user):
 
                 for r in response:
                     try:
-                        sheet = TimeSheet.objects.get(user=user,task=p,
+                        sheet = TimeSheet.objects.get(task=p,
                                                       project=p.project,
                                                       time_sheet_id=r[
                                                              'id_string'])
@@ -42,7 +42,7 @@ def all_project_time_sheet(user):
                         sheet.created_date = datetime.datetime.strptime(r['created_date'], "%m-%d-%Y")
                         sheet.save()
                     except Exception:
-                        sheet = TimeSheet.objects.create(user=user,task=p, project=p.project,
+                        sheet = TimeSheet.objects.create(task=p, project=p.project,
                                                      bill_status=str(r['bill_status']),
                                                      last_modified_date=datetime.datetime.strptime(r['log_date'], "%m-%d-%Y"),
                                                      time_sheet_id=r['id_string'],

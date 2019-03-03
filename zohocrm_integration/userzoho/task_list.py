@@ -24,8 +24,8 @@ def task_filter(tasks):
     return response
 
 
-def all_project_task_list(user):
-    project = Projects.objects.filter(user=user)
+def all_project_task_list():
+    project = Projects.objects.all()
     for p in project:
         if p.tasklist_url == None or p.tasklist_url == "":
             pass
@@ -48,12 +48,12 @@ def all_project_task_list(user):
 
                 for d in data:
                     try:
-                        task_list = TaskList.objects.get(user=user, task_list_id=d['id_string'])
+                        task_list = TaskList.objects.get(task_list_id=d['id_string'])
                     except Exception:
-                        task_list = TaskList.objects.create(user=user, task_list_id=d['id_string'],
+                        task_list = TaskList.objects.create(task_list_id=d['id_string'],
                                                             project=p)
 
-                    task_list = TaskList.objects.get(user=user, task_list_id=d['id_string'],
+                    task_list = TaskList.objects.get(task_list_id=d['id_string'],
                                                     project=p)
 
                     try:

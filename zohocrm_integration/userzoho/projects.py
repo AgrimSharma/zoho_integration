@@ -45,16 +45,15 @@ def all_projects(user):
     else:
         projects = projects.json()
         projects_data = projects['projects']
-        print len(projects_data)
         for p in projects_data:
 
             try:
-                pro = Projects.objects.get(user=user, project_id=p['id'],name=p['name'])
+                pro = Projects.objects.get(project_id=p['id'],name=p['name'])
             except Exception:
-                pro = Projects.objects.create(user=user,
+                pro = Projects.objects.create(
                                               project_id=p.get('id'),
                                               name=p['name'])
-            pro = Projects.objects.get(user=user, project_id=p['id'])
+            pro = Projects.objects.get(project_id=p['id'])
             try:
                 start_time = p.get('start_date', "")
             except Exception:
@@ -644,7 +643,7 @@ def parse_project_data(csm, user=None):
             projects = Projects.objects.filter(owner_name__icontains=csm, name__icontains='hdfc')
 
         else:
-            projects = user.projects_set.filter(owner_name__icontains=csm)
+            projects = Projects.objects.filter(owner_name__icontains=csm)
     response = []
     for pro in projects:
         taks_open = pro.tasks_set.filter(
@@ -817,10 +816,10 @@ def project_data_parse(project_id):
 
 
 def parse_project_data_project(project_name, user=None):
-    if not user:
-        projects = Projects.objects.filter(name__icontains=project_name)
-    else:
-        projects = user.projects_set.filter(name__icontains=project_name)
+    # if not user:
+    #     projects = Projects.objects.filter(name__icontains=project_name)
+    # else:
+    projects = Projects.objects.filter(name__icontains=project_name)
 
     response = []
     for pro in projects:

@@ -145,12 +145,12 @@ def pull_subtasks(task, user):
         data = data['tasks']
         for d in data:
             try:
-                ta = SubTasks.objects.get(user=user, sub_task_id=d['id'])
+                ta = SubTasks.objects.get(sub_task_id=d['id'])
             except Exception:
-                ta = SubTasks.objects.create(user=user, sub_task_id=d.get('id', ""),
+                ta = SubTasks.objects.create(sub_task_id=d.get('id', ""),
                                           tasks=task)
                 ta.save()
-            sub_task = SubTasks.objects.get(user=user, sub_task_id=d['id'])
+            sub_task = SubTasks.objects.get(sub_task_id=d['id'])
             try:
                 end_date = datetime.datetime.strptime(d['end_date'], "%Y-$m-%d")
             except Exception:
@@ -196,9 +196,9 @@ def all_projects_task(user):
                 data = data['tasks']
                 for d in data:
                     try:
-                        ta = Tasks.objects.get(user=user,task_id=d['id'])
+                        ta = Tasks.objects.get(task_id=d['id'])
                     except Exception:
-                        ta = Tasks.objects.create(user=user,task_id=d.get('id', ""),
+                        ta = Tasks.objects.create(task_id=d.get('id', ""),
                                                   project=p)
 
                     task = Tasks.objects.get(task_id=d['id'])

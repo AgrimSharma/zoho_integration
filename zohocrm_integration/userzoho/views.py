@@ -800,7 +800,7 @@ def tasks_list_pull(request):
             port = settings.PORTAL_ID
 
         if port:
-            tasks = all_project_task_list(user)
+            tasks = all_project_task_list()
             return HttpResponse("success")
             # return redirect("/time_sheet_pull/")
     else:
@@ -884,7 +884,7 @@ def sub_tasks_pull(request):
             port = settings.PORTAL_ID
 
         if port:
-            tasks = user.tasks_set.all()
+            tasks = Tasks.objects.all()
             for t in tasks:
                 pull_subtasks(t, user)
             return HttpResponse("success")
