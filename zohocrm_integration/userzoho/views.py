@@ -1302,15 +1302,16 @@ def project_list_color(request):
         yellow_project = []
         green_project = []
         for pro in project:
-            percent = pro['color']
-            if percent == "green":
+            percent = pro['percent']
+            if percent >= 85.0:
                 green_project.append(pro)
-            elif percent == "red":
-                red_project.append(pro)
-            else:
+            elif 75.0 <= percent < 85.0:
                 yellow_project.append(pro)
+            else:
+                red_project.append(pro)
         # color = color.split(",")
         if color == "red":
+            print "red"
             return render(request, "zohouser/filter_new_red.html",
                       {"projects": red_project,
                        "csm": list(set(csm_list)),
@@ -1321,6 +1322,8 @@ def project_list_color(request):
 
                        })
         elif color == "yellow":
+            print "yellow"
+
             return render(request, "zohouser/filter_new_orange.html",
                           {"projects": yellow_project,
                            "csm": list(set(csm_list)),
@@ -1331,8 +1334,10 @@ def project_list_color(request):
 
                            })
         elif color == "green":
+            print "green"
+
             return render(request, "zohouser/filter_new_green.html",
-                          {"projects": yellow_project,
+                          {"projects": green_project,
                            "csm": list(set(csm_list)),
                            "date": today,
                            "user_name": user.email,
@@ -1341,6 +1346,7 @@ def project_list_color(request):
 
                            })
         elif color == "red,green":
+            print "red,green"
 
             return render(request, "zohouser/filter_new_red_green.html",
                           {"projects": red_project + green_project,
@@ -1352,6 +1358,7 @@ def project_list_color(request):
 
                            })
         elif color == "red,yellow":
+            print "red,yellow"
 
             return render(request, "zohouser/filter_new_red_yellow.html",
                           {"projects": red_project + yellow_project,
@@ -1363,7 +1370,7 @@ def project_list_color(request):
 
                            })
         elif color == "yellow,green":
-            print 1
+            print "yellow,green", len(yellow_project + green_project)
             return render(request, "zohouser/filter_new_yellow_green.html",
                           {"projects": yellow_project + green_project,
                            "csm": list(set(csm_list)),
@@ -1375,6 +1382,8 @@ def project_list_color(request):
                            })
 
         else:
+            print "all"
+
             return render(request, "zohouser/filter_new.html",
                       {"projects": red_project + yellow_project + green_project,
                        "csm": list(set(csm_list)),

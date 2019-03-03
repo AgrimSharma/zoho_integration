@@ -688,6 +688,13 @@ def parse_project_data(csm, user=None):
 
         except Exception:
             name_list = ""
+        # percent = round(percent, 2) * 100
+        # if percent >= 85.0:
+        #     color = "green"
+        # elif 75.0 <= percent < 85.0:
+        #     color = 'yellow'
+        # else:
+        #     color = "red"
         task_api_closed,task_api_total  = task_api(pro)
         task_html_closed, task_html_total = task_html(pro)
         task_uat_closed,task_uat_total  = task_uat(pro)
@@ -865,6 +872,13 @@ def parse_project_data_project(project_name, user=None):
 
         except Exception:
             name_list = ""
+        percent = round(percent, 2) * 100
+        # if percent >= 85.0:
+        #     color = "green"
+        # elif 75.0 <= percent < 85.0:
+        #     color = 'yellow'
+        # else:
+        #     color = "red"
         task_api_closed, task_api_total = task_api(pro)
         task_html_closed, task_html_total = task_html(pro)
         task_uat_closed, task_uat_total = task_uat(pro)
@@ -910,22 +924,12 @@ def parse_project_data_project(project_name, user=None):
 def parse_project_data_color(user):
     today = datetime.datetime.now()
     next_date = today + datetime.timedelta(days=7)
-    #
-    # if color == 1:
-    #     query = Q(end_date_format=None) or Q(end_date_format__lte=today, status__in=['active', 'Active'])
-    # elif color == 2:
-    #     query = Q(end_date_format=None) or Q(end_date_format__gte=today,end_date_format__lt=next_date,
-    #                                   status__in=['active', 'Active'])
-    # else:
-    #     query = Q(end_date_format__gte=next_date,
-    #                                   status__in=['active', 'Active','Closed', 'closed'])
-    # projects = Projects.objects.filter(query)
+    response = []
     if "hdfc" in user.email:
         projects = Projects.objects.filter(name__icontains="hdfc")
     else:
         projects = Projects.objects.all()
 
-    response = []
     for pro in projects:
         taks_open = pro.tasks_set.filter(
             status__in=['Open', 'In Progress', 'open', 'in progress'])
@@ -969,14 +973,20 @@ def parse_project_data_color(user):
 
         except Exception:
             name_list = ""
-
-        task_api_closed, task_api_total = task_api(pro)
+        # percent = round(percent, 2) * 100
+        # if percent >= 85.0:
+        #     color = "green"
+        # elif 75.0 <= percent < 85.0:
+        #     color = 'yellow'
+        # else:
+        #     color = "red"
+        task_api_closed,task_api_total  = task_api(pro)
         task_html_closed, task_html_total = task_html(pro)
-        task_uat_closed, task_uat_total = task_uat(pro)
+        task_uat_closed,task_uat_total  = task_uat(pro)
         task_bee_closed, task_bee_total = task_bee(pro)
         task_ux_closed, task_ux_total = task_ux(pro)
         task_ui_closed, task_ui_total = task_ui(pro)
-        task_qc_closed, task_qc_total = task_qc(pro)
+        task_qc_closed,task_qc_total  = task_qc(pro)
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
@@ -1010,3 +1020,5 @@ def parse_project_data_color(user):
                     )
         response.append(data)
     return response
+
+
