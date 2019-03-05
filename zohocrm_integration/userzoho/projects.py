@@ -79,7 +79,7 @@ def all_projects(user):
                                                                         0)
             pro.milestone_count_close = p.get('milestone_count', "").get(
                 'closed', 0)
-            pro.status = p.get('status', "")
+            pro.status = p.get('status', "") if pro.status not in ['completed', 'Completed'] else "completed"
             pro.created_date_format = datetime.datetime.strptime(created_date,
                                                                  "%m-%d-%Y") if created_date else None
             pro.start_date_format = datetime.datetime.strptime(start_time,
