@@ -46,13 +46,15 @@ def all_projects(user):
         projects = projects.json()
         projects_data = projects['projects']
         for p in projects_data:
-
             try:
-                pro = Projects.objects.get(project_id=p['id'],name=p['name'])
+                pro = Projects.objects.get(project_id=p['id'])
             except Exception:
+                print p['id'], p['name']
+
                 pro = Projects.objects.create(
                                               project_id=p.get('id'),
                                               name=p['name'])
+                pro.save()
             pro = Projects.objects.get(project_id=p['id'])
             try:
                 start_time = p.get('start_date', "")
