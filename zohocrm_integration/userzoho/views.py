@@ -641,12 +641,21 @@ def project_list(request):
             closed = Projects.objects.filter(name__icontains=name, status__in=['Completed', 'completed'], end_date_format__range=[first, last]).count()
             query_closed = Q(project__name__icontains=name,status__in=['closed','Closed'],end_date__gte=first,end_date__lt=today) or Q(project__name__icontains=name,status__in=['closed','Closed'],last_updated_time__range=[first, last])
             task_open = Tasks.objects.filter(project__name__icontains=name,
-                                             status__in=['open','Open','in progress','In Progress'],end_date__gte=first,end_date__lt= today).count()
+                                             status__in=['open', 'Open',
+                                                         'in progress',
+                                                         'In Progress'],
+                                             end_date__gte=first,
+                                             end_date__lt=today).count()
             task_inprogress = Tasks.objects.filter(
                 project__name__icontains=name,
                 status__in=['in progress',
-                            'In Progress'],end_date__gte=today,end_date__lte=last).count()
-            task_closed = Tasks.objects.filter(query_closed).count()
+                            'In Progress'],
+                end_date__range=[today, last]).count()
+            task_closed = Tasks.objects.filter(project__name__icontains=name,
+                                               status__in=['Closed', 'closed',
+                                                           "close", "close"],
+                                               last_updated_time__range=[first,
+                                                                         last]).count()
             date_today = datetime.datetime.now().date()
             week_day = date_today.weekday()
             begin_date = datetime.datetime.now().date() - datetime.timedelta(
@@ -662,12 +671,22 @@ def project_list(request):
             closed = Projects.objects.filter(status__in=['Completed', 'completed'],
                                              end_date_format__range=[first,
                                                                      last]).count()
-            task_open = Tasks.objects.filter(status__in=['open','Open','in progress','In Progress'],end_date__gte=first,end_date__lt= today).count()
-            task_inprogress = Tasks.objects.filter(status__in=['in progress',
-                            'In Progress'],end_date__gte=today,end_date__lte=last).count()
-            task_closed = Tasks.objects.filter(status__in=['Closed',
-                                                           'closed'],
-                                               last_updated_time__range=[first, last]).count()
+            task_open = Tasks.objects.filter(
+                                             status__in=['open', 'Open',
+                                                         'in progress',
+                                                         'In Progress'],
+                                             end_date__gte=first,
+                                             end_date__lt=today).count()
+            task_inprogress = Tasks.objects.filter(
+
+                status__in=['in progress',
+                            'In Progress'],
+                end_date__range=[today, last]).count()
+            task_closed = Tasks.objects.filter(
+                                               status__in=['Closed', 'closed',
+                                                           "close", "close"],
+                                               last_updated_time__range=[first,
+                                                                         last]).count()
             date_today = datetime.datetime.now().date()
             week_day = date_today.weekday()
             begin_date = datetime.datetime.now().date() - datetime.timedelta(
