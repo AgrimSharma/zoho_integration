@@ -234,28 +234,6 @@
 								 <div class="sortby_row">
 <div class="col-md-4">
 								<div class="row align-items-center">
-									<div class="col-md-4 filter-padd">FILTER BY CSM:</div>
-									<div class="col-md-7">
-									<div class="custom_select">
-										<select id="csms">
-										   <option value="">Select</option>
-                                            {%  if name == "all" %}
-                                            {%  for c in csm %}
-										   <option value="{{ c }}">{{ c }}</option>
-                                            {%  endfor %}
-                                            {%  else %}
-                                                {%  for c in csm %}
-                                                    {%  if c == name %}
-										                <option value="{{ c }}" selected>{{ c }}</option>
-                                                    {%  else %}
-                                                        <option value="{{ c }}" >{{ c }}</option>
-
-                                                    {%  endif %}
-                                            {%  endfor %}
-                                        {%  endif %}
-										</select>
-									 </div>
-									 </div>
 
 								 </div></div>
 								 </div>
