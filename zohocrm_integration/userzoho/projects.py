@@ -49,7 +49,6 @@ def all_projects(user):
             try:
                 pro = Projects.objects.get(project_id=p['id'])
             except Exception:
-                print p['id'], p['name']
 
                 pro = Projects.objects.create(
                                               project_id=p.get('id'),
@@ -322,8 +321,7 @@ def project_list_view_all(name, status, csm):
             name_list = " ".join(name_data)
         except Exception:
             name_list = ""
-        print pro.name, len(milestone_closed), len(milestone_closed) + len(
-                        milestone_open)
+
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
@@ -900,7 +898,6 @@ def parse_project_data_project(project_name, user=None):
         #     color = 'yellow'
         # else:
         #     color = "red"
-        print round(percent, 2) * 100, pro.name if "zoho" in pro.name else ""
         task_api_closed, task_api_total = task_api(pro)
         task_html_closed, task_html_total = task_html(pro)
         task_uat_closed, task_uat_total = task_uat(pro)
