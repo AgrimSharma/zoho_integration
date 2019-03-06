@@ -39,7 +39,7 @@ urlpatterns = [
     url(r'^over_due_task/', over_due_task),
 
 
-    # URL for auth request
+    # URL for auth retasks_pullquest
     url(r'^task/(?P<project_id>\w+)', task_project),
     url(r'^milestone/(?P<project_id>\w+)', milestone_data),
     url(r'^project_ux/(?P<project_id>\w+)', project_ux),

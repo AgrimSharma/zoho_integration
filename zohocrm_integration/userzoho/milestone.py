@@ -7,9 +7,13 @@ import requests
 import datetime
 
 
-def all_projects_milestone(user):
+def all_projects_milestone(user, name):
     token = Tokens.objects.latest("id")
-    project = Projects.objects.all()
+    if "hdfc" in name:
+        project = Projects.objects.filter(name__icontains=name)
+    else:
+        project = Projects.objects.all()
+
     access_token = token.access_token
 
     for p in project:
@@ -20,8 +24,9 @@ def all_projects_milestone(user):
             headers = {
                 'authorization': "Bearer {}".format(access_token),
             }
+            querystring = {"range": "300"}
 
-            response = requests.request("GET", url, headers=headers)
+            response = requests.request("GET", url, headers=headers, params=querystring)
             if response.status_code in [204, 400, 401, 404]:
                 pass
             else:
@@ -128,6 +133,7 @@ def project_close_milestone(project_id):
             users=user
         ))
     return response
+
 
 def project_open_milestone(project_id):
     project = Projects.objects.get(id=project_id)

@@ -655,7 +655,6 @@ def project_list(request):
                 days=4 - week_day)
             this_week = Tasks.objects.filter(project__name__icontains=name, end_date__gte=begin_date, end_date__lte=end_date).count()
 
-
         else:
             active = Projects.objects.filter(status__in=['active', 'Active'],
                                              end_date_format__range=[first,
@@ -677,6 +676,7 @@ def project_list(request):
                 days=4 - week_day)
             this_week = Tasks.objects.filter(end_date__gte=begin_date,
                                              end_date__lte=end_date).count()
+
         month = datetime.datetime.strftime(today, "%B")
         # project.sort(key=lambda hotel: hotel['name'])
         project.sort(key=lambda hotel: hotel['csm'])
@@ -809,6 +809,7 @@ def tasks_pull(request):
     user = request.user
     if user.is_authenticated:
         code = request.GET.get("code", "")
+        name = request.GET.get("name", "")
         url = "https://accounts.zoho.com/oauth/v2/token"
 
         querystring = {
@@ -840,7 +841,7 @@ def tasks_pull(request):
             port = settings.PORTAL_ID
 
         if port:
-            tasks = all_projects_task(user)
+            tasks = all_projects_task(user, name)
             return HttpResponse("success")
             # return redirect("/time_sheet_pull/")
     else:
@@ -896,6 +897,7 @@ def milestone_pull(request):
     if user.is_authenticated:
         code = request.GET.get("code", "")
         url = "https://accounts.zoho.com/oauth/v2/token"
+        name = request.GET.get("name", "")
 
         querystring = {
             "code": code,
@@ -926,7 +928,7 @@ def milestone_pull(request):
             port = settings.PORTAL_ID
 
         if port:
-            milestone = all_projects_milestone(user=user,)
+            milestone = all_projects_milestone(user=user,name=name)
             return HttpResponse("success")
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
@@ -944,6 +946,7 @@ def time_sheet_pull(request):
     user = request.user
     if user.is_authenticated:
         code = request.GET.get("code", "")
+        name = request.GET.get("name", "")
         url = "https://accounts.zoho.com/oauth/v2/token"
 
         querystring = {
@@ -975,7 +978,7 @@ def time_sheet_pull(request):
             port = settings.PORTAL_ID
 
         if port:
-            timesheet = all_project_time_sheet(user=user,)
+            timesheet = all_project_time_sheet(user=user, name=name)
             return HttpResponse("success")
     else:
         return HttpResponse(json.dumps(dict(error="Auth error")))
@@ -1182,7 +1185,7 @@ def mile_stone_tasks(request, milestone):
                 flag=mile.flag,
                 users=user
             ))
-        return render(request, "zohouser/tasks/project_tasks.html", {"current_task": task})
+        return render(request, "zohouser/tasks/project_tasks.html", {"current_task": task, "name": project.name + "(" +mile.name + ")"})
     else:
         return redirect("/")
 

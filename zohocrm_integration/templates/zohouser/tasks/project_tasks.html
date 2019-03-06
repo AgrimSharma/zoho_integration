@@ -6,7 +6,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
       <link href="{%  static 'css/bootstrap.min.css' %}" rel="stylesheet">
-    <title>Zoho</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <title>Zoho | Project Tasks</title>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg bg-dark">
@@ -68,7 +69,7 @@
                 <th>Start Date</th>
                 <th>End Date</th>
                 <th>Status</th>
-                <th>Subtasks</th>
+                <!--<th>Subtasks</th>-->
 {#                <th>Timesheet</th>#}
 {#                <th>Assigned To</th>#}
                 <th>Created Time</th>
@@ -91,14 +92,14 @@
 {#                <td>{{t.milestone_id}}</td>#}
                 <td>{{t.start_date}}</td>
                 <td>{{t.end_date}}</td>
-                <td>{% if t.status == 'Closed' %} <label class="text-success">{{t.status}}</label>
-                    {% elif t.status == 'Open' and date_today < t.end_date %} <label class="text-success">{{t.status}}</label>
-                    {% elif t.status == 'Open' and t.end_date == None %} <label class="text-danger">{{t.status}}</label>
+                <td>{% if t.status == 'Closed' %} <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
+                    {% elif t.status == 'Open' and date_today < t.end_date %} <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
+                    {% elif t.status == 'Open' and t.end_date == None %} <i class="fas fa-square" style="color: red;font-size: 30px;"></i>
 
-                    {% else %} <label class="text-danger">{{t.status}}</label>
+                    {% else %} <i class="fas fa-square" style="color: red;font-size: 30px;"></i>
                     {% endif %}
                 </td>
-                <td>{{t.subtasks}}</td>
+                <!--<td>{{t.subtasks}}</td>-->
 {#                <td><a href="/time_sheet_task/{{t.id}}">Timesheet</a> </td>#}
 {#                <td>{{ t.owner }}</td>#}
                 <td>{{t.created_time}}</td>

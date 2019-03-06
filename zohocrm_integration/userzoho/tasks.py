@@ -172,9 +172,12 @@ def pull_subtasks(task, user):
     return
 
 
-def all_projects_task(user):
+def all_projects_task(user, name):
     token = Tokens.objects.latest("id")
-    project = Projects.objects.all()
+    if name:
+        project = Projects.objects.filter(name__icontains=name)
+    else:
+        project = Projects.objects.all()
     access_token = token.access_token
     for p in project:
 
@@ -185,8 +188,9 @@ def all_projects_task(user):
             headers = {
                 'authorization': "Bearer {}".format(access_token),
             }
+            querystring = {"range": "300"}
 
-            response = requests.request("GET", url, headers=headers)
+            response = requests.request("GET", url, headers=headers, params=querystring)
             # if data:
 
             if response.status_code in [204, 400, 401, 404]:

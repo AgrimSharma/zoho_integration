@@ -81,6 +81,20 @@ def all_projects(user):
                                                                         0)
             pro.milestone_count_close = p.get('milestone_count', "").get(
                 'closed', 0)
+            # mile_percent = (pro.milestone_count_close / pro.milestone_count_open) * 100
+            # if mile_percent == 100 :
+            #     pro.status = "completed"
+            # elif 75.0 <= mile_percent < 100:
+            #     pro.status = "In-Progress"
+            # else:
+            #     pro.status = "Active"
+            # task_percent = (pro.task_count_close / pro.task_count_open) * 100
+            # if task_percent == 100:
+            #     pro.status = "completed"
+            # elif 75.0 <= mile_percent < 100:
+            #     pro.status = "In-Progress"
+            # else:
+            #     pro.status = "Active"
             pro.status = p.get('status', "") if pro.status not in ['completed', 'Completed'] else "completed"
             pro.created_date_format = datetime.datetime.strptime(created_date,
                                                                  "%m-%d-%Y") if created_date else None
@@ -215,6 +229,8 @@ def project_list_view(name, status, csm):
             name_list = " ".join(name_data)
         except Exception:
             name_list = ""
+        milesotne_count = Milestone.objects.filter(project=pro).count()
+
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
@@ -234,7 +250,8 @@ def project_list_view(name, status, csm):
                     percent=round(percent, 2) * 100,
                     color=color,
                     csm=name_list,
-                    overdue=over_due.days if over_due else None
+                    overdue=over_due.days if over_due else None,
+                    milestone_count=milesotne_count
                     )
         response.append(data)
     return response
@@ -874,13 +891,14 @@ def parse_project_data_project(project_name, user=None):
 
         except Exception:
             name_list = ""
-        percent = round(percent, 2) * 100
+        # percent = round(percent, 2) * 100
         # if percent >= 85.0:
         #     color = "green"
         # elif 75.0 <= percent < 85.0:
         #     color = 'yellow'
         # else:
         #     color = "red"
+        print round(percent, 2) * 100, pro.name if "zoho" in pro.name else ""
         task_api_closed, task_api_total = task_api(pro)
         task_html_closed, task_html_total = task_html(pro)
         task_uat_closed, task_uat_total = task_uat(pro)

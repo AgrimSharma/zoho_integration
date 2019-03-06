@@ -12,7 +12,22 @@
     <title>Zoho</title>
 </head>
 <body>
+        {% if "hdfc" in request.user.email %}
+
     <div class="container">
+        <div style="text-align: center"><h1>Do you want to pull live stats from ZOHO?</h1></div>
+        <div style="text-align: center;padding-top: 30px;">
+            <a class="btn btn-danger" href="/projects_pull/?name=hdfc" style="width: 200px;">Projects Pull</a></div>
+        <div style="text-align: center;padding-top: 30px;"><a class="btn btn-danger" href="/tasks_pull/?name=hdfc" style="width: 200px;">Tasks Pull</a></div>
+        <div style="text-align: center;padding-top: 30px;">
+            <a class="btn btn-danger" href="/time_sheet_pull/?name=hdfc" style="width: 200px;">Time Sheet Pull</a></div>
+        <div style="text-align: center;padding-top: 30px;">
+            <a class="btn btn-danger" href="/milestone_pull/?name=hdfc" style="width: 200px;">Milestone Pull</a></div>
+        <div style="text-align: center; padding-top: 30px;">
+        <a class="btn btn-success" href="/project_list/?csm=all&name=hdfc&status=all" style="width: 200px;">No</a></div>
+    </div>
+        {% else %}
+<div class="container">
         <div style="text-align: center"><h1>Do you want to pull live stats from ZOHO?</h1></div>
         <div style="text-align: center;padding-top: 30px;">
             <a class="btn btn-danger" href="/projects_pull/" style="width: 200px;">Projects Pull</a></div>
@@ -25,6 +40,6 @@
             <a class="btn btn-danger" href="/milestone_pull/" style="width: 200px;">Milestone Pull</a></div>
         <div style="text-align: center; padding-top: 30px;">
         <a class="btn btn-success" href="/project_list/?csm=all&name=all&status=all" style="width: 200px;">No</a></div>
-    </div>
+    </div>{% endif %}
 </body>
 </html>

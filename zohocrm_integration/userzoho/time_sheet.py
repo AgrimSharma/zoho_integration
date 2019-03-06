@@ -4,10 +4,14 @@ import datetime
 
 import time
 
-def all_project_time_sheet(user):
+
+def all_project_time_sheet(user, name):
     token = Tokens.objects.latest("id")
     access_token = token.access_token
-    task = Tasks.objects.all()
+    if "hdfc" in name:
+        task = Tasks.objects.filter(project__name__icontains=name)
+    else:
+        task = Tasks.objects.all()
     for p in task:
         if p.timesheet_url == "" or p.timesheet_url == None:
             pass
@@ -18,7 +22,9 @@ def all_project_time_sheet(user):
             headers = {
                 'authorization': "Bearer {}".format(access_token),
             }
-            response = requests.request("GET", url, headers=headers)
+            querystring = {"range": "300"}
+
+            response = requests.request("GET", url, headers=headers, params=querystring)
 
             if response.status_code in [204, 400, 401, 404]:
                 pass
