@@ -117,6 +117,10 @@
 										</div>
 								 </div>
 							</div>
+							  	{% if "hdfc" in request.user.email %}
+														<div class="col-md-3">
+														</div>
+								{% else %}
 							<div class="col-md-3">
 							<div class="row align-items-right">
 									<div class="col-md-3 filter-padd">SEARCH</div>
@@ -129,6 +133,8 @@
 								 </div>
 
 							</div>
+								{% endif %}
+
 						</div>
 					 </div> 
 						<div class="sortby_showing">
