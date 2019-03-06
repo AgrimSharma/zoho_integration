@@ -284,13 +284,13 @@ def project_list_view_all(name, status, csm):
     response = []
     for pro in projects:
         taks_open = pro.tasks_set.filter(
-            status__in=['Open', 'In Progress', 'open', 'in progress'])
-        tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])
-        total = len(taks_open) + len(tasks_close)
+            status__in=['Open', 'In Progress', 'open', 'in progress']).count()
+        tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed']).count()
+        total = taks_open + tasks_close
         current_task, future_date_one_week, past_date_one_week, past_date_two_week = task_list_week_project(
             pro.id)
         try:
-            percent = len(tasks_close) / total
+            percent = tasks_close / total
         except Exception:
             percent = 0
         today = datetime.datetime.now().date()
@@ -322,13 +322,15 @@ def project_list_view_all(name, status, csm):
             name_list = " ".join(name_data)
         except Exception:
             name_list = ""
+        print pro.name, len(milestone_closed), len(milestone_closed) + len(
+                        milestone_open)
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
-                    task_count_open=len(taks_open) + len(tasks_close),
+                    task_count_open=total,
                     milestone_count_open=len(milestone_closed) + len(
                         milestone_open),
-                    task_count_close=len(tasks_close),
+                    task_count_close=tasks_close,
                     milestone_count_close=len(milestone_closed),
                     start_date=pro.start_date_format,
                     status=pro.status.capitalize(),
