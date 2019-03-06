@@ -82,6 +82,7 @@
 }
 
 </style>
+<link rel="shortcut icon" href="/static/images/icon.ico" />
 
     <title>Zoho | Dashboard | All</title>
 </head>
@@ -270,7 +271,8 @@
     <tr>
       <td scope="row">{{ forloop.counter }}</td>
       <td >{{project.csm}}</td>
-         <td >{%  if project.task_count_open > 0 %}<a href="/project_filter/?project_name={{ project.name }}">  {{project.name}}</a>{%  else %} {{project.name}}{%  endif %}</td>
+         <!--<td >{%  if project.task_count_open > 0 %}<a href="/project_filter/?project_name={{ project.name }}">  {{project.name}}</a>{%  else %} {{project.name}}{%  endif %}</td>-->
+         <td >{%  if project.milestone_count > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.name}}</a>{%  elif project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.name}}</a>{%  else %} {{project.name}}{%  endif %}</td>
 
 {#        <td><a href="/project_task_list/{{ project.id }}"> {% if  project.color == "red"%}<span class="text-danger">{{project.name}}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.name}}</span>{%  else %}<span class="text-success">{{project.name}}</span> {%  endif %}</a></td>#}
       <td>{{project.end_date}}</td>
