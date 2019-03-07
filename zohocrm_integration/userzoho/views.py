@@ -680,23 +680,6 @@ def project_list(request):
         if name == "hdfc":
             active = Projects.objects.filter(name__icontains=name, status__in=['active', 'Active'], end_date_format__range=[first, last]).count()
             closed = Projects.objects.filter(name__icontains=name, status__in=['Completed', 'completed'], end_date_format__range=[first, last]).count()
-            # query_closed = Q(project__name__icontains=name,status__in=['closed','Closed'],end_date__gte=first,end_date__lt=today) or Q(project__name__icontains=name,status__in=['closed','Closed'],last_updated_time__range=[first, last])
-            # task_open = Tasks.objects.filter(project__name__icontains=name,
-            #                                  status__in=['open', 'Open',
-            #                                              'in progress',
-            #                                              'In Progress'],
-            #                                  end_date__gte=first,
-            #                                  end_date__lt=today).count()
-            # task_inprogress = Tasks.objects.filter(
-            #     project__name__icontains=name,
-            #     status__in=['in progress',
-            #                 'In Progress'],
-            #     end_date__range=[today, last]).count()
-            # task_closed = Tasks.objects.filter(project__name__icontains=name,
-            #                                    status__in=['Closed', 'closed',
-            #                                                "close", "close"],
-            #                                    last_updated_time__range=[first,
-            #                                                              last]).count()
             date_today = datetime.datetime.now().date()
             week_day = date_today.weekday()
             begin_date = datetime.datetime.now().date() - datetime.timedelta(
@@ -712,22 +695,7 @@ def project_list(request):
             closed = Projects.objects.filter(status__in=['Completed', 'completed'],
                                              end_date_format__range=[first,
                                                                      last]).count()
-            # task_open = Tasks.objects.filter(
-            #                                  status__in=['open', 'Open',
-            #                                              'in progress',
-            #                                              'In Progress'],
-            #                                  end_date__gte=first,
-            #                                  end_date__lt=today).count()
-            # task_inprogress = Tasks.objects.filter(
-            # 
-            #     status__in=['in progress',
-            #                 'In Progress'],
-            #     end_date__range=[today, last]).count()
-            # task_closed = Tasks.objects.filter(
-            #                                    status__in=['Closed', 'closed',
-            #                                                "close", "close"],
-            #                                    last_updated_time__range=[first,
-            #                                                              last]).count()
+
             date_today = datetime.datetime.now().date()
             week_day = date_today.weekday()
             begin_date = datetime.datetime.now().date() - datetime.timedelta(
@@ -738,15 +706,13 @@ def project_list(request):
                                              end_date__lte=end_date).count()
 
         month = datetime.datetime.strftime(today, "%B")
-        # project.sort(key=lambda hotel: hotel['name'])
         project.sort(key=lambda hotel: hotel['csm'])
         red, yellow, green = 0,0,0
         for p in project:
             percent = float(p['percent'])
-            # if p['status'] in ['active', 'Active'] :
             if percent >= 85.0 or p['status'] == "completed":
                 green += 1
-            elif 75.0 <= percent  and  percent< 85.0:
+            elif 75.0 <= percent < 85.0 :
                 yellow += 1
             else:
                 red += 1
