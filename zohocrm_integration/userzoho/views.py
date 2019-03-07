@@ -2016,7 +2016,18 @@ def projects_types(request):
             projects = project_filter_data(green)
             status = "Completed Projects"
             color="green"
-        return render(request, "zohouser/projects.html", {"projects": projects, "status": status, "color": color})
+        week_day = today.weekday()
+        begin_date = datetime.datetime.now().date() - datetime.timedelta(
+            days=week_day)
+        end_date = datetime.datetime.now().date() + datetime.timedelta(
+            days=6 - week_day)
+        this_week = Tasks.objects.filter(end_date__gte=begin_date,end_date__lte=end_date).count()
+
+        return render(request, "zohouser/projects.html", {"projects": projects,
+                                                          "status": status,
+                                                          "color": color,
+                                                          "this_week":this_week
+                                                          })
 
 
 def mile_stone_pie(request, project_id):

@@ -147,9 +147,9 @@
         <div class="card-body">
         <div class="numbox">
             {% if "hdfc" in request.user.email %}
-            <h3><a href="/client_tasks_week/?name=hdfc">{{ this_week }}</a></h3>
+            <h3>{{ this_week }}</h3>
             {% else %}
-                        <h3><a href="/client_tasks_week/?name=all">{{ this_week }}</a></h3>
+                        <h3>{{ this_week }}</h3>
             {% endif %}
             <p>Milestone</p>
             </div>
