@@ -743,7 +743,6 @@ def project_list(request):
         red, yellow, green = 0,0,0
         for p in project:
             percent = float(p['percent'])
-            print p['name'], percent
             # if p['status'] in ['active', 'Active'] :
             if percent >= 85.0 or p['status'] == "completed":
                 green += 1
@@ -1853,7 +1852,6 @@ def show_all(request):
 
         for p in project:
             percent = float(p['percent'])
-            print p['name'], percent
             # if p['status'] in ['active', 'Active'] :
             if (percent >= 85.0 or p['status'] == "completed") and p['end_date']:
                 green += 1
@@ -2029,7 +2027,6 @@ def mile_stone_pie(request, project_id):
     pending_ms = project.milestone_set.filter(end_date__gte=date_today,
                                               status='notcompleted').count()
     completed_ms = project.milestone_set.filter(status='completed').count()
-    print dict(green=completed_ms,yellow=pending_ms, red=over_due_ms)
     return HttpResponse(json.dumps(dict(green=completed_ms,yellow=pending_ms, red=over_due_ms)))
 
 
@@ -2181,7 +2178,6 @@ def project_task_filter(request, project_id):
                     status = "closed"
             except Exception:
                 status = "over"
-            print t.task_name, "=====>", status
             response.append(dict(
                 id=t.id,
                 description=strip_tags(t.description) if len(
