@@ -122,11 +122,21 @@ def filter_tasks(tasks):
             days_left = days_left.days
         except Exception:
             days_left = 0
+        try:
+            project_name = t.project.name
+        except Exception:
+            project_name = ""
+        if t.status == "Closed":
+            status = "closed"
+        elif t.status in ["open", 'Open', "In Progress", "in progress"] and t.end_date < today:
+            status = "over"
+        else:
+            status = "progress"
         response.append(dict(
             description=strip_tags(t.description)[:20],
             start_date=t.start_date,
             end_date=t.end_date,
-            status=t.status,
+            status=status,
             subtasks=t.subtasks,
             name=t.task_name,
             id=t.id,
@@ -137,7 +147,8 @@ def filter_tasks(tasks):
             percent=t.percent_complete,
             color=color,
             days_left=days_left,
-            project=t.project
+            project=project_name
+
         ))
     return response
 

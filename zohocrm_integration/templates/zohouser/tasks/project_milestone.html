@@ -2,11 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+             <link href="{%  static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-      <link href="{%  static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+{#  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>#}
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+<link rel="stylesheet" href="{%  static 'css/custom.css' %}" >
+   <!--<script src="https://www.amcharts.com/lib/3/amcharts.js" type="text/javascript"></script>-->
+<!--<script src="https://www.amcharts.com/lib/3/pie.js" type="text/javascript"></script>-->
+    <script src="https://www.amcharts.com/lib/4/core.js"></script>
+<script src="https://www.amcharts.com/lib/4/charts.js"></script>
     <link rel="shortcut icon" href="/static/images/icon.ico" />
 
     <title>Zoho | Milestones</title>
@@ -56,8 +64,107 @@
   </div>
 </nav>
 
-<hr>
-<div class="col-md-12" style="text-align: center;padding-top: 20px;"> <strong>Milestone for project <label class="text-success"> {{ name }}</label></strong>
+<div class="container-fluid">
+  <div class="row project_detail_row">
+    <div class="col-lg-4">
+     	<div class="card shadow num_of_projects h-100">
+          <div class="card-header">No. of Milestones</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4 border-right text-center">
+                <div class="numbox total">
+                  <h3>{{ total_projects }}</h3>
+                  <p>Total</p>
+                </div>
+              </div>
+              <div class="col-md-4 border-right text-center">
+                <div class="numbox active">
+                  <h3>{{ active }}</h3>
+                  <p>Active</p>
+                </div>
+              </div>
+              <div class="col-md-4 text-center">
+                <div class="numbox delivered">
+                  <h3>{{ closed }}</h3>
+                  <p>Completed</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card shadow projectwise_health h-100">
+        <div class="card-header">Milestone Wise Health </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-lg-7" ><div id="chartdiv" ></div></div>
+            <div class="col-lg-5">
+              <ul class="projectwise_health_list m-0 p-0">
+                  {% if "hdfc" in request.user.email %}
+                    <li class="overdue">
+                      <span style="background-color: #fc021f"></span>
+                      <label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=red">Overdue Milestone {{ task_open }}</a></label>
+                    </li>
+                    <li class="pending">
+                      <span style="background-color: #FBC02D"></span>
+                      <label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=yellow">Pending Milestone {{ task_inprogress }}</a></label>
+                    </li>
+                    <li class="ontrack">
+                      <span style="background-color: #388E3C"></span>
+                      <label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=green"> Closed Milestone {{ task_closed }}</a></label>
+                    </li>
+                  {% else %}
+                    <li class="overdue">
+                      <span style="background-color: #fc021f"></span>
+                      <label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=red">Overdue Milestone {{ task_open }}</a></label>
+                    </li>
+                    <li class="pending">
+                      <span style="background-color: #FBC02D"></span>
+                      <label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=yellow">Pending Milestone {{ task_inprogress }}</a></label>
+                    </li>
+                    <li class="ontrack">
+                      <span style="background-color: #388E3C"></span>
+                      <label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=green"> Closed Milestone {{ task_closed }}</a></label>
+                    </li>
+                  {% endif %}
+              </ul>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="col-lg-2 text-center">
+
+    	<div class="card shadow deliverables h-100">
+
+        <div class="card-header">
+        	Milestone Deliverables This Week
+        </div>
+        <div class="card-body">
+        <div class="numbox">
+            {% if "hdfc" in request.user.email %}
+            <h3><a href="/client_tasks_week/?name=hdfc">{{ this_week }}</a></h3>
+            {% else %}
+                        <h3><a href="/client_tasks_week/?name=all">{{ this_week }}</a></h3>
+            {% endif %}
+            <p>Milestone</p>
+            </div>
+        </div>
+
+        </div>
+
+    </div>
+  </div>
+
+
+
+  <div class="row mt-3">
+    <div class="col-lg-12">
+      <div class="col-md-12" style="text-align: center;padding-top: 20px;"> <strong>Milestone for project <label class="text-success"> {{ name }}</label></strong>
      <table class="table table-bordered table-sm">
         <thead class="thead-dark">
             <tr>
@@ -78,13 +185,13 @@
              {% for t in milestone %}
             <tr>
                 <td>{{forloop.counter}}</td>
-                <td style="text-align:left;">{{t.project}}</td>
-                            <td style="text-align:left;">{{t.name}}</td>
+                <td style="text-align:left;">{{name}}</td>
+                <td style="text-align:left;">{% if t.task_count > 0 %}<a href="/mile_stone_task/{{ t.id }}">{{t.name}}</a> {% else %} {{t.name}} {% endif %}</td>
 
                 <td>{{t.start_date}}<br>{{t.end_date}}</td>
 
                 <td>{{t.owner_name}}</td>
-                <td><a href="/mile_stone_task/{{ t.id }}"> {{ t.users }}</a></td>
+                <td> {{ t.users }}</td>
                 <td>{{t.sequence}}</td>
                 <td>{{t.flag}}</td>
                  <td>{%  if t.status == 'notcompleted' and date_today < t.end_date %} <i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
@@ -101,7 +208,85 @@
         {% endif %}
         </tbody>
     </table>
-</div></div>
+</div>
+    </div>
+  </div>
+</div>
+<input type="text" value="{{ proj_id }}" id="name" style="display: none">
+
+<script>
+
+var name = $("#name").val();
+var chartData =  [] ;
+     $.ajax({
+         type: "GET",
+         url: "/mile_stone_pie/" + name + "/",
+         <!--url: "/mile_stone_pie/",-->
+         data: {},
+         success: function (resp) {
+             var data = JSON.parse(resp);
+             console.log(resp);
+                var chart = am4core.create("chartdiv", am4charts.PieChart);
+                chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+
+                // Add data
+                chart.data = [
+                {
+                  "country": "Closed",
+                  "litres": data.green
+                }, {
+                  "country": "Overdue",
+                  "litres": data.red
+                }, {
+                  "country": "Pending",
+                  "litres": data.yellow
+                }];
+
+
+                var colorSet = new am4core.ColorSet();
+                colorSet.list = ["#388E3C", "#FBC02D", "#fc021f"].map(function(color) {
+                  return new am4core.color(color);
+                });
+
+                // Add and configure Series
+                var pieSeries = chart.series.push(new am4charts.PieSeries());
+                pieSeries.dataFields.value = "litres";
+                pieSeries.dataFields.category = "country";
+                pieSeries.colors = colorSet;
+                pieSeries.slices.template.cornerRadius = 6;
+                pieSeries.colors.step = 3;
+
+                pieSeries.hiddenState.properties.endAngle = -90;
+
+                          <!--chartData.push({"Name": "Closed", "Value": data.task_closed, "id":"close"});-->
+                                                    <!--chartData.push({"Name": "Overdue", "Value": data.task_open, "id":"open"});-->
+
+                        <!--chartData.push({"Name": "Pending", "Value": data.task_inprogress,"Id":"progress"});-->
+
+             <!--var chart = new AmCharts.AmPieChart();-->
+        <!--chart.valueField = "Value";-->
+        <!--chart.titleField = "Name";-->
+        <!--chart.dataProvider = chartData;-->
+        <!--chart.pieAlpha = 0.9;-->
+        <!--chart.outlineAlpha = 1;-->
+        <!--chart.outlineThickness = 1;-->
+        <!--chart.labelsEnabled = false;-->
+
+
+
+        <!--chart.write("chartdiv");-->
+         },
+         error: function () {
+             alert("error");
+         }
+     });
+
+
+
+
+
+</script>
+
 <script>
     $(".shipment_sold").click(function(){
     //  alert("Invalid Shipment Number");

@@ -154,7 +154,7 @@ def project_open_milestone(project_id):
             end_date=m.end_date,
             sequence=m.sequence,
             flag=m.flag,
-            users=user
+            users=user,
         ))
     return response
 
@@ -179,6 +179,8 @@ def project_all_milestone(project_id):
             sequence=m.sequence,
             flag=m.flag,
             users=user,
-            id=m.id
+            id=m.id,
+            task_count=len(tasks)
+
         ))
     return response

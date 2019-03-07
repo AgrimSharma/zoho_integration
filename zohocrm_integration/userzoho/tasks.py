@@ -301,6 +301,20 @@ def project_all_tasks(project_id):
     response = []
     for t in tasks:
         users = t.zohousers_set.all()
+        time_sheet_count=TimeSheet.objects.filter(task=t).count()
+        today = datetime.datetime.now().date()
+        try:
+            datetime.datetime.strftime(t.end_date,"%Y-%m-%d")
+
+            if t.status in ["open", 'Open'] and t.end_date > today:
+                status = "progress"
+            elif t.status in ["open", 'Open'] and t.end_date < today:
+                status = "over"
+            else:
+                status = "closed"
+        except Exception:
+            status = "over"
+        print t.task_name, "=====>", status
         response.append(dict(
             id=t.id,
             description=strip_tags(t.description) if len(strip_tags(t.description)) < 50 else strip_tags(t.description)[:50] + "...",
@@ -318,6 +332,8 @@ def project_all_tasks(project_id):
             completed_time=t.last_updated_time,
             subtasks=t.subtasks,
             project=t.project,
-            owner=",".join(list(set([o.username for o in users])))
+            owner=",".join(list(set([o.username for o in users]))),
+            time_sheet_count=time_sheet_count,
+            task_status=status
         ))
     return response

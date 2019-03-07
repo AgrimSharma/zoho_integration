@@ -165,37 +165,37 @@
     </div>
     <div class="col-lg-6">
       <div class="card shadow projectwise_health h-100">
-        <div class="card-header">Task Wise Health</div>
+        <div class="card-header">Project Wise Health</div>
         <div class="card-body">
           <div class="row">
-            <div class="col-lg-7" ><div id="chartdiv" ></div></div>
-            <div class="col-lg-5">
+            <div class="col-lg-6" ><div id="chartdiv" ></div></div>
+            <div class="col-lg-6">
               <ul class="projectwise_health_list m-0 p-0">
                   {% if "hdfc" in request.user.email %}
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/over_due_task/?project_name=hdfc&tasks=all">Overdue Tasks {{ task_open }}</a></label>
+                      <label class="lbl_val"><a href="/projects/?project_name=hdfc&type=red&month=all">Overdue Projects {{ task_open }}</a></label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/pending_task/?project_name=hdfc&tasks=all">Pending Tasks {{ task_inprogress }}</a></label>
+                      <label class="lbl_val"><a href="/projects/?project_name=hdfc&type=yellow&month=all">Pending Projects {{ task_inprogress }}</a></label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/closed_tasks/?project_name=hdfc&tasks=all"> Closed Tasks {{ task_closed }}</a></label>
+                      <label class="lbl_val"><a href="/projects/?project_name=hdfc&type=green&month=all"> Closed Projects {{ task_closed }}</a></label>
                     </li>
                   {% else %}
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/over_due_task/?project_name=all&tasks=all">Overdue Tasks {{ task_open }}</a></label>
+                      <label class="lbl_val"><a href="/projects/?project_name=all&type=red&month=all">Overdue Projects {{ task_open }}</a></label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/pending_task/?project_name=all&tasks=all">Pending Tasks {{ task_inprogress }}</a></label>
+                      <label class="lbl_val"><a href="/projects/?project_name=all&type=yellow&month=all">Pending Projects {{ task_inprogress }}</a></label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/closed_tasks/?project_name=all&tasks=all"> Closed Tasks {{ task_closed }}</a></label>
+                      <label class="lbl_val"><a href="/projects/?project_name=all&type=green&month=all"> Closed Projects {{ task_closed }}</a></label>
                     </li>
                   {% endif %}
               </ul>
@@ -280,8 +280,8 @@
       <td >{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}" title="Closed/Total">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>
      <td >{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}" title="Closed/Total">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
       <td style="text-align: center" >
-                    {%  if project.percent >= 85.0 %}    <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
-                    {%  elif 75.0 <= project.percent and project.percent < 85.0 %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
+                    {%  if project.percent >= 85.0 or project.status == 'completed' and p.end_date %}    <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
+                    {%  elif 75.0 <= project.percent < 85.0 and p.end_date %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
                     {%  else %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
                     {%  endif %}
                 </td>
@@ -310,7 +310,8 @@ var name = $("#name").val();
 var chartData =  [] ;
      $.ajax({
          type: "GET",
-         url: "/client_tasks_all/" + name + "/",
+         <!--url: "/client_tasks_all/" + name + "/",-->
+         url: "/project_pie_all/",
          data: {},
          success: function (resp) {
              var data = JSON.parse(resp);
@@ -322,13 +323,13 @@ var chartData =  [] ;
                 chart.data = [
                 {
                   "country": "Closed",
-                  "litres": data.task_closed
+                  "litres": data.green
                 }, {
                   "country": "Overdue",
-                  "litres": data.task_open
+                  "litres": data.red
                 }, {
                   "country": "Pending",
-                  "litres": data.task_inprogress
+                  "litres": data.yellow
                 }];
 
 

@@ -229,7 +229,8 @@ def project_list_view(name, status, csm):
         except Exception:
             name_list = ""
         milesotne_count = Milestone.objects.filter(project=pro).count()
-
+        percent = round(percent, 2) * 100
+        status =pro.status.lower()
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
@@ -239,14 +240,14 @@ def project_list_view(name, status, csm):
                     task_count_close=len(tasks_close),
                     milestone_count_close=len(milestone_closed),
                     start_date=pro.start_date_format,
-                    status=pro.status.capitalize(),
+                    status=status,
                     created_date=pro.created_date_format,
                     project_id=pro.project_id,
                     current_task=current_task,
                     future_date_one_week=future_date_one_week,
                     past_date_one_week=past_date_one_week,
                     past_date_two_week=past_date_two_week,
-                    percent=round(percent, 2) * 100,
+                    percent=percent,
                     color=color,
                     csm=name_list,
                     overdue=over_due.days if over_due else None,
@@ -282,9 +283,8 @@ def project_list_view_all(name, status, csm):
                 projects = Projects.objects.filter(name__icontains=name,status__in=['Closed', 'closed'])
     response = []
     for pro in projects:
-        taks_open = pro.tasks_set.filter(
-            status__in=['Open', 'In Progress', 'open', 'in progress']).count()
-        tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed']).count()
+        taks_open = pro.task_count_open
+        tasks_close = pro.task_count_close
         total = taks_open + tasks_close
         current_task, future_date_one_week, past_date_one_week, past_date_two_week = task_list_week_project(
             pro.id)
@@ -395,9 +395,8 @@ def project_list_view_color(name, csm, color):
             projects = Projects.objects.filter(query)
     response = []
     for pro in projects:
-        taks_open = pro.tasks_set.filter(
-            status__in=['Open', 'In Progress', 'open', 'in progress'])
-        tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])
+        taks_open = pro.task_count_close
+        tasks_close = pro.task_count_close
         total = len(taks_open) + len(tasks_close)
         current_task, future_date_one_week, past_date_one_week, past_date_two_week = task_list_week_project(
             pro.id)
@@ -430,15 +429,25 @@ def project_list_view_color(name, csm, color):
             name_list = " ".join(name_data)
         except Exception:
             name_list = ""
-        milestone_closed = pro.milestone_set.filter(status='notcompleted')
-        milestone_open = pro.milestone_set.filter(status='completed')
+        milestone_closed = pro.milestone_count_close
+        milestone_open = pro.milestone_count_close + pro.milestone_count_open
+        # milesotne_count = milestone_closed + milestone_open
+        # if len(taks_open) + len(tasks_close) == 0 and milesotne_count > 0:
+        #     try:
+        #         percent = round(len(milestone_closed) / milesotne_count,
+        #                         2) * 100
+        #     except ZeroDivisionError:
+        #         percent = 0
+        # else:
+        #
+        #     percent = round(percent, 2) * 100
         data = dict(name=pro.name,
                     id=pro.id,
                     end_date=pro.end_date_format,
-                    task_count_open=len(taks_open) + len(tasks_close),
+                    task_count_open=total,
                     milestone_count_open=len(milestone_closed) + len(
                         milestone_open),
-                    task_count_close=len(tasks_close),
+                    task_count_close=pro.task_count_close,
                     milestone_count_close=len(milestone_closed),
                     start_date=pro.start_date_format,
                     status=pro.status.capitalize(),
@@ -448,7 +457,7 @@ def project_list_view_color(name, csm, color):
                     future_date_one_week=future_date_one_week,
                     past_date_one_week=past_date_one_week,
                     past_date_two_week=past_date_two_week,
-                    percent=round(percent, 2) * 100,
+                    percent=percent,
                     color=color,
                     csm=name_list,
                     overdue=over_due.days if over_due else None
@@ -1041,3 +1050,72 @@ def parse_project_data_color(user):
     return response
 
 
+def project_filter_data(projects):
+    response = []
+    for pro in projects:
+        taks_open = pro.tasks_set.filter(
+            status__in=['Open', 'In Progress', 'open', 'in progress'])
+        tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])
+        total = len(taks_open) + len(tasks_close)
+        current_task, future_date_one_week, past_date_one_week, past_date_two_week = task_list_week_project(
+            pro.id)
+        try:
+            percent = len(tasks_close) / total
+        except Exception:
+            percent = 0
+        today = datetime.datetime.now().date()
+        if pro.status in ["Active",
+                          'active'] and pro.end_date_format and pro.end_date_format < today:
+            color = "red"
+        elif pro.status in ["Active",
+                            'active'] and pro.end_date_format == None:
+            color = "red"
+        elif pro.status in ["closed",
+                            'Closed'] and pro.end_date_format == None:
+            color = "red"
+        else:
+            color = 'green'
+        try:
+            datetime.datetime.strftime(pro.end_date_format, "%Y-%m-%d")
+            if pro.end_date_format < today and pro.status == 'active':
+                color = 'red'
+            else:
+                color = 'green'
+            over_due = datetime.datetime.now().date() - pro.end_date_format
+        except Exception:
+            over_due = None
+        milestone_closed = pro.milestone_set.filter(status='notcompleted')
+        milestone_open = pro.milestone_set.filter(status='completed')
+        try:
+            names = pro.owner_name
+            name_data = [n.capitalize() for n in names.split(".")]
+            name_list = " ".join(name_data)
+        except Exception:
+            name_list = ""
+        milesotne_count = Milestone.objects.filter(project=pro).count()
+        percent = round(percent, 2) * 100
+        status = pro.status.lower()
+        data = dict(name=pro.name,
+                    id=pro.id,
+                    end_date=pro.end_date_format,
+                    task_count_open=len(taks_open) + len(tasks_close),
+                    milestone_count_open=len(milestone_closed) + len(
+                        milestone_open),
+                    task_count_close=len(tasks_close),
+                    milestone_count_close=len(milestone_closed),
+                    start_date=pro.start_date_format,
+                    status=status,
+                    created_date=pro.created_date_format,
+                    project_id=pro.project_id,
+                    current_task=current_task,
+                    future_date_one_week=future_date_one_week,
+                    past_date_one_week=past_date_one_week,
+                    past_date_two_week=past_date_two_week,
+                    percent=percent,
+                    color=color,
+                    csm=name_list,
+                    overdue=over_due.days if over_due else None,
+                    milestone_count=milesotne_count
+                    )
+        response.append(data)
+    return response
