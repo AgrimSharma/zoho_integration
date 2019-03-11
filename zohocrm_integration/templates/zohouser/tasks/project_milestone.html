@@ -102,33 +102,33 @@
             <div class="col-lg-7" ><div id="chartdiv" ></div></div>
             <div class="col-lg-5">
               <ul class="projectwise_health_list m-0 p-0">
-                  {% if "hdfc" in request.user.email %}
+                  <!--{% if "hdfc" in request.user.email %}-->
+                    <!--<li class="overdue">-->
+                      <!--<span style="background-color: #fc021f"></span>-->
+                      <!--<label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=red">Overdue Milestone {{ task_open }}</a></label>-->
+                    <!--</li>-->
+                    <!--<li class="pending">-->
+                      <!--<span style="background-color: #FBC02D"></span>-->
+                      <!--<label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=yellow">Pending Milestone {{ task_inprogress }}</a></label>-->
+                    <!--</li>-->
+                    <!--<li class="ontrack">-->
+                      <!--<span style="background-color: #388E3C"></span>-->
+                      <!--<label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=green"> Closed Milestone {{ task_closed }}</a></label>-->
+                    <!--</li>-->
+                  <!--{% else %}-->
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=red">Overdue Milestone {{ task_open }}</a></label>
+                      <label class="lbl_val">{% if task_open > 0 %}<a href="/fetch_mile_stones/{{proj_id}}/?type=red">Overdue Milestone {{ task_open }}</a> {% else %} Overdue Milestone {{ task_open }} {% endif %}</label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=yellow">Pending Milestone {{ task_inprogress }}</a></label>
+                      <label class="lbl_val">{% if task_inprogress > 0 %}<a href="/fetch_mile_stones/{{proj_id}}/?type=yellow">Pending Milestone {{ task_inprogress }}</a> {% else %} Pending Milestone {{ task_inprogress }} {% endif %}</label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=green"> Closed Milestone {{ task_closed }}</a></label>
+                          <label class="lbl_val">{% if task_closed > 0 %}<a href="/fetch_mile_stones/{{proj_id}}/?type=green"> Closed Milestone {{ task_closed }}</a> {% else %} Closed Milestone {{ task_closed }} {% endif %}</label>
                     </li>
-                  {% else %}
-                    <li class="overdue">
-                      <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=red">Overdue Milestone {{ task_open }}</a></label>
-                    </li>
-                    <li class="pending">
-                      <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=yellow">Pending Milestone {{ task_inprogress }}</a></label>
-                    </li>
-                    <li class="ontrack">
-                      <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/fetch_mile_stones/{{proj_id}}/?type=green"> Closed Milestone {{ task_closed }}</a></label>
-                    </li>
-                  {% endif %}
+                  <!--{% endif %}-->
               </ul>
             </div>
 

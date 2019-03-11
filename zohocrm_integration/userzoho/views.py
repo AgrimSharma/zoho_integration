@@ -393,7 +393,9 @@ def open_tasks(request, project_id):
         return render(request, "zohouser/tasks/project_tasks.html", {
             "date_today": date_today,
             "current_task": tasks,
-            "name": "Open Task {}".format(project.name)})
+            "name": "Open Task {}".format(project.name),
+            "proj_id": project.id
+            })
     else:
         return redirect("/")
 
@@ -409,7 +411,9 @@ def close_tasks(request, project_id):
         return render(request, "zohouser/tasks/project_tasks.html", {
             "date_today": date_today,
             "current_task": tasks,
-            "name": "Close Task {}".format(project.name)})
+            "name": "Close Task {}".format(project.name),
+            "proj_id": project.id
+        })
     else:
         return redirect("/")
 
@@ -1201,65 +1205,72 @@ def sub_tasks(request, task_id):
 def mile_stone_tasks(request, milestone):
     user = request.user
     if user.is_authenticated():
-        mile = Milestone.objects.get(id=milestone)
+        mile = Milestone.objects.filter(id=milestone)
+        if mile:
+            mile= mile[0]
+            project = mile.project
+            today =datetime.datetime.now().date()
+            task = Tasks.objects.filter(milestone_id=mile.id_string)
+            closed_tasks = Tasks.objects.filter(milestone_id=mile.id_string, status__in=["closed", "Closed"]).count()
+            active_tasks = Tasks.objects.filter(milestone_id=mile.id_string, status__in=["Open", "open", 'In Progress', "in progress", "In progress"]).count()
+            response = []
+            green = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["closed","Closed"]).count()
+            red = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["Open", "open",'In Progress',"in progress","In progress"],
+                                                end_date__lt=today).count()
+            yellow = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["Open", "open",'In Progress',"in progress","In progress"],
+                                                    end_date__gte=today).count()
+            date_today = datetime.datetime.now().date()
+            week_day = date_today.weekday()
+            begin_date = datetime.datetime.now().date() - datetime.timedelta(
+                days=week_day)
+            end_date = datetime.datetime.now().date() + datetime.timedelta(
+                days=4 - week_day)
+            this_week = Tasks.objects.filter(project=project,end_date__gte=begin_date,
+                                             end_date__lte=end_date).count()
+            for t in task:
+                user_list = t.zohousers_set.all()
+                user = ",".join(list(set([u.username for u in user_list])))
+                time_sheet_count = TimeSheet.objects.filter(task=t).count()
+                try:
+                    datetime.datetime.strftime(t.end_date,"%Y-%m-%d")
+                    if t.status in ["open", 'Open'] and t.end_date > today:
+                        status = "progress"
+                    elif t.status in ["open", 'Open'] and t.end_date < today:
+                        status = "over"
+                    else:
+                        status = "closed"
+                except Exception:
+                    status = "over"
+                response.append(dict(
+                    project=project.name,
+                    owner_name=mile.owner_name,
+                    name=mile.name,
+                    status=mile.status,
+                    start_date=mile.start_date,
+                    end_date=mile.end_date,
+                    sequence=mile.sequence,
+                    flag=mile.flag,
+                    users=user,
+                    time_sheet=time_sheet_count,
+                    task_status=status,
+                    task_name=t.task_name,
+                    completed=t.completed,
+                    percent_complete=t.percent_complete
+                ))
+            return render(request, "zohouser/tasks/project_tasks.html",
+                          {"current_task": response,
+                           "name": project.name + "(" +mile.name + ")",
+                           "total_projects":task.count(),
+                           "closed":closed_tasks,
+                           "active": active_tasks,
+                           "mile_id": mile.id,
+                           "task_open":red,
+                           "task_inprogress": yellow,
+                           "task_closed": green,
+                           "this_week":this_week,
+                            "proj_id": project.id
 
-        project = mile.project
-        today =datetime.datetime.now().date()
-        task = Tasks.objects.filter(milestone_id=mile.id_string)
-        closed_tasks = Tasks.objects.filter(milestone_id=mile.id_string, status__in=["closed", "Closed"]).count()
-        active_tasks = Tasks.objects.filter(milestone_id=mile.id_string, status__in=["Open", "open", 'In Progress', "in progress", "In progress"]).count()
-        response = []
-        green = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["closed","Closed"]).count()
-        red = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["Open", "open",'In Progress',"in progress","In progress"],
-                                            end_date__lt=today).count()
-        yellow = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["Open", "open",'In Progress',"in progress","In progress"],
-                                                end_date__gte=today).count()
-        date_today = datetime.datetime.now().date()
-        week_day = date_today.weekday()
-        begin_date = datetime.datetime.now().date() - datetime.timedelta(
-            days=week_day)
-        end_date = datetime.datetime.now().date() + datetime.timedelta(
-            days=4 - week_day)
-        this_week = Tasks.objects.filter(project=project,end_date__gte=begin_date,
-                                         end_date__lte=end_date).count()
-        for t in task:
-            user_list = t.zohousers_set.all()
-            user = ",".join(list(set([u.username for u in user_list])))
-            time_sheet_count = TimeSheet.objects.filter(task=t).count()
-            if t.status in ["open", 'Open'] and t.end_date > today:
-                status = "progress"
-            elif t.status in ["open", 'Open'] and t.end_date < today:
-                status = "over"
-            else:
-                status = "closed"
-            response.append(dict(
-                project=project.name,
-                owner_name=mile.owner_name,
-                name=mile.name,
-                status=mile.status,
-                start_date=mile.start_date,
-                end_date=mile.end_date,
-                sequence=mile.sequence,
-                flag=mile.flag,
-                users=user,
-                time_sheet=time_sheet_count,
-                task_status=status,
-                task_name=t.task_name,
-                completed=t.completed,
-                percent_complete=t.percent_complete
-            ))
-        return render(request, "zohouser/tasks/project_tasks.html",
-                      {"current_task": response,
-                       "name": project.name + "(" +mile.name + ")",
-                       "total_projects":task.count(),
-                       "closed":closed_tasks,
-                       "active": active_tasks,
-                       "proj_id": mile.id,
-                       "task_open":red,
-                       "task_inprogress": yellow,
-                       "task_closed": green,
-                       "this_week":this_week
-        })
+            })
     else:
         return redirect("/")
 
@@ -2069,7 +2080,11 @@ def mile_stone_filter_tasks(request, milestone):
         project = mile.project
         user = ""
         today =datetime.datetime.now().date()
-
+        week_day = today.weekday()
+        begin_date = datetime.datetime.now().date() - datetime.timedelta(
+            days=week_day)
+        end_date = datetime.datetime.now().date() + datetime.timedelta(
+            days=6 - week_day)
         response = []
         if style == "red":
             task = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["Open", "open",'In Progress',"in progress","In progress"],
@@ -2079,7 +2094,6 @@ def mile_stone_filter_tasks(request, milestone):
                                                 end_date__gte=today)
         else:
             task = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["closed","Closed"])
-
         for t in task:
             user_list = t.zohousers_set.all()
             user = ",".join(list(set([u.username for u in user_list])))
@@ -2295,6 +2309,52 @@ def week_task_view(request):
         })
     else:
         return redirect("/")
+
+
+def project_task_current(request, project_id):
+    user = request.user
+    if user.is_authenticated():
+        date_today = datetime.datetime.now().date()
+        week_day = date_today.weekday()
+        begin_date = datetime.datetime.now().date() - datetime.timedelta(
+            days=week_day)
+        end_date = datetime.datetime.now().date() + datetime.timedelta(
+            days=6 - week_day)
+        project = Projects.objects.get(id=project_id)
+        this_week = project.tasks_set.filter(end_date__gte=begin_date,
+                                         end_date__lte=end_date)
+        task_active = project.tasks_set.filter(end_date__gte=begin_date,
+                                           end_date__lte=end_date,
+                                           status__in=['Open', "In Progress"]).count()
+        task_close = project.tasks_set.filter(end_date__gte=begin_date,
+                                       end_date__lte=end_date,
+                                       status__in=['Closed', "closed"]).count()
+        task_over = project.tasks_set.filter(
+            status__in=['Open', "In Progress"],
+            end_date__gte=begin_date,
+            end_date__lt=date_today).count()
+        task_progress = project.tasks_set.filter(status__in=['Open',
+                                                         "In Progress"],
+                                             end_date__gte=date_today,
+                                             end_date__lte=end_date).count()
+
+
+        tasks = filter_tasks(this_week)
+        tasks.sort(key=lambda hotel: hotel['status'], reverse=True)
+        return render(request, "zohouser/task_wise_list.html",{
+            "tasks": tasks,
+            "total_projects": len(tasks),
+            "active": task_active,
+            "closed": task_close,
+            "task_open":task_over,
+            "task_inprogress":task_progress,
+            "task_closed":task_close,
+            "name": "all" if "indigo" in user.email else "hdfc"
+
+        })
+    else:
+        return redirect("/")
+
 
 
 def home(request):

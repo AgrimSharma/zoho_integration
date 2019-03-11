@@ -174,28 +174,52 @@
                   {% if "hdfc" in request.user.email %}
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/week_task_view/?project_name=hdfc&type=red">Overdue Tasks {{ task_open }}</a></label>
+                      <label class="lbl_val">
+                          <!--<a href="/week_task_view/?project_name=all&type=red">-->
+                              Overdue Tasks {{ task_open }}
+                          <!--</a>-->
+                      </label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/week_task_view/?project_name=hdfc&type=yellow">Pending Tasks {{ task_inprogress }}</a></label>
+                      <label class="lbl_val">
+                          <!--<a href="/week_task_view/?project_name=all&type=yellow">-->
+                              Pending Tasks {{ task_inprogress }}
+                          <!--</a>-->
+                      </label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/week_task_view/?project_name=hdfc&type=green"> Closed Tasks {{ task_closed }}</a></label>
+                      <label class="lbl_val">
+                          <!--<a href="/week_task_view/?project_name=all&type=green"> -->
+                              Closed Tasks {{ task_closed }}
+                          <!--</a>-->
+                      </label>
                     </li>
                   {% else %}
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/week_task_view/?project_name=all&type=red">Overdue Tasks {{ task_open }}</a></label>
+                      <label class="lbl_val">
+                          <!--<a href="/week_task_view/?project_name=all&type=red">-->
+                              Overdue Tasks {{ task_open }}
+                          <!--</a>-->
+                      </label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/week_task_view/?project_name=all&type=yellow">Pending Tasks {{ task_inprogress }}</a></label>
+                      <label class="lbl_val">
+                          <!--<a href="/week_task_view/?project_name=all&type=yellow">-->
+                              Pending Tasks {{ task_inprogress }}
+                          <!--</a>-->
+                      </label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/week_task_view/?project_name=all&type=green"> Closed Tasks {{ task_closed }}</a></label>
+                      <label class="lbl_val">
+                          <!--<a href="/week_task_view/?project_name=all&type=green"> -->
+                              Closed Tasks {{ task_closed }}
+                          <!--</a>-->
+                      </label>
                     </li>
                   {% endif %}
               </ul>

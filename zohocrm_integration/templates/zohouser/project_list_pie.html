@@ -173,28 +173,28 @@
                   {% if "hdfc" in request.user.email %}
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/projects/?project_name=hdfc&type=red">Overdue Projects {{ task_open }}</a></label>
+                      <label class="lbl_val">{% if task_open > 0 %}<a href="/projects/?project_name=hdfc&type=red">Overdue Projects {{ task_open }}</a>{% else %} Overdue Projects {{ task_open }}{% endif %}</label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/projects/?project_name=hdfc&type=yellow">Pending Projects {{ task_inprogress }}</a></label>
+                      <label class="lbl_val">{% if task_inprogress > 0 %}<a href="/projects/?project_name=hdfc&type=yellow">Pending Projects {{ task_inprogress }}</a>{% else %} Pending Projects {{ task_inprogress }}{% endif %}</label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/projects/?project_name=hdfc&type=green"> Closed Projects {{ task_closed }}</a></label>
+                      <label class="lbl_val">{% if task_closed > 0 %}<a href="/projects/?project_name=hdfc&type=green"> Closed Projects {{ task_closed }}</a>{% else %}Closed Projects {{ task_closed }}{% endif %}</label>
                     </li>
                   {% else %}
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/projects/?project_name=all&type=red">Overdue Projects {{ task_open }}</a></label>
+                      <label class="lbl_val">{% if task_open > 0 %}<a href="/projects/?project_name=all&type=red">Overdue Projects {{ task_open }}</a>{% else %} Overdue Projects {{ task_open }}{% endif %}</label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/projects/?project_name=all&type=yellow">Pending Projects {{ task_inprogress }}</a></label>
+                      <label class="lbl_val">{% if task_inprogress > 0 %}<a href="/projects/?project_name=all&type=yellow">Pending Projects {{ task_inprogress }}</a>{% else %} Pending Projects {{ task_inprogress }}{% endif %}</label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/projects/?project_name=all&type=green"> Closed Projects {{ task_closed }}</a></label>
+                      <label class="lbl_val">{% if task_closed > 0 %}<a href="/projects/?project_name=all&type=green"> Closed Projects {{ task_closed }}</a>{% else %}Closed Projects {{ task_closed }}{% endif %}</label>
                     </li>
                   {% endif %}
               </ul>
@@ -215,9 +215,9 @@
         <div class="card-body">
         <div class="numbox">
             {% if "hdfc" in request.user.email %}
-            <h3><a href="/client_tasks_week/?name=hdfc">{{ this_week }}</a></h3>
+            <h3>{% if this_week > 0 %} <a href="/client_tasks_week/?name=hdfc">{{ this_week }}</a>{% else %}{{ this_week }}{% endif %}</h3>
             {% else %}
-                        <h3><a href="/client_tasks_week/?name=all">{{ this_week }}</a></h3>
+            <h3>{% if this_week > 0 %} <a href="/client_tasks_week/?name=all">{{ this_week }}</a>{% else %}{{ this_week }}{% endif %}</h3>
             {% endif %}
             <p>Tasks</p>
             </div>
@@ -270,7 +270,7 @@
       <td scope="row">{{ forloop.counter }}</td>
       <td >{{project.csm}}</td>
          <!--<td >{%  if project.milestone_count > 0 %}<a href="/all_milestone/?project_name={{ project.name }}">  {{project.name}}</a>{%  elif project.task_count_open > 0 %}<a href="/project_filter/?project_name={{ project.name }}">  {{project.name}}</a>{%  else %} {{project.name}}{%  endif %}</td>-->
-         <td >{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.name}}</a>{%  elif project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}">  {{project.name}}</a>{%  else %} {{project.name}}{%  endif %}</td>
+         <td >{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}">  {{project.name}}</a>{%  else %} {{project.name}}{%  endif %}</td>
 
 {#        <td><a href="/project_task_list/{{ project.id }}"> {% if  project.color == "red"%}<span class="text-danger">{{project.name}}</span>{% elif  project.color == "yellow"%}<span class="text-warning">{{project.name}}</span>{%  else %}<span class="text-success">{{project.name}}</span> {%  endif %}</a></td>#}
       <td>{{project.end_date}}</td>

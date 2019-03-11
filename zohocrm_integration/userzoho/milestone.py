@@ -165,6 +165,18 @@ def project_all_milestone(project_id):
     response = []
     for m in milestone:
         tasks = Tasks.objects.filter(milestone_id=m.id_string)
+        complete = Tasks.objects.filter(milestone_id=m.id_string, status__in=['Closed','closed']).count()
+        print  m.name,len(tasks), complete
+        try:
+            percent = complete / len(tasks)
+        except Exception:
+            percent = 0
+        if percent >= 85.0:
+            color = "green"
+        elif 75.0 <= percent < 85.0:
+            color = "yellow"
+        else:
+            color = "red"
         user = ""
         for t in tasks:
             user_list = t.zohousers_set.all()
@@ -180,7 +192,8 @@ def project_all_milestone(project_id):
             flag=m.flag,
             users=user,
             id=m.id,
-            task_count=len(tasks)
+            task_count=len(tasks),
+            color=color
 
         ))
     return response

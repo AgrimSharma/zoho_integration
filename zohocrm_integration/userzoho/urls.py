@@ -84,6 +84,7 @@ urlpatterns = [
     url(r'^task_pie_project/(?P<project_id>\w+)/', task_pie_project, name="task_pie_project"),
     url(r'^project_task_filter/(?P<project_id>\w+)/', project_task_filter, name="project_task_filter"),
     url(r'^fetch_mile_stones/(?P<project_id>\w+)/', fetch_mile_stones, name="fetch_mile_stones"),
+    url(r'^project_task_current/(?P<project_id>\w+)/', project_task_current, name="project_task_current"),
     url(r'^', home),
 
 ]

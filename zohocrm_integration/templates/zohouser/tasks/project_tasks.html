@@ -105,28 +105,28 @@
                   {% if "hdfc" in request.user.email %}
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/mile_stone_filter_tasks/{{proj_id}}/?type=red">Overdue Task {{ task_open }}</a></label>
+                      <label class="lbl_val"><a href="/mile_stone_filter_tasks/{{mile_id}}/?type=red">Overdue Task {{ task_open }}</a></label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/mile_stone_filter_tasks/{{proj_id}}/?type=yellow">Pending Task {{ task_inprogress }}</a></label>
+                      <label class="lbl_val"><a href="/mile_stone_filter_tasks/{{mile_id}}/?type=yellow">Pending Task {{ task_inprogress }}</a></label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/mile_stone_filter_tasks/{{proj_id}}/?type=green"> Closed Task {{ task_closed }}</a></label>
+                      <label class="lbl_val"><a href="/mile_stone_filter_tasks/{{mile_id}}/?type=green"> Closed Task {{ task_closed }}</a></label>
                     </li>
                   {% else %}
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/mile_stone_filter_tasks/{{proj_id}}/?type=red">Overdue Task {{ task_open }}</a></label>
+                      <label class="lbl_val"><a href="/mile_stone_filter_tasks/{{mile_id}}/?type=red">Overdue Task {{ task_open }}</a></label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/mile_stone_filter_tasks/{{proj_id}}/?type=yellow">Pending Task {{ task_inprogress }}</a></label>
+                      <label class="lbl_val"><a href="/mile_stone_filter_tasks/{{mile_id}}/?type=yellow">Pending Task {{ task_inprogress }}</a></label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/mile_stone_filter_tasks/{{proj_id}}/?type=green"> Closed Task {{ task_closed }}</a></label>
+                      <label class="lbl_val"><a href="/mile_stone_filter_tasks/{{mile_id}}/?type=green"> Closed Task {{ task_closed }}</a></label>
                     </li>
                   {% endif %}
               </ul>
@@ -146,10 +146,10 @@
         </div>
         <div class="card-body">
         <div class="numbox">
-            {% if "hdfc" in request.user.email %}
-            <h3><a href="/client_tasks_week/?name=hdfc">{{ this_week }}</a></h3>
-            {% else %}
-                        <h3><a href="/client_tasks_week/?name=all">{{ this_week }}</a></h3>
+            <!--{% if "hdfc" in request.user.email %}-->
+            <!--<h3>{% if this_week > 0 %} <a href="/project_task_current/?name=hdfc">{{ this_week }}</a>{% else %} {{this_week}} {% endif %}</h3>-->
+            <!--{% else %}-->
+            <h3>{% if this_week > 0 %} <a href="/project_task_current/{{ proj_id }}/">{{ this_week }}</a>{% else %} {{this_week}} {% endif %}</h3>
             {% endif %}
             <p>Tasks</p>
             </div>
@@ -231,7 +231,7 @@
     </div>
   </div>
 </div>
-<input type="text" value="{{ proj_id }}" id="name" style="display: none">
+<input type="text" value="{{ mile_id }}" id="name" style="display: none">
 
 <script>
 
