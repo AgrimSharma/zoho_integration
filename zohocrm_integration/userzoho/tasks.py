@@ -306,15 +306,24 @@ def project_all_tasks(project_id):
         try:
             datetime.datetime.strftime(t.end_date,"%Y-%m-%d")
 
-            if t.status in ["open", 'Open'] and t.end_date > today:
-                status = "progress"
-            elif t.status in ["open", 'Open'] and t.end_date < today:
-                status = "over"
-            else:
+            datetime.datetime.strftime(t.end_date, "%Y-%m-%d")
+            percent_complete = float(t.percent_complete)
+            if percent_complete >= 85:
                 status = "closed"
+            elif 75.0 <= percent_complete < 85 or t.end_date > today:
+                status = "progress"
+            else:
+                status = "over"
         except Exception:
             status = "over"
-        print t.task_name, "=====>", status
+            percent_complete = float(t.percent_complete)
+
+            if percent_complete >= 85:
+                status = "closed"
+            elif 75.0 <= percent_complete < 85 or t.end_date > today:
+                status = "progress"
+            else:
+                status = "over"
         response.append(dict(
             id=t.id,
             description=strip_tags(t.description) if len(strip_tags(t.description)) < 50 else strip_tags(t.description)[:50] + "...",

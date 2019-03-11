@@ -422,8 +422,8 @@ def all_tasks(request, project_id):
     user = request.user
     if user.is_authenticated():
         project = Projects.objects.get(id=project_id)
-        tasks = project_all_tasks(project_id)
-        tasks.sort(key=lambda hotel: hotel['status'], reverse=True)
+        tasks_data = project_all_tasks(project_id)
+        tasks_data.sort(key=lambda hotel: hotel['status'], reverse=True)
         date_today = datetime.datetime.now().date()
         tasks = project.tasks_set.all()
         tasks_active = project.tasks_set.filter(status__in=['Open','open', 'in progress', 'In Progress']).count()
@@ -441,7 +441,7 @@ def all_tasks(request, project_id):
 
         return render(request, "zohouser/tasks/project_tasks_all.html", {
             "date_today": date_today,
-            "current_task": tasks,
+            "current_task": tasks_data,
             "name": "ALL Task {}".format(project.name),
             "total_projects": tasks.count(),
             "active":tasks_active,
@@ -1214,11 +1214,12 @@ def mile_stone_tasks(request, milestone):
             closed_tasks = Tasks.objects.filter(milestone_id=mile.id_string, status__in=["closed", "Closed"]).count()
             active_tasks = Tasks.objects.filter(milestone_id=mile.id_string, status__in=["Open", "open", 'In Progress', "in progress", "In progress"]).count()
             response = []
-            green = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["closed","Closed"]).count()
-            red = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["Open", "open",'In Progress',"in progress","In progress"],
-                                                end_date__lt=today).count()
-            yellow = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["Open", "open",'In Progress',"in progress","In progress"],
-                                                    end_date__gte=today).count()
+            # green = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["closed","Closed"]).count()
+            # red = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["Open", "open",'In Progress',"in progress","In progress"],
+            #                                     end_date__lt=today).count()
+            # yellow = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["Open", "open",'In Progress',"in progress","In progress"],
+            #                                         end_date__gte=today).count()
+            green, red, yellow = 0,0,0
             date_today = datetime.datetime.now().date()
             week_day = date_today.weekday()
             begin_date = datetime.datetime.now().date() - datetime.timedelta(
@@ -1233,14 +1234,23 @@ def mile_stone_tasks(request, milestone):
                 time_sheet_count = TimeSheet.objects.filter(task=t).count()
                 try:
                     datetime.datetime.strftime(t.end_date,"%Y-%m-%d")
-                    if t.status in ["open", 'Open'] and t.end_date > today:
-                        status = "progress"
-                    elif t.status in ["open", 'Open'] and t.end_date < today:
-                        status = "over"
-                    else:
+                    percent_complete = float(t.percent_complete)
+                    if percent_complete >= 85:
+                        green += 1
                         status = "closed"
+                    elif 75.0 <= percent_complete < 85 or t.end_date > today:
+                        yellow += 1
+                        status = "progress"
+                    else:
+                        red += 1
+                        status = "over"
+                    # if t.status in ["open", 'Open', 'In Progress', "In progress"] and t.end_date > today:
+                    # elif t.status in ["open", 'Open'] and t.end_date < today:
+                    # else:
                 except Exception:
                     status = "over"
+
+
                 response.append(dict(
                     project=project.name,
                     owner_name=mile.owner_name,
@@ -2024,10 +2034,17 @@ def task_pie(request, project_id):
         mile = Milestone.objects.get(id=project_id)
         today = datetime.datetime.now().date()
 
-        closed_tasks = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["closed","Closed"]).count()
+        closed_tasks = Tasks.objects.filter(milestone_id=mile.id_string,
+                                     status__in=["closed", "Closed"]).count()
         active_tasks = Tasks.objects.filter(milestone_id=mile.id_string,
-                                            status__in=["Open", "open",'In Progress',"in progress","In progress"],end_date__lt=today).count()
-        inprogress_tasks = Tasks.objects.filter(milestone_id=mile.id_string,status__in=["Open", "open",'In Progress', "in progress","In progress"],end_date__gte=today).count()
+                                   status__in=["Open", "open", 'In Progress',
+                                               "in progress", "In progress"],
+                                   end_date__lt=today).count()
+        inprogress_tasks = Tasks.objects.filter(milestone_id=mile.id_string,
+                                      status__in=["Open", "open",
+                                                  'In Progress', "in progress",
+                                                  "In progress"],
+                                      end_date__gte=today).count()
         return HttpResponse(json.dumps(dict(red=active_tasks, green=closed_tasks, yellow=inprogress_tasks)))
     else:
         return redirect("/")
