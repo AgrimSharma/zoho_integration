@@ -313,8 +313,8 @@ def project_list_view_all(name, status, csm):
             over_due = datetime.datetime.now().date() - pro.end_date_format
         except Exception:
             over_due = None
-        milestone_closed = pro.milestone_set.filter(status='notcompleted')
-        milestone_open = pro.milestone_set.filter(status='completed')
+        milestone_closed = pro.milestone_set.filter(status='completed').count()
+        milestone_open = pro.milestone_set.all().count()
         try:
             names = pro.owner_name
             name_data = [n.capitalize() for n in names.split(".")]
@@ -326,10 +326,9 @@ def project_list_view_all(name, status, csm):
                     id=pro.id,
                     end_date=pro.end_date_format,
                     task_count_open=total,
-                    milestone_count_open=len(milestone_closed) + len(
-                        milestone_open),
+                    milestone_count_open=milestone_open,
                     task_count_close=tasks_close,
-                    milestone_count_close=len(milestone_closed),
+                    milestone_count_close=milestone_closed,
                     start_date=pro.start_date_format,
                     status=pro.status.capitalize(),
                     created_date=pro.created_date_format,

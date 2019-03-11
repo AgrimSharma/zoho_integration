@@ -203,7 +203,7 @@
 {#                <td>{{t.milestone_id}}</td>#}
                 <td>{{t.start_date}}</td>
                 <td>{{t.end_date}}</td>
-                <td>{% if t.status == 'Closed' %} <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
+                <td>{% if t.status == 'closed' %} <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
                     {% elif t.task_status == 'progress'  %} <i class="fas fa-square" style="color: #FBC02D;font-size: 30px;"></i>
                     {% else %} <i class="fas fa-square" style="color: red;font-size: 30px;"></i>
                     {% endif %}

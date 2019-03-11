@@ -720,7 +720,25 @@ def project_list(request):
                 yellow += 1
             else:
                 red += 1
-        return render(request, "zohouser/project_list_pie.html",
+        if name == "hdfc":
+            return render(request, "zohouser/project_list_pie_hdfc.html",
+                          {"projects": project,
+                           "csm": list(set(csm_list)),
+                           "date": today,
+                           "name": name,
+                           "status": status,
+                           "user_name": user.email,
+                           "total_projects": total_projects,
+                           "active": active,
+                           "closed": closed,
+                           "task_closed": green,
+                           "task_open": red,
+                           "task_inprogress": yellow,
+                           "this_week": this_week,
+                           "month": month
+                           })
+        else:
+            return render(request, "zohouser/project_list_pie.html",
                           {"projects": project,
                            "csm": list(set(csm_list)),
                            "date": today,
@@ -1248,8 +1266,16 @@ def mile_stone_tasks(request, milestone):
                     # elif t.status in ["open", 'Open'] and t.end_date < today:
                     # else:
                 except Exception:
-                    status = "over"
-
+                    percent_complete = float(t.percent_complete)
+                    if percent_complete >= 85:
+                        green += 1
+                        status = "closed"
+                    elif 75.0 <= percent_complete < 85 :
+                        yellow += 1
+                        status = "progress"
+                    else:
+                        red += 1
+                        status = "over"
 
                 response.append(dict(
                     project=project.name,
@@ -1267,6 +1293,7 @@ def mile_stone_tasks(request, milestone):
                     completed=t.completed,
                     percent_complete=t.percent_complete
                 ))
+            print red, green, yellow
             return render(request, "zohouser/tasks/project_tasks.html",
                           {"current_task": response,
                            "name": project.name + "(" +mile.name + ")",
@@ -1853,7 +1880,9 @@ def show_all(request):
                     red += 1
             else:
                 red += 1
-        return render(request, "zohouser/project_list_pie_all.html",
+        if name == "hdfc":
+
+            return render(request, "zohouser/project_list_pie_all_hdfc.html",
                       {"projects": project,
                        "csm": list(set(csm_list)),
                        "name": name,
@@ -1867,6 +1896,21 @@ def show_all(request):
                        "task_inprogress": yellow,
                        "this_week": this_week,
                        })
+        else:
+            return render(request, "zohouser/project_list_pie_all.html",
+                          {"projects": project,
+                           "csm": list(set(csm_list)),
+                           "name": name,
+                           "status": status,
+                           "user_name": user.email,
+                           "total_projects": total_projects,
+                           "active": red + yellow,
+                           "closed": green,
+                           "task_closed": green,
+                           "task_open": red,
+                           "task_inprogress": yellow,
+                           "this_week": this_week,
+                           })
 
 
 def client_tasks_all(request, name):
@@ -2033,19 +2077,42 @@ def task_pie(request, project_id):
     if user.is_authenticated():
         mile = Milestone.objects.get(id=project_id)
         today = datetime.datetime.now().date()
+        task = Tasks.objects.filter(milestone_id=mile.id_string)
+        reen, red, yellow = 0, 0, 0
+        date_today = datetime.datetime.now().date()
+        week_day = date_today.weekday()
+        begin_date = datetime.datetime.now().date() - datetime.timedelta(
+            days=week_day)
+        end_date = datetime.datetime.now().date() + datetime.timedelta(
+            days=4 - week_day)
+        red, green, yellow = 0,0,0
+        for t in task:
 
-        closed_tasks = Tasks.objects.filter(milestone_id=mile.id_string,
-                                     status__in=["closed", "Closed"]).count()
-        active_tasks = Tasks.objects.filter(milestone_id=mile.id_string,
-                                   status__in=["Open", "open", 'In Progress',
-                                               "in progress", "In progress"],
-                                   end_date__lt=today).count()
-        inprogress_tasks = Tasks.objects.filter(milestone_id=mile.id_string,
-                                      status__in=["Open", "open",
-                                                  'In Progress', "in progress",
-                                                  "In progress"],
-                                      end_date__gte=today).count()
-        return HttpResponse(json.dumps(dict(red=active_tasks, green=closed_tasks, yellow=inprogress_tasks)))
+            try:
+                datetime.datetime.strftime(t.end_date, "%Y-%m-%d")
+                percent_complete = float(t.percent_complete)
+                if percent_complete >= 85:
+                    green += 1
+                elif 75.0 <= percent_complete < 85 or t.end_date > today:
+                    yellow += 1
+                else:
+                    red += 1
+                # if t.status in ["open", 'Open', 'In Progress', "In progress"] and t.end_date > today:
+                # elif t.status in ["open", 'Open'] and t.end_date < today:
+                # else:
+            except Exception:
+                percent_complete = float(t.percent_complete)
+                if percent_complete >= 85:
+                    green += 1
+                    status = "closed"
+                elif 75.0 <= percent_complete < 85:
+                    yellow += 1
+                    status = "progress"
+                else:
+                    red += 1
+                    status = "over"
+
+        return HttpResponse(json.dumps(dict(red=red, green=green, yellow=yellow)))
     else:
         return redirect("/")
 
