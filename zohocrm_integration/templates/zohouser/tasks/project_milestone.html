@@ -186,8 +186,10 @@
             <tr>
                 <td>{{forloop.counter}}</td>
                 <td style="text-align:left;">{{name}}</td>
-                <td style="text-align:left;">{% if t.task_count > 0 %}<a href="/mile_stone_task/{{ t.id }}">{{t.name}}</a> {% else %} {{t.name}} {% endif %}</td>
-
+                <td style="text-align:left;">
+                    {% if "hdfc" in request.user.email %}{{t.name}}
+                    {% else %}{% if t.task_count > 0 %}<a href="/mile_stone_task/{{ t.id }}">{{t.name}}</a> {% else %} {{t.name}} {% endif %}</td>
+                {% endif %}
                 <td>{{t.start_date}}<br>{{t.end_date}}</td>
 
                 <td>{{t.owner_name}}</td>
