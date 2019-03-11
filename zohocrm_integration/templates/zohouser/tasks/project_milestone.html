@@ -23,7 +23,7 @@
 <nav class="navbar navbar-expand-lg bg-dark">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#" style="color: white">Projects View</a>
+      <a class="navbar-brand" href="#" style="color: white">Dashboard</a>
     </div>
     <ul class="nav navbar-nav pull-right" >
         {% if "hdfc" in request.user.email %}
@@ -41,25 +41,19 @@
 
   <div class="container-fluid" >
     <ul class="navbar-nav" style="display: contents;">
-      <li class="nav-item ">
-          {% if "hdfc" in request.user.email %}
-            <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
-          {% else %}
-                      <a class="nav-link" href="/project_list/?name=all&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
-        {% endif %}
-      </li>
-      <li class="nav-item">
-          {% if "hdfc" in request.user.email %}
-        <a class="nav-link" href="/project_filter/?csm=all&project_name=hdfc">Projects</a>
-          {% else %}
-                    <a class="nav-link" href="/project_filter/?csm=all&project_name=all">Projects<span class="sr-only">(current)</span></a>
-          {% endif %}
+        {% if "hdfc" in request.user.email %}
 
+      <li class="nav-item ">
+            <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
+      </li>
+        {% else %}
+        <li class="nav-item">
+        <a class="nav-link" href="/project_list/?name=all&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">CSMs</a>
       </li>
-
+{% endif %}
     </ul>
   </div>
 </nav>

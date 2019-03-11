@@ -2053,12 +2053,20 @@ def projects_types(request):
         end_date = datetime.datetime.now().date() + datetime.timedelta(
             days=6 - week_day)
         this_week = Tasks.objects.filter(end_date__gte=begin_date,end_date__lte=end_date).count()
+        if name == "hdfc":
 
-        return render(request, "zohouser/projects.html", {"projects": projects,
+            return render(request, "zohouser/projects_hdfc.html", {"projects": projects,
                                                           "status": status,
                                                           "color": color,
                                                           "this_week":this_week
                                                           })
+        else:
+            return render(request, "zohouser/projects.html",
+                          {"projects": projects,
+                           "status": status,
+                           "color": color,
+                           "this_week": this_week
+                           })
 
 
 def mile_stone_pie(request, project_id):
