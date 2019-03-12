@@ -190,9 +190,9 @@
                 <td> {{ t.users }}</td>
                 <td>{{t.sequence}}</td>
                 <td>{{t.flag}}</td>
-                 <td>{%  if t.status == 'notcompleted' and date_today < t.end_date %} <i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
-                {%  elif t.status == 'notcompleted' %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
-                                {% else %} <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
+                 <td>{%  if t.status == 'notcompleted' and t.end_date >= date_today %} <i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
+                {%  elif t.status == 'notcompleted' and t.end_date < date_today %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
+                     {% else %} <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
                 {%  endif %}
                 </td>
             </tr>
