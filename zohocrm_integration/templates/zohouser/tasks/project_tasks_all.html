@@ -102,33 +102,19 @@
             <div class="col-lg-7" ><div id="chartdiv" ></div></div>
             <div class="col-lg-5">
               <ul class="projectwise_health_list m-0 p-0">
-                  {% if "hdfc" in request.user.email %}
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/project_task_filter/{{proj_id}}/?type=red">Overdue Task {{ task_open }}</a></label>
+                      <label class="lbl_val">{% if task_open > 0 %}<a href="/project_task_filter/{{proj_id}}/?type=red">Overdue Task {{ task_open }}</a>{% else %} Overdue Task {{task_open}} {% endif %}</label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/project_task_filter/{{proj_id}}/?type=yellow">Pending Task {{ task_inprogress }}</a></label>
+                      <label class="lbl_val">{% if task_inprogress > 0 %}<a href="/project_task_filter/{{proj_id}}/?type=yellow">Pending Task {{ task_inprogress }}</a>{% else %} Pending Task {{task_inprogress}} {% endif %}</label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/project_task_filter/{{proj_id}}/?type=green"> Closed Task {{ task_closed }}</a></label>
+                      <label class="lbl_val">{% if task_closed > 0 %}<a href="/project_task_filter/{{proj_id}}/?type=green"> Closed Task {{ task_closed }}</a>{% else %} Closed Task {{task_closed}} {% endif %}</label>
                     </li>
-                  {% else %}
-                    <li class="overdue">
-                      <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val"><a href="/project_task_filter/{{proj_id}}/?type=red">Overdue Task {{ task_open }}</a></label>
-                    </li>
-                    <li class="pending">
-                      <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val"><a href="/project_task_filter/{{proj_id}}/?type=yellow">Pending Task {{ task_inprogress }}</a></label>
-                    </li>
-                    <li class="ontrack">
-                      <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val"><a href="/project_task_filter/{{proj_id}}/?type=green"> Closed Task {{ task_closed }}</a></label>
-                    </li>
-                  {% endif %}
+
               </ul>
             </div>
 
@@ -147,9 +133,9 @@
         <div class="card-body">
         <div class="numbox">
             {% if "hdfc" in request.user.email %}
-            <h3><a href="/client_tasks_week/?name=hdfc">{{ this_week }}</a></h3>
+            {% if this_week > 0 %}<h3><a href="/client_tasks_week/?name=hdfc">{{ this_week }}</a></h3>{% else %} <h3>{{ this_week }}</h3>{% endif %}
             {% else %}
-                        <h3><a href="/client_tasks_week/?name=all">{{ this_week }}</a></h3>
+                  {% if this_week > 0 %}      <h3><a href="/client_tasks_week/?name=all">{{ this_week }}</a></h3>{% else %} <h3>{{ this_week }}</h3>{% endif %}
             {% endif %}
             <p>Tasks</p>
             </div>
@@ -203,7 +189,7 @@
 {#                <td>{{t.milestone_id}}</td>#}
                 <td>{{t.start_date}}</td>
                 <td>{{t.end_date}}</td>
-                <td>{% if t.status == 'closed' %} <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
+                <td>{% if t.task_status == 'closed' or t.percent_complete == 100 %} <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
                     {% elif t.task_status == 'progress'  %} <i class="fas fa-square" style="color: #FBC02D;font-size: 30px;"></i>
                     {% else %} <i class="fas fa-square" style="color: red;font-size: 30px;"></i>
                     {% endif %}

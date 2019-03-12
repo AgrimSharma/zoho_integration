@@ -428,9 +428,25 @@ def all_tasks(request, project_id):
         tasks = project.tasks_set.all()
         tasks_active = project.tasks_set.filter(status__in=['Open','open', 'in progress', 'In Progress']).count()
         tasks_closed = project.tasks_set.filter(status__in=['closed', 'Closed']).count()
-        task_over = project.tasks_set.filter(status__in=['Open','open', 'in progress', 'In Progress'], end_date__lt=date_today).count()
-        task_progress = project.tasks_set.filter(status__in=['Open','open', 'in progress', 'In Progress'], end_date__gte=date_today).count()
-        task_close = project.tasks_set.filter(status__in=['closed', 'Closed']).count()
+        # task_over = project.tasks_set.filter(status__in=['Open','open', 'in progress', 'In Progress'], end_date__lt=date_today).count()
+        # task_progress = project.tasks_set.filter(status__in=['Open','open', 'in progress', 'In Progress'], end_date__gte=date_today).count()
+        # task_close = project.tasks_set.filter(status__in=['closed', 'Closed']).count()
+        today = datetime.datetime.now().date()
+        red, yellow, green = 0,0,0
+        for t in tasks:
+            if t.status in ["Open", "In Progress", "open",
+                            "in progress"] and t.end_date and t.end_date < today:
+                red += 1
+            elif t.status in ["Open", "In Progress",
+                              "open"] and t.end_date == None:
+                red += 1
+            elif t.status in ["closed", 'Closed'] and t.end_date == None:
+                green += 1
+            elif t.status in ["Open", "In Progress", "open",
+                              'in progress'] and t.end_date and t.end_date > today:
+                yellow += 1
+            else:
+                green += 1
         week_day = date_today.weekday()
         begin_date = datetime.datetime.now().date() - datetime.timedelta(
             days=week_day)
@@ -446,9 +462,9 @@ def all_tasks(request, project_id):
             "total_projects": tasks.count(),
             "active":tasks_active,
             "closed":tasks_closed,
-            "task_open":task_over,
-            "task_inprogress":task_progress,
-            "task_closed":task_close,
+            "task_open":red,
+            "task_inprogress":yellow,
+            "task_closed":green,
             "this_week":this_week,
             "proj_id": project.id
         })
@@ -712,14 +728,21 @@ def project_list(request):
         month = datetime.datetime.strftime(today, "%B")
         project.sort(key=lambda hotel: hotel['csm'])
         red, yellow, green = 0,0,0
-        for p in project:
-            percent = float(p['percent'])
-            if percent >= 85.0 or p['status'] == "completed":
-                green += 1
-            elif 75.0 <= percent < 85.0 :
+        for pro in project:
+            if pro['status'] in ["Active",
+                              'active'] and pro['end_date'] and pro['end_date'] < today:
+                red += 1
+            elif pro['status'] in ["Active",
+                                'active'] and pro['end_date'] == None:
+                red += 1
+            elif pro['status'] in ["closed",
+                                'Closed'] and pro['end_date'] == None:
+                red += 1
+            elif pro['status'] in ["Active",
+                                'active'] and pro['end_date'] >= today:
                 yellow += 1
             else:
-                red += 1
+                green += 1
         if name == "hdfc":
             return render(request, "zohouser/project_list_pie_hdfc.html",
                           {"projects": project,
@@ -1861,25 +1884,25 @@ def show_all(request):
                 days=4 - week_day)
             this_week = Tasks.objects.filter(end_date__gte=begin_date,
                                              end_date__lte=end_date).count()
-        project.sort(key=lambda hotel: hotel['csm'])
-        red, green, yellow = 0, 0, 0
-
-        for p in project:
-            percent = float(p['percent'])
-            # if p['status'] in ['active', 'Active'] :
-            if (percent >= 85.0 or p['status'] == "completed") and p['end_date']:
-                green += 1
-            elif 75.0 <= percent < 85.0:
-                try:
-                    dtes = datetime.datetime.strptime(p['end_date'],"%Y-%m-%d")
-                    if dtes > datetime.datetime.now():
-                        yellow += 1
-                    else:
-                        red += 1
-                except Exception:
-                    red += 1
-            else:
+        project.sort(key=lambda hotel: hotel['color'], reverse=True)
+        red, yellow, green = 0, 0, 0
+        today = datetime.datetime.now().date()
+        for pro in project:
+            if pro['status'] in ["Active",
+                                 'active'] and pro['end_date'] and pro[
+                'end_date'] < today:
                 red += 1
+            elif pro['status'] in ["Active",
+                                   'active'] and pro['end_date'] == None:
+                red += 1
+            elif pro['status'] in ["closed",
+                                   'Closed'] and pro['end_date'] == None:
+                red += 1
+            elif pro['status'] in ["Active",
+                                   'active', "In Progress"] and pro['end_date'] >= today:
+                yellow += 1
+            else:
+                green += 1
         if name == "hdfc":
 
             return render(request, "zohouser/project_list_pie_all_hdfc.html",
@@ -1940,18 +1963,23 @@ def project_pie(request):
         projects = Projects.objects.filter(end_date_format__range=[first, last])
     else:
         projects = Projects.objects.filter(name__icontains='hdfc', end_date_format__range=[first, last])
-
-    for p in projects:
-        close_tasks = p.task_count_close
-        total_tasks = p.task_count_close + p.task_count_open
-        percent = round(close_tasks / total_tasks, 2) * 100
-        if p.status in ['active', 'Active']:
-            if percent >= 85.0:
-                green += 1
-            elif 75.0 <= percent < 85.0:
-                yellow += 1
-            else:
-                red += 1
+    red, yellow, green = 0,0,0
+    for pro in projects:
+        # close_tasks = pro.task_count_close
+        # total_tasks = pro.task_count_close + pro.task_count_open
+        # percent = round(close_tasks / total_tasks, 2) * 100
+        if pro.status in ["Active",
+                          'active'] and pro.end_date_format and pro.end_date_format < today:
+            red += 1
+        elif pro.status in ["Active",
+                            'active'] and pro.end_date_format == None:
+            red += 1
+        elif pro.status in ["closed",
+                            'Closed'] and pro.end_date_format == None:
+            red += 1
+        elif pro.status in ["Active",
+                            'active'] and pro.end_date_format >= today:
+            yellow += 1
         else:
             green += 1
     return HttpResponse(json.dumps(dict(red=red, green=green, yellow=yellow)))
@@ -1964,27 +1992,25 @@ def project_pie_all(request):
         projects = Projects.objects.all()
     else:
         projects = Projects.objects.filter(name__icontains='hdfc')
-
-    for p in projects:
-        close_tasks = p.task_count_close
-        total_tasks = p.task_count_close + p.task_count_open
-        try:
-            percent = round(close_tasks / total_tasks, 2) * 100
-        except ZeroDivisionError:
-            percent = 0
-        if (percent >= 85.0 and p.end_date_format) or p.status == 'completed':
-            green += 1
-        elif 75.0 <= percent < 85.0:
-            try:
-                d = datetime.datetime.strftime(p.end_date_format, '%Y-%m-%d')
-                if p.end_date_format > datetime.datetime.now():
-                    yellow += 1
-                else:
-                    red += 1
-            except Exception:
-                red += 1
-        else:
+    today = datetime.datetime.now().date()
+    for pro in projects:
+        # close_tasks = pro.task_count_close
+        # total_tasks = pro.task_count_close + pro.task_count_open
+        # percent = round(close_tasks / total_tasks, 2) * 100
+        if pro.status in ["Active",
+                          'active'] and pro.end_date_format and pro.end_date_format < today:
             red += 1
+        elif pro.status in ["Active",
+                            'active'] and pro.end_date_format == None:
+            red += 1
+        elif pro.status in ["closed",
+                            'Closed'] and pro.end_date_format == None:
+            red += 1
+        elif pro.status in ["Active",
+                            'active'] and pro.end_date_format >= today:
+            yellow += 1
+        else:
+            green += 1
 
     return HttpResponse(json.dumps(dict(red=red, green=green, yellow=yellow)))
 
@@ -1994,7 +2020,7 @@ def projects_types(request):
     if user.is_authenticated():
         red, green, yellow = [],[],[]
         name = request.GET.get("project_name")
-        month = request.GET.get("month")
+        month = request.GET.get("month", "all")
         today = datetime.datetime.now().date()
         first, last = get_month_day_range(today)
         project_type=request.GET.get("type")
@@ -2012,23 +2038,38 @@ def projects_types(request):
                 projects = Projects.objects.filter(end_date_format__range=[first,last])
 
         for p in projects:
-            try:
-                total = p.task_count_open + p.task_count_close
-                percent = float(round(p.task_count_close/total, 2) * 100)
-            except ZeroDivisionError:
-                percent = 0
-            if (percent >= 85.0 and p.end_date_format) or p.status == "completed":
-                green.append(p)
-            elif 75.0 <= percent < 85.0:
-                try:
-                    d = datetime.datetime.strftime(p.end_date_format,'%Y-%m-%d')
-                    if p.end_date_format > today:
-                        yellow.append(p)
-                    else:
-                        red.append(p)
-                except Exception:
-                    red.append(p)
+            today = datetime.datetime.now().date()
+            if p.status in ["Active",
+                              'active'] and p.end_date_format and p.end_date_format < today:
+                red.append(p)
+            elif p.status in ["Active",
+                                'active'] and p.end_date_format == None:
+                red.append(p)
+            elif p.status in ["closed",
+                                'Closed'] and p.end_date_format == None:
+                red.append(p)
+            elif p.status in ["Active", 'active',
+                                'In Progress'] and p.end_date_format and p.end_date_format > today:
+                yellow.append(p)
             else:
+                green.append(p)
+            # try:
+            #     total = p.task_count_open + p.task_count_close
+            #     percent = float(round(p.task_count_close/total, 2) * 100)
+            # except ZeroDivisionError:
+            #     percent = 0
+            # if (percent >= 85.0 and p.end_date_format) or p.status == "completed":
+            #     green.append(p)
+            # elif 75.0 <= percent < 85.0:
+            #     try:
+            #         d = datetime.datetime.strftime(p.end_date_format,'%Y-%m-%d')
+            #         if p.end_date_format > today:
+            #             yellow.append(p)
+            #         else:
+            #             red.append(p)
+            #     except Exception:
+            #         red.append(p)
+            # else:
                 red.append(p)
 
         if project_type == 'red':
@@ -2130,12 +2171,27 @@ def task_pie_project(request, project_id):
     if user.is_authenticated():
         project = Projects.objects.get(id=project_id)
         today = datetime.datetime.now().date()
-
-        closed_tasks = project.tasks_set.filter(status__in=["closed","Closed"]).count()
-        active_tasks = project.tasks_set.filter(
-                                            status__in=["Open", "open",'In Progress',"in progress","In progress"],end_date__lt=today).count()
-        inprogress_tasks = project.tasks_set.filter(status__in=["Open", "open",'In Progress', "in progress","In progress"],end_date__gte=today).count()
-        return HttpResponse(json.dumps(dict(red=active_tasks, green=closed_tasks, yellow=inprogress_tasks)))
+        tasks = project.tasks_set.all()
+        red, yellow, green = 0, 0, 0
+        for t in tasks:
+            if t.status in ["Open", "In Progress", "open",
+                            "in progress"] and t.end_date and t.end_date < today:
+                red += 1
+            elif t.status in ["Open", "In Progress",
+                              "open"] and t.end_date == None:
+                red += 1
+            elif t.status in ["closed", 'Closed'] and t.end_date == None:
+                green += 1
+            elif t.status in ["Open", "In Progress", "open",
+                              'in progress'] and t.end_date and t.end_date > today:
+                yellow += 1
+            else:
+                green += 1
+        # closed_tasks = project.tasks_set.filter(status__in=["closed","Closed"]).count()
+        # active_tasks = project.tasks_set.filter(
+        #                                     status__in=["Open", "open",'In Progress',"in progress","In progress"],end_date__lt=today).count()
+        # inprogress_tasks = project.tasks_set.filter(status__in=["Open", "open",'In Progress', "in progress","In progress"],end_date__gte=today).count()
+        return HttpResponse(json.dumps(dict(red=red, green=green, yellow=yellow)))
     else:
         return redirect("/")
 
@@ -2232,35 +2288,68 @@ def project_task_filter(request, project_id):
         style = request.GET.get("type")
         project = Projects.objects.get(id=project_id)
         date_today = datetime.datetime.now().date()
-
-        if style == "red":
-            tasks = project.tasks_set.filter(
-                status__in=['Open', 'open', 'in progress', 'In Progress'],
-                end_date__lt=date_today)
-        elif style == "yellow":
-            tasks = project.tasks_set.filter(
-                status__in=['Open', 'open', 'in progress', 'In Progress'],
-                end_date__gte=date_today)
+        tasks = project.tasks_set.all()
+        red, yellow, green = [],[],[]
+        today = datetime.datetime.now().date()
+        for t in tasks:
+            if t.status in ["Open", "In Progress", "open",
+                            "in progress"] and t.end_date and t.end_date < today:
+                red.append(t)
+            elif t.status in ["Open", "In Progress",
+                              "open"] and t.end_date == None:
+                red.append(t)
+            elif t.status in ["closed", 'Closed'] and t.end_date == None:
+                green.append(t)
+            elif t.status in ["Open", "In Progress", "open",
+                              'in progress'] and t.end_date and t.end_date > today:
+                yellow.append(t)
+            else:
+                green.append(t)
+        # if style == "red":
+        #     tasks = project.tasks_set.filter(
+        #         status__in=['Open', 'open', 'in progress', 'In Progress'],
+        #         end_date__lt=date_today)
+        # elif style == "yellow":
+        #     tasks = project.tasks_set.filter(
+        #         status__in=['Open', 'open', 'in progress', 'In Progress'],
+        #         end_date__gte=date_today)
+        # else:
+        #     tasks = project.tasks_set.filter(
+        #         status__in=['closed', 'Closed'])
+        if style == 'red':
+            tasks = red
+        elif style == 'yellow':
+            tasks = yellow
         else:
-            tasks = project.tasks_set.filter(
-                status__in=['closed', 'Closed'])
-
+            tasks = green
         response = []
         for t in tasks:
             users = t.zohousers_set.all()
             time_sheet_count = TimeSheet.objects.filter(task=t).count()
-            today = datetime.datetime.now().date()
-            try:
-                datetime.datetime.strftime(t.end_date, "%Y-%m-%d")
-
-                if t.status in ["open", 'Open'] and t.end_date > today:
-                    status = "progress"
-                elif t.status in ["open", 'Open'] and t.end_date < today:
-                    status = "over"
-                else:
-                    status = "closed"
-            except Exception:
-                status = "over"
+            if t.status in ["Open", "In Progress", "open",
+                            "in progress"] and t.end_date and t.end_date < today:
+                status = 'over'
+            elif t.status in ["Open", "In Progress",
+                              "open"] and t.end_date == None:
+                status = 'over'
+            elif t.status in ["closed", 'Closed'] and t.end_date == None:
+                status = 'closed'
+            elif t.status in ["Open", "In Progress", "open",
+                              'in progress'] and t.end_date and t.end_date > today:
+                status = 'progress'
+            else:
+                status = 'closed'
+            # try:
+            #     datetime.datetime.strftime(t.end_date, "%Y-%m-%d")
+            #
+            #     if t.status in ["open", 'Open'] and t.end_date > today:
+            #         status = "progress"
+            #     elif t.status in ["open", 'Open'] and t.end_date < today:
+            #         status = "over"
+            #     else:
+            #         status = "closed"
+            # except Exception:
+            #     status = "over"
             response.append(dict(
                 id=t.id,
                 description=strip_tags(t.description) if len(

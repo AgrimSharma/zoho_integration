@@ -303,27 +303,40 @@ def project_all_tasks(project_id):
         users = t.zohousers_set.all()
         time_sheet_count=TimeSheet.objects.filter(task=t).count()
         today = datetime.datetime.now().date()
-        try:
-            datetime.datetime.strftime(t.end_date,"%Y-%m-%d")
+        if t.status in ["Open", "In Progress", "open",
+                        "in progress"] and t.end_date and t.end_date < today:
+            status = 'over'
+        elif t.status in ["Open", "In Progress",
+                          "open"] and t.end_date == None:
+            status = 'over'
+        elif t.status in ["closed", 'Closed'] and t.end_date == None:
+            status = 'closed'
+        elif t.status in ["Open", "In Progress", "open",
+                          'in progress'] and t.end_date and t.end_date > today:
+            status = 'progress'
+        else:
+            status = 'closed'
+        # try:
+        #     datetime.datetime.strftime(t.end_date,"%Y-%m-%d")
+        #
+        #     datetime.datetime.strftime(t.end_date, "%Y-%m-%d")
+        #     percent_complete = float(t.percent_complete)
+        #     if percent_complete >= 85:
+        #         status = "closed"
+        #     elif 75.0 <= percent_complete < 85 or t.end_date > today:
+        #         status = "progress"
+        #     else:
+        #         status = "over"
+        # except Exception:
+        #     status = "over"
+            # percent_complete = float(t.percent_complete)
 
-            datetime.datetime.strftime(t.end_date, "%Y-%m-%d")
-            percent_complete = float(t.percent_complete)
-            if percent_complete >= 85:
-                status = "closed"
-            elif 75.0 <= percent_complete < 85 or t.end_date > today:
-                status = "progress"
-            else:
-                status = "over"
-        except Exception:
-            status = "over"
-            percent_complete = float(t.percent_complete)
-
-            if percent_complete >= 85:
-                status = "closed"
-            elif 75.0 <= percent_complete < 85 or t.end_date > today:
-                status = "progress"
-            else:
-                status = "over"
+            # if percent_complete >= 85:
+            #     status = "closed"
+            # elif 75.0 <= percent_complete < 85 or t.end_date > today:
+            #     status = "progress"
+            # else:
+            #     status = "over"
         response.append(dict(
             id=t.id,
             description=strip_tags(t.description) if len(strip_tags(t.description)) < 50 else strip_tags(t.description)[:50] + "...",

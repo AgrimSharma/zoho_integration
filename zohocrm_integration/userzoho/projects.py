@@ -209,14 +209,17 @@ def project_list_view(name, status, csm):
         elif pro.status in ["closed",
                             'Closed'] and pro.end_date_format == None:
             color = "red"
+        elif pro.status in ["Active",
+                            'active'] and pro.end_date_format >= today:
+            color = "yellow"
         else:
             color = 'green'
         try:
             datetime.datetime.strftime(pro.end_date_format, "%Y-%m-%d")
-            if pro.end_date_format < today and pro.status == 'active':
-                color = 'red'
-            else:
-                color = 'green'
+            # if pro.end_date_format < today and pro.status == 'active':
+            #     color = 'red'
+            # else:
+            #     color = 'green'
             over_due = datetime.datetime.now().date() - pro.end_date_format
         except Exception:
             over_due = None
@@ -302,14 +305,17 @@ def project_list_view_all(name, status, csm):
         elif pro.status in ["closed",
                             'Closed'] and pro.end_date_format == None:
             color = "red"
+        elif pro.status in ["Active", 'active', 'In Progress'] and pro.end_date_format and pro.end_date_format > today:
+            color = "yellow"
         else:
             color = 'green'
+            print pro.name, pro.status
         try:
             datetime.datetime.strftime(pro.end_date_format, "%Y-%m-%d")
-            if pro.end_date_format < today and pro.status == 'active':
-                color = 'red'
-            else:
-                color = 'green'
+            # if pro.end_date_format < today and pro.status == 'active':
+            #     color = 'red'
+            # else:
+            #     color = 'green'
             over_due = datetime.datetime.now().date() - pro.end_date_format
         except Exception:
             over_due = None

@@ -278,8 +278,8 @@
       <td >{%  if project.milestone_count_open > 0 %}<a href="/all_milestone/{{ project.id }}" title="Closed/Total">  {{project.milestone_count_close}}/{{project.milestone_count_open}}</a>{%  else %}{{project.milestone_count_close}}/{{project.milestone_count_open}}{%  endif %}</td>
      <td >{%  if project.task_count_open > 0 %}<a href="/all_tasks/{{ project.id }}" title="Closed/Total">  {{project.task_count_close}}/{{project.task_count_open}}</a>{%  else %}{{project.task_count_close}}/{{project.task_count_open}}{%  endif %}</td>
       <td style="text-align: center" >
-                    {%  if project.percent >= 85.0 or project.status == 'completed' %}    <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
-                    {%  elif 75.0 <= project.percent and project.percent < 85.0 %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
+                    {%  if project.color == 'green' %}    <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
+                    {%  elif project.color == 'yellow' %}<i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
                     {%  else %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
                     {%  endif %}
                 </td>
