@@ -166,15 +166,9 @@
         </div>
         <div class="card-body">
         <div class="numbox">
-            <!--{% if "hdfc" in request.user.email %}-->
-            <!--<h3>{% if this_week > 0 %} <a href="/project_task_current/?name=hdfc">{{ this_week }}</a>{% else %} {{this_week}} {% endif %}</h3>-->
-            <!--{% else %}-->
             <h3>
-                <!--{% if this_week > 0 %} <a href="/project_task_current/{{ proj_id }}/">{{ this_week }}</a>{% else %}-->
-                {{this_week}}
-                <!--{% endif %}-->
+                {{ this_week }}
             </h3>
-            {% endif %}
             <p>Tasks</p>
             </div>
         </div>

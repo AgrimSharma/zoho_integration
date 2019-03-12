@@ -1267,7 +1267,7 @@ def mile_stone_tasks(request, milestone):
                 days=week_day)
             end_date = datetime.datetime.now().date() + datetime.timedelta(
                 days=4 - week_day)
-            this_week = Tasks.objects.filter(project=project,end_date__gte=begin_date,
+            this_week = Tasks.objects.filter(milestone_id=mile.id_string,end_date__gte=begin_date,
                                              end_date__lte=end_date).count()
             for t in task:
                 user_list = t.zohousers_set.all()
@@ -1316,7 +1316,6 @@ def mile_stone_tasks(request, milestone):
                     completed=t.completed,
                     percent_complete=t.percent_complete
                 ))
-            print red, green, yellow
             return render(request, "zohouser/tasks/project_tasks.html",
                           {"current_task": response,
                            "name": project.name + "(" +mile.name + ")",
