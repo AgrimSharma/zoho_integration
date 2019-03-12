@@ -2211,12 +2211,13 @@ def fetch_mile_stones(request,project_id):
     if status == "red":
         mile_stones = red
     elif status == "yellow":
-
         mile_stones = yellow
     else:
         mile_stones = green
 
-    return render(request, "zohouser/mile_stone.html", {"milestone": mile_stones, "name": project.name})
+    return render(request, "zohouser/mile_stone.html", {"milestone": mile_stones,
+                                                        "name": project.name,
+                                                        "status": status})
 
 
 def mile_stone_filter_tasks(request, milestone):

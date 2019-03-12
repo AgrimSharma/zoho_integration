@@ -23,7 +23,7 @@
 <nav class="navbar navbar-expand-lg bg-dark">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#" style="color: white">Projects View</a>
+      <a class="navbar-brand" href="#" style="color: white">Dashboard</a>
     </div>
     <ul class="nav navbar-nav pull-right" >
         {% if "hdfc" in request.user.email %}
@@ -41,30 +41,27 @@
 
   <div class="container-fluid" >
     <ul class="navbar-nav" style="display: contents;">
-      <li class="nav-item ">
-          {% if "hdfc" in request.user.email %}
-            <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
-          {% else %}
-                      <a class="nav-link" href="/project_list/?name=all&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
-        {% endif %}
-      </li>
-      <li class="nav-item">
-          {% if "hdfc" in request.user.email %}
-        <a class="nav-link" href="/project_filter/?csm=all&project_name=hdfc">Projects</a>
-          {% else %}
-                    <a class="nav-link" href="/project_filter/?csm=all&project_name=all">Projects<span class="sr-only">(current)</span></a>
-          {% endif %}
+        {% if "hdfc" in request.user.email %}
 
+      <li class="nav-item ">
+            <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
+      </li>
+        {% else %}
+        <li class="nav-item">
+        <a class="nav-link" href="/project_list/?name=all&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">CSMs</a>
       </li>
-
+{% endif %}
     </ul>
   </div>
 </nav>
 
-<hr><div class="container-fluid">
+<div class="container-fluid">
+
+
+
 
   <div class="row mt-3">
     <div class="col-lg-12">
@@ -90,17 +87,19 @@
             <tr>
                 <td>{{forloop.counter}}</td>
                 <td style="text-align:left;">{{name}}</td>
-                <td style="text-align:left;">{% if t.task_count > 0 %}<a href="/mile_stone_task/{{ t.id }}">{{t.name}}</a> {% else %} {{t.name}} {% endif %}</td>
-
+                <td style="text-align:left;">
+                    {% if "hdfc" in request.user.email %}{{t.name}}
+                    {% else %}{% if t.task_count > 0 %}<a href="/mile_stone_task/{{ t.id }}">{{t.name}}</a> {% else %} {{t.name}} {% endif %}</td>
+                {% endif %}
                 <td>{{t.start_date}}<br>{{t.end_date}}</td>
 
                 <td>{{t.owner_name}}</td>
                 <td> {{ t.users }}</td>
                 <td>{{t.sequence}}</td>
                 <td>{{t.flag}}</td>
-                 <td>{%  if t.status == 'notcompleted' and date_today < t.end_date %} <i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
-                {%  elif t.status == 'notcompleted' %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
-                                {% else %} <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
+                 <td>{%  if status == "yellow" %} <i class="fas fa-square" style="color: orange;font-size: 30px;"></i>
+                {%  elif status == 'red' %}<i class="fas fa-square" style="color: red;font-size: 30px;"></i>
+                     {% else %} <i class="fas fa-square" style="color: green;font-size: 30px;"></i>
                 {%  endif %}
                 </td>
             </tr>
