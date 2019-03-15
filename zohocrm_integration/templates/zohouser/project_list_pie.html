@@ -116,14 +116,14 @@
       </li>
       <li class="nav-item">
           {% if "hdfc" in request.user.email %}
-        <a class="nav-link" href="/project_filter/?csm=all&project_name=hdfc">Projects</a>
+        <a class="nav-link" href="/show_all/?csm=all&name=hdfc&status=all">Projects</a>
           {% else %}
                     <a class="nav-link" href="/project_filter/?csm=all&project_name=all">Projects<span class="sr-only">(current)</span></a>
           {% endif %}
 
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">CSMs</a>
+        <a class="nav-link" href="/csm_list/">CSMs</a>
       </li>
 
     </ul>

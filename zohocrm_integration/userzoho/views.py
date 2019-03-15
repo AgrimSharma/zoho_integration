@@ -1378,7 +1378,6 @@ def project_filter(request):
                 csm_list.append(names)
         csm_list = list(set(csm_list))
         today = datetime.datetime.now()
-
         return render(request, "zohouser/filter.html",
                   dict(projects=projects,
                        csm=csm_list,
@@ -2537,6 +2536,57 @@ def project_task_current(request, project_id):
     else:
         return redirect("/")
 
+
+def csm_list(request):
+    user = request.user
+    if user.is_authenticated():
+        if "indigo" in request.user.email:
+            project = Projects.objects.all().values_list("owner_name")
+        else:
+            project = Projects.objects.filter(name__icontains="hdfc").values_list("owner_name")
+        csm_list = []
+        for c in project:
+            names = str(c[0])
+            if names not in csm_list:
+                csm_list.append(names)
+        return render(request, "zohouser/csm.html",{"projects":csm_list})
+
+
+def project_filter_csm(request):
+    user = request.user
+    if user.is_authenticated():
+
+        csm_list = []
+        csm = request.GET.get("csm", "all")
+        project_name = request.GET.get("project_name", "all")
+        if "indigo" in user.email:
+            if project_name == "all":
+                    projects = parse_project_data(csm,user)
+            else:
+                projects = parse_project_data_project(project_name)
+            csm_data = Projects.objects.all().values_list("owner_name")
+        else:
+            if project_name == "all":
+                projects = parse_project_data(csm, user)
+            else:
+                projects = parse_project_data_project(project_name)
+            csm_data = Projects.objects.filter(name__icontains="hdfc").values_list("owner_name")
+
+        for c in csm_data:
+            names = str(c[0])
+            if names not in csm_data:
+                csm_list.append(names)
+        csm_list = list(set(csm_list))
+        today = datetime.datetime.now()
+        return render(request, "zohouser/filter_hdfc.html",
+                  dict(projects=projects,
+                       csm=csm_list,
+                       total=len(projects),
+                       today=today,
+                       name=csm
+                       ))
+    else:
+        return redirect("/")
 
 
 def home(request):

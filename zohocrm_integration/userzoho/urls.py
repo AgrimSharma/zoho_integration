@@ -73,6 +73,7 @@ urlpatterns = [
     url(r'^project/task/time_sheet/(?P<task_id>\w+)', project_task_time_sheet, name='project_task_time_sheet'),
     url(r'^client_tasks_week/', task_weekly, name='task_weekly'),
     url(r'^project_filter/', project_filter, name='project_filter'),
+    url(r'^project_filter_csm/', project_filter_csm, name='project_filter_csm'),
     url(r'^status_check/', intermediate, name="intermediate"),
     url(r'^project_list_color/', project_list_color, name="project_list_color"),
     url(r'^project_pie/', project_pie, name="project_pie"),
@@ -85,6 +86,7 @@ urlpatterns = [
     url(r'^project_task_filter/(?P<project_id>\w+)/', project_task_filter, name="project_task_filter"),
     url(r'^fetch_mile_stones/(?P<project_id>\w+)/', fetch_mile_stones, name="fetch_mile_stones"),
     url(r'^project_task_current/(?P<project_id>\w+)/', project_task_current, name="project_task_current"),
+    url(r'^csm_list/', csm_list, name="csm_list"),
     url(r'^', home),
 
 ]
