@@ -523,6 +523,7 @@ def all_milestone(request, project_id):
         over_due_ms = project.milestone_set.filter(end_date__lt=date_today, status='notcompleted').count()
         pending_ms = project.milestone_set.filter(end_date__gte=date_today, status='notcompleted').count()
         completed_ms = project.milestone_set.filter( status='completed').count()
+
         return render(request, "zohouser/tasks/project_milestone.html", {
             "date_today": date_today,
             "milestone": tasks,
@@ -726,7 +727,7 @@ def project_list(request):
                                              end_date__lte=end_date).count()
 
         month = datetime.datetime.strftime(today, "%B")
-        project.sort(key=lambda hotel: hotel['csm'])
+        project.sort(key=lambda hotel: hotel['color'])
         red, yellow, green = 0,0,0
         for pro in project:
             if pro['status'] in ["Active",
