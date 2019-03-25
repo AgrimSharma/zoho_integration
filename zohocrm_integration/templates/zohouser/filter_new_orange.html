@@ -207,6 +207,9 @@
          </section>
 
 
+       <input type="text" value="{{project_name}}" id="name_project" style="display:none;">
+
+
       <script>
         $("#project_name").on('keyup', function (e) {
             if (e.keyCode == 13) {
@@ -224,17 +227,26 @@
 
         });
          $("input[type='checkbox']").click(function(){
+            var name = $("#name_project").val();
         	var favorite = [];
+        	if(project_name === "all"){
             $.each($("input[name='optradio']:checked"), function(){
                 favorite.push($(this).val());
             });
             var energy = favorite.join();
+
             window.location.href = "/project_list_color/?color=" + energy;
+			}
+			else{
+            $.each($("input[name='optradio']:checked"), function(){
+                favorite.push($(this).val());
+            });
+            var energy = favorite.join();
 
+            window.location.href = "/project_list_color/?color=" + energy + "&project_name=" + name;
+			}
         });
-      </script>
-   <script>
 
-   </script>
+      </script>
    </body>
 </html>

@@ -1118,14 +1118,14 @@ def parse_project_data_project(project_name, user=None):
     return response
 
 
-def parse_project_data_color(user):
+def parse_project_data_color(project_name):
     today = datetime.datetime.now()
     next_date = today + datetime.timedelta(days=7)
     response = []
-    if "hdfc" in user.email:
-        projects = Projects.objects.filter(name__icontains="hdfc")
-    else:
+    if project_name == "all":
         projects = Projects.objects.all()
+    else:
+        projects = Projects.objects.filter(name__icontains=project_name)
 
     for pro in projects:
         taks_open = pro.tasks_set.filter(
