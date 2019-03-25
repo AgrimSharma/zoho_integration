@@ -16,7 +16,7 @@ utc=pytz.UTC
 
 scope = "ZohoProjects.portals.READ,ZohoProjects.projects.READ,ZohoProjects.tasklists.READ," \
         "ZohoProjects.tasks.READ,ZohoProjects.timesheets.READ,ZohoProjects.milestones.READ," \
-        "ZohoProjects.timesheets.READ"
+        "ZohoProjects.search.READ"
 
 
 def portals_data(access_token):
@@ -806,6 +806,7 @@ def projects_pull(request):
     user = request.user
     if user.is_authenticated:
         code = request.GET.get("code", "")
+        name = request.GET.get("name", "")
         url = "https://accounts.zoho.com/oauth/v2/token"
 
         querystring = {
@@ -836,8 +837,11 @@ def projects_pull(request):
 
             port = settings.PORTAL_ID
 
-        if port:
+        if name:
+            projects = all_projects_name(name)
+        else:
             projects = all_projects(user)
+
             # return redirect("/tasks_pull/")
         return HttpResponse("Success")
     else:
@@ -1378,6 +1382,8 @@ def project_filter(request):
                 csm_list.append(names)
         csm_list = list(set(csm_list))
         today = datetime.datetime.now()
+        projects.sort(key=lambda project: project['percent'], reverse=True)
+
         return render(request, "zohouser/filter.html",
                   dict(projects=projects,
                        csm=csm_list,
