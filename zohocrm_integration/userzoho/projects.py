@@ -13,17 +13,7 @@ from django.utils.html import strip_tags
 
 
 def get_month_day_range(date):
-    """
-    For a date 'date' returns the start and end date for the month of 'date'.
-    Month with 31 days:
-    >>> date = datetime.date(2011, 7, 27)
-    >>> get_month_day_range(date)
-    (datetime.date(2011, 7, 1), datetime.date(2011, 7, 31))
-    Month with 28 days:
-    >>> date = datetime.date(2011, 2, 15)
-    >>> get_month_day_range(date)
-    (datetime.date(2011, 2, 1), datetime.date(2011, 2, 28))
-    """
+
     last_day = date + relativedelta(day=1, months=+1, days=-1)
     first_day = date + relativedelta(day=1)
     return first_day, last_day
@@ -110,9 +100,9 @@ def all_projects(user):
     return "success"
 
 
-def project_data(project_id):
-    url = "https://projectsapi.zoho.com/restapi/portal/{}/projects/".format(
-        settings.PORTAL_ID)
+def project_data_id(project_id):
+    url = "https://projectsapi.zoho.com/restapi/portal/{}/projects/{}/".format(
+        settings.PORTAL_ID, project_id)
     token = Tokens.objects.latest("id")
     access_token = token.access_token
     headers = {
@@ -209,7 +199,8 @@ def all_projects_name(name):
         projects = projects.json()
         projects_data = projects['projects']
         for p in projects_data:
-            projects_data(p['id'])
+            print p['name'], "====>", p['id']
+            project_data_id(p['id'])
     return "success"
 
 
@@ -441,7 +432,6 @@ def project_list_view_all(name, status, csm):
     return response
 
 
-
 def project_list_view_color(name, csm, color):
     today = datetime.datetime.now().date()
     if color == 'red':
@@ -561,36 +551,56 @@ def project_list_view_color(name, csm, color):
 
 
 def task_ux(project):
-    query_open = Q(project=project,task_name__icontains='Creative',
-                      status__in=["Open", "open",
-                    "In Progress",
-                    'in progress']) or Q(project=project,
-                                         task_name__icontains='creative',
-                                         status__in=["Open", "open",
-                                                     "In Progress",
-                                                     'in progress',
-                                                     "In progress"]) or Q(project=project,
-        task_name__icontains='creatives',
-        status__in=["Open", "open",
-                    "In Progress",
-                    'in progress',
-                    "In progress"]) or Q(project=project,
-                                         task_name__icontains='creatives',
-                                         status__in=["Open", "open",
-                                                     "In Progress",
-                                                     'in progress',
-                                                     "In progress"])
-    query_closed =  Q(
-        project=project,
-        task_name__icontains='Creative',
-        status__in=["closed","closed"]) or Q(project=project,
-                                         task_name__icontains='creative',
-                                         status__in=["closed","closed"]) or Q(
-        project=project,
-        task_name__icontains='Creatives',
-        status__in=["closed","closed"]) or Q(project=project,
-                                         task_name__icontains='creatives',
-                                         status__in=["closed","closed"])
+    query_open = Q(project=project,task_name__icontains='User Experience',
+                   status__in=["Open", "open","In Progress",'in progress']) or \
+                 Q(project=project,task_name__icontains='User Experience',
+                   status__in=["Open", "open","In Progress",'in progress',"In progress"]) or \
+                 Q(project=project,task_name__icontains='user experience',
+                   status__in=["Open", "open","In Progress",'in progress',"In progress"]) or \
+                 Q(project=project,task_name__icontains='user experience',
+                   status__in=["Open", "open","In Progress",'in progress',"In progress"])or \
+                 Q(project=project,task_name__icontains='Wireframes',
+                   status__in=["Open", "open","In Progress",'in progress',"In progress"]) or \
+                 Q(project=project, task_name__icontains='wireframes',
+                   status__in=["Open", "open", "In Progress", 'in progress',"In progress"]) or \
+                 Q(project=project,task_name__icontains='IA',
+                   status__in=["Open", "open","In Progress",'in progress',"In progress"]) or \
+                 Q(project=project, task_name__icontains='ia',
+                   status__in=["Open", "open", "In Progress", 'in progress',"In progress"]) or \
+                 Q(project=project,task_name__icontains='Content',
+                   status__in=["Open", "open","In Progress",'in progress',"In progress"]) or \
+                 Q(project=project, task_name__icontains='content',
+                   status__in=["Open", "open", "In Progress", 'in progress',"In progress"]) or \
+                 Q(project=project,task_name__icontains='Copy',
+                   status__in=["Open", "open","In Progress",'in progress',"In progress"]) or \
+                 Q(project=project, task_name__icontains='copy',
+                   status__in=["Open", "open", "In Progress", 'in progress',"In progress"])
+
+    query_closed = Q(project=project,task_name__icontains='User Experience',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project,task_name__icontains='User Experience',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project,task_name__icontains='user experience',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project,task_name__icontains='user experience',
+                   status__in=["Closed","closed"])or \
+                 Q(project=project,task_name__icontains='Wireframes',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project, task_name__icontains='wireframes',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project,task_name__icontains='IA',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project, task_name__icontains='ia',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project,task_name__icontains='Content',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project, task_name__icontains='content',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project,task_name__icontains='Copy',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project, task_name__icontains='copy',
+                   status__in=["Closed","closed"])
+
     tasks_open = Tasks.objects.filter(query_open).count()
     tasks_closed = Tasks.objects.filter(query_closed).count()
     return tasks_closed, tasks_open + tasks_closed
@@ -598,19 +608,29 @@ def task_ux(project):
 
 def task_ui(project):
     query_open = Q(project=project, task_name__icontains='ui',
-                   status__in=["Open", "open", "In Progress", 'in progress',
-                               "In progress"]) or Q(project=project,
-                                                    task_name__icontains='UI',
-                                                    status__in=["Open", "open",
-                                                                "In Progress",
-                                                                'in progress',
-                                                                "In progress"])
-    query_closed = Q(project=project, task_name__icontains='UI',
-                     status__in=["Closed", "closed"]) or Q(project=project,
-                                                           task_name__icontains='ui',
-                                                           status__in=[
-                                                               "Closed",
-                                                               "closed"])
+                   status__in=["Open", "open", "In Progress", 'in progress',"In progress"]) or \
+                 Q(project=project,task_name__icontains='UI',
+                   status__in=["Open", "open","In Progress",'in progress',"In progress"]) or \
+                 Q(project=project, task_name__icontains='Creative',
+                   status__in=["Open", "open", "In Progress", 'in progress',"In progress"]) or \
+                 Q(project=project, task_name__icontains='creative',
+                   status__in=["Open", "open", "In Progress", 'in progress',"In progress"]) or \
+                 Q(project=project, task_name__icontains='design',
+                   status__in=["Open", "open", "In Progress", 'in progress',"In progress"]) or \
+                 Q(project=project, task_name__icontains='Design',
+                   status__in=["Open", "open", "In Progress", 'in progress',"In progress"])
+    query_closed = Q(project=project, task_name__icontains='ui',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project,task_name__icontains='UI',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project, task_name__icontains='Creative',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project, task_name__icontains='creative',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project, task_name__icontains='design',
+                   status__in=["Closed","closed"]) or \
+                 Q(project=project, task_name__icontains='Design',
+                   status__in=["Closed","closed"])
     tasks_open = Tasks.objects.filter(query_open).count()
     tasks_closed = Tasks.objects.filter(query_closed).count()
     return tasks_closed, tasks_open + tasks_closed
@@ -618,19 +638,23 @@ def task_ui(project):
 
 def task_html(project):
     query_open = Q(project=project, task_name__icontains='HTML',
+                   status__in=["Open", "open", "In Progress", 'in progress',"In progress"]) or \
+                 Q(project=project, task_name__icontains='html',
+                   status__in=["Open", "open","In Progress",'in progress',"In progress"]) or \
+                 Q(project=project, task_name__icontains='PLP',
                    status__in=["Open", "open", "In Progress", 'in progress',
-                               "In progress"]) or Q(project=project,
-                                                    task_name__icontains='html',
-                                                    status__in=["Open", "open",
-                                                                "In Progress",
-                                                                'in progress',
-                                                                "In progress"])
+                               "In progress"]) or \
+                 Q(project=project, task_name__icontains='plp',
+                   status__in=["Open", "open", "In Progress", 'in progress',
+                               "In progress"])
     query_closed = Q(project=project, task_name__icontains='HTML',
-                     status__in=["Closed", "closed"]) or Q(project=project,
-                                                           task_name__icontains='html',
-                                                           status__in=[
-                                                               "Closed",
-                                                               "closed"])
+                   status__in=['closed', "Closed"]) or \
+                 Q(project=project, task_name__icontains='html',
+                   status__in=['closed', "Closed"]) or \
+                 Q(project=project, task_name__icontains='PLP',
+                   status__in=['closed', "Closed"]) or \
+                 Q(project=project, task_name__icontains='plp',
+                   status__in=['closed', "Closed"])
     tasks_open = Tasks.objects.filter(query_open).count()
     tasks_closed = Tasks.objects.filter(query_closed).count()
     return tasks_closed, tasks_open + tasks_closed
@@ -671,13 +695,20 @@ def task_bee(project):
                                                     status__in=["Open", "open",
                                                                 "In Progress",
                                                                 'in progress',])
-    query_bug = Q(project=project, task_name__icontains='Bug',
-                   status__in=["Open", "open", "In Progress", 'in progress',
-                               "In progress"]) or Q(project=project,
-                                                    task_name__icontains='bug',
-                                                    status__in=["Open", "open",
-                                                                "In Progress",
-                                                                'in progress',])
+    # query_bug = Q(project=project, task_name__icontains='Bug',
+    #                status__in=["Open", "open", "In Progress", 'in progress',
+    #                            "In progress"]) or Q(project=project,
+    #                                                 task_name__icontains='bug',
+    #                                                 status__in=["Open", "open",
+    #                                                             "In Progress",
+    #                                                             'in progress',])
+    # query_issues = Q(project=project, task_name__icontains='Issues',
+    #               status__in=["Open", "open", "In Progress", 'in progress',
+    #                           "In progress"]) or Q(project=project,
+    #                                                task_name__icontains='issues',
+    #                                                status__in=["Open", "open",
+    #                                                            "In Progress",
+    #                                                            'in progress', ])
     query_closed = Q(project=project, task_name__icontains='backend',
                      status__in=["Closed", "closed"]) or Q(project=project,
                                                            task_name__icontains='Backend',
@@ -692,41 +723,65 @@ def task_bee(project):
                                                     status__in=[
                                                         "Closed",
                                                         "closed"])
-    query_closed_bug = Q(project=project, task_name__icontains='Bug',
-                                                                        status__in=[
-                                                                            "Closed",
-                                                                            "closed"]) or Q(project=project,
-                                                    task_name__icontains='bug',
-                                                    status__in=[
-                                                        "Closed",
-                                                        "closed"])
+    # query_closed_bug = Q(project=project, task_name__icontains='Bug',
+    #                                                                     status__in=[
+    #                                                                         "Closed",
+    #                                                                         "closed"]) or Q(project=project,
+    #                                                 task_name__icontains='bug',
+    #                                                 status__in=[
+    #                                                     "Closed",
+    #                                                     "closed"])
+    # query_closed_issues = Q(project=project, task_name__icontains='Issues',
+    #                      status__in=[
+    #                          "Closed",
+    #                          "closed"]) or Q(project=project,
+    #                                          task_name__icontains='issues',
+    #                                          status__in=[
+    #                                              "Closed",
+    #                                              "closed"])
 
     tasks_open = Tasks.objects.filter(query_open).count()
     tasks_open_re = Tasks.objects.filter(query_re).count()
-    tasks_open_bug = Tasks.objects.filter(query_bug).count()
+    # tasks_open_bug = Tasks.objects.filter(query_bug).count()
+    # tasks_open_issues = Tasks.objects.filter(query_issues).count()
     tasks_closed = Tasks.objects.filter(query_closed).count()
     tasks_closed_re = Tasks.objects.filter(query_closed_re).count()
-    tasks_closed_bug = Tasks.objects.filter(query_closed_bug).count()
-    tasks_closed = tasks_closed+ tasks_closed_re + tasks_closed_bug
-    tasks_open = tasks_open + tasks_open_re + tasks_open_bug
+    # tasks_closed_bug = Tasks.objects.filter(query_closed_bug).count()
+    # tasks_closed_issues = Tasks.objects.filter(query_closed_issues).count()
+    tasks_closed = tasks_closed+ tasks_closed_re
+    tasks_open = tasks_open + tasks_open_re
     return tasks_closed, tasks_open + tasks_closed
 
 
 def task_qc(project):
     query_open = Q(project=project, task_name__icontains='qc',
+                   status__in=["Open", "open", "In Progress", 'in progress',"In progress"]) or \
+                 Q(project=project,task_name__icontains='QC',
+                   status__in=["Open", "open","In Progress",'in progress',"In progress"]) or \
+                 Q(project=project, task_name__icontains='issues',
                    status__in=["Open", "open", "In Progress", 'in progress',
-                               "In progress"]) or Q(project=project,
-                                                    task_name__icontains='QC',
-                                                    status__in=["Open", "open",
-                                                                "In Progress",
-                                                                'in progress',
-                                                                "In progress"])
-    query_closed = Q(project=project, task_name__icontains='qc',
-                     status__in=["Closed", "closed"]) or Q(project=project,
-                                                           task_name__icontains='QC',
-                                                           status__in=[
-                                                               "Closed",
-                                                               "closed"])
+                               "In progress"]) or \
+                 Q(project=project, task_name__icontains='Issues',
+                   status__in=["Open", "open", "In Progress", 'in progress',
+                               "In progress"]) or \
+                 Q(project=project, task_name__icontains='Bugs',
+                   status__in=["Open", "open", "In Progress", 'in progress',
+                               "In progress"]) or \
+                 Q(project=project, task_name__icontains='bugs',
+                   status__in=["Open", "open", "In Progress", 'in progress',
+                               "In progress"])
+    query_closed =Q(project=project, task_name__icontains='qc',
+                   status__in=["Closed", "closed"]) or \
+                 Q(project=project,task_name__icontains='QC',
+                   status__in=["Closed", "closed"]) or \
+                 Q(project=project, task_name__icontains='issues',
+                   status__in=["Closed", "closed"]) or \
+                 Q(project=project, task_name__icontains='Issues',
+                   status__in=["Closed", "closed"]) or \
+                 Q(project=project, task_name__icontains='Bugs',
+                   status__in=["Closed", "closed"]) or \
+                 Q(project=project, task_name__icontains='bugs',
+                   status__in=["Closed", "closed"])
     tasks_open = Tasks.objects.filter(query_open).count()
     tasks_closed = Tasks.objects.filter(query_closed).count()
     return tasks_closed, tasks_open + tasks_closed
@@ -740,10 +795,24 @@ def task_uat(project):
                                                     status__in=["Open", "open",
                                                                 "In Progress",
                                                                 'in progress',
+                                                                "In progress"]) or \
+                 Q(project=project, task_name__icontains='UAT',
+                   status__in=["Open", "open", "In Progress", 'in progress',
+                               "In progress"]) or Q(project=project,
+                                                    task_name__icontains='uat',
+                                                    status__in=["Open", "open",
+                                                                "In Progress",
+                                                                'in progress',
                                                                 "In progress"])
     query_closed = Q(project=project, task_name__icontains='testing',
                      status__in=["Closed", "closed"]) or Q(project=project,
                                                            task_name__icontains='Testing',
+                                                           status__in=[
+                                                               "Closed",
+                                                               "closed"]) or \
+                   Q(project=project, task_name__icontains='UAT',
+                     status__in=["Closed", "closed"]) or Q(project=project,
+                                                           task_name__icontains='uat',
                                                            status__in=[
                                                                "Closed",
                                                                "closed"])
