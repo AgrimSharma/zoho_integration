@@ -2594,6 +2594,129 @@ def project_filter_csm(request):
         return redirect("/")
 
 
+def project_list_running(request):
+    user = request.user
+    if user.is_authenticated():
+        today = datetime.datetime.now().date()
+        first,last=get_month_day_range(today)
+        name = request.GET.get('name')
+        csm_data = Projects.objects.all().values_list("owner_name")
+        csm_list = []
+        for c in csm_data:
+            names = str(c[0])
+            if names not in csm_data:
+                csm_list.append(names)
+        project = project_list_view_running(name)
+        sorted(list(set(csm_list)))
+        total_projects = len(project)
+        if name == "hdfc":
+            active = Projects.objects.filter(name__icontains=name, status__in=['active', 'Active'], end_date_format__range=[first, last]).count()
+            closed = Projects.objects.filter(name__icontains=name, status__in=['Completed', 'completed'], end_date_format__range=[first, last]).count()
+            date_today = datetime.datetime.now().date()
+            week_day = date_today.weekday()
+            begin_date = datetime.datetime.now().date() - datetime.timedelta(
+                days=week_day)
+            end_date = datetime.datetime.now().date() + datetime.timedelta(
+                days=4 - week_day)
+            this_week = Tasks.objects.filter(project__name__icontains=name, end_date__gte=begin_date, end_date__lte=end_date).count()
+
+        else:
+            active = Projects.objects.filter(status__in=['active', 'Active'],
+                                             end_date_format__range=[first,
+                                                                     last]).count()
+            closed = Projects.objects.filter(status__in=['Completed', 'completed'],
+                                             end_date_format__range=[first,
+                                                                     last]).count()
+
+            date_today = datetime.datetime.now().date()
+            week_day = date_today.weekday()
+            begin_date = datetime.datetime.now().date() - datetime.timedelta(
+                days=week_day)
+            end_date = datetime.datetime.now().date() + datetime.timedelta(
+                days=4 - week_day)
+            this_week = Tasks.objects.filter(end_date__gte=begin_date,
+                                             end_date__lte=end_date).count()
+
+        month = datetime.datetime.strftime(today, "%B")
+        # project.sort(key=lambda hotel: hotel['end_date'])
+        red, yellow, green = 0,0,0
+        for pro in project:
+            if pro['status'] in ["Active",
+                              'active'] and pro['end_date'] and pro['end_date'] < today:
+                red += 1
+            elif pro['status'] in ["Active",
+                                'active'] and pro['end_date'] == None:
+                red += 1
+            elif pro['status'] in ["closed",
+                                'Closed'] and pro['end_date'] == None:
+                red += 1
+            elif pro['status'] in ["Active",
+                                'active'] and pro['end_date'] >= today:
+                yellow += 1
+            else:
+                green += 1
+        print red, yellow, green
+        if name == "hdfc":
+            return render(request, "zohouser/project_list_pie_hdfc_current.html",
+                          {"projects": project,
+                           "csm": list(set(csm_list)),
+                           "date": today,
+                           "name": name,
+                           "user_name": user.email,
+                           "total_projects": total_projects,
+                           "active": red + yellow,
+                           "closed": green,
+                           "task_closed": green,
+                           "task_open": red,
+                           "task_inprogress": yellow,
+                           "this_week": this_week,
+                           "month": month
+                           })
+        else:
+            return render(request, "zohouser/project_list_pie_hdfc_current.html",
+                          {"projects": project,
+                           "csm": list(set(csm_list)),
+                           "date": today,
+                           "name": name,
+                           "user_name": user.email,
+                           "total_projects": total_projects,
+                           "active": red + yellow,
+                           "closed": green,
+                           "task_closed": green,
+                           "task_open": red,
+                           "task_inprogress": yellow,
+                           "this_week": this_week,
+                           "month": month
+                           })
+    else:
+        return redirect("/")
+
+
+def project_pie_hdfc(request):
+    user = request.user
+    today = datetime.datetime.now().date()
+    first, last = get_month_day_range(today)
+    start = first - datetime.timedelta(days=90)
+    projects = Projects.objects.filter(name__icontains='hdfc',start_date_format__gte=start)
+    red, yellow, green = 0,0,0
+    for pro in projects:
+        if pro.status in ["Active",
+                          'active'] and pro.end_date_format and pro.end_date_format < today:
+            red += 1
+        elif pro.status in ["Active",
+                            'active'] and pro.end_date_format == None:
+            red += 1
+        elif pro.status in ["closed",
+                            'Closed'] and pro.end_date_format == None:
+            red += 1
+        elif pro.status in ["Active",
+                            'active'] and pro.end_date_format >= today:
+            yellow += 1
+        else:
+            green += 1
+    return HttpResponse(json.dumps(dict(red=red, green=green, yellow=yellow)))
+
+
 def home(request):
     user = request.user
     if "hdfc" in user.username:

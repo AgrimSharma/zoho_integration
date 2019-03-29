@@ -230,7 +230,7 @@
 
 	<div class="sortby_showing mt-3">
        <div class="row align-items-center">
-          <div class="col-md-6 pull-right">
+          <div class="col-md-9 pull-right">
              <div class="sortby_row">
                  <div class="showing_page ">
                      Projects nearing end date for {{month}}
@@ -242,13 +242,6 @@
                     <a class="nav-link" href="/show_all/?csm=all&name=hdfc&status=all">Show All</a>
                  {% else %}
                     <a class="nav-link" href="/show_all/?csm=all&name=all&status=all">Show All</a>
-                  {% endif %}
-
-          </div>
-           <div class="col-md-3" style="text-align: right;">
-                 {% if "hdfc" in request.user.email %}
-                    <a class="nav-link" href="/project_list_running/?name=hdfc">Current Active</a>
-                 {% else %}
                   {% endif %}
 
           </div>
@@ -308,7 +301,7 @@ var chartData =  [] ;
      $.ajax({
          type: "GET",
          <!--url: "/client_tasks/" + name + "/",-->
-         url: "/project_pie/",
+         url: "/project_pie_hdfc/",
          data: {},
          success: function (resp) {
              var data = JSON.parse(resp);
