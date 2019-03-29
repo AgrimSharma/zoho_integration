@@ -2700,20 +2700,22 @@ def project_pie_hdfc(request):
     projects = Projects.objects.filter(name__icontains='hdfc',start_date_format__gte=start)
     red, yellow, green = 0,0,0
     for pro in projects:
-        if pro.status in ["Active",
-                          'active'] and pro.end_date_format and pro.end_date_format < today:
-            red += 1
-        elif pro.status in ["Active",
-                            'active'] and pro.end_date_format == None:
-            red += 1
-        elif pro.status in ["closed",
-                            'Closed'] and pro.end_date_format == None:
-            red += 1
-        elif pro.status in ["Active",
-                            'active'] and pro.end_date_format >= today:
-            yellow += 1
-        else:
-            green += 1
+        if pro.end_date_format == None or pro.end_date_format > first:
+
+            if pro.status in ["Active",
+                              'active'] and pro.end_date_format and pro.end_date_format < today:
+                red += 1
+            elif pro.status in ["Active",
+                                'active'] and pro.end_date_format == None:
+                red += 1
+            elif pro.status in ["closed",
+                                'Closed'] and pro.end_date_format == None:
+                red += 1
+            elif pro.status in ["Active",
+                                'active'] and pro.end_date_format >= today:
+                yellow += 1
+            else:
+                green += 1
     return HttpResponse(json.dumps(dict(red=red, green=green, yellow=yellow)))
 
 
