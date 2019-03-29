@@ -109,7 +109,7 @@
     <ul class="navbar-nav" style="display: contents;">
       <li class="nav-item active">
           {% if "hdfc" in request.user.email %}
-            <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/project_list_running/?name=hdfc">Dashboard <span class="sr-only">(current)</span></a>
           {% else %}
                       <a class="nav-link" href="/project_list/?name=all&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
         {% endif %}
@@ -247,7 +247,7 @@
           </div>
            <div class="col-md-3" style="text-align: right;">
                  {% if "hdfc" in request.user.email %}
-                    <a class="nav-link" href="/project_list_running/?name=hdfc">Current Active</a>
+                    <a class="nav-link" href="/project_list_running/?name=hdfc">Currently Active</a>
                  {% else %}
                   {% endif %}
 

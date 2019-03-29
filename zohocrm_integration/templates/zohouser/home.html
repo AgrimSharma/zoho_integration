@@ -91,7 +91,7 @@
           if (data.message === 'success' &&  data.redirect === 'auth') {
               window.location.href = "/project_list/?csm=all&name=all&status=all";
           }else if(data.message === 'success' &&  data.redirect === 'client'){
-              window.location.href = "/project_list/?csm=all&name=hdfc&status=all";
+              window.location.href = "/project_list_running/?name=hdfc";
           } else {
               alert("Please try again");
           }

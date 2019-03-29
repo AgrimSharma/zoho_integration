@@ -109,7 +109,7 @@
     <ul class="navbar-nav" style="display: contents;">
       <li class="nav-item active">
           {% if "hdfc" in request.user.email %}
-            <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/project_list_running/?name=hdfc">Dashboard <span class="sr-only">(current)</span></a>
           {% else %}
                       <a class="nav-link" href="/project_list/?name=all&status=all&csm=all">Dashboard <span class="sr-only">(current)</span></a>
         {% endif %}
@@ -136,7 +136,7 @@
   <div class="row project_detail_row">
     <div class="col-lg-5">
      	<div class="card shadow num_of_projects h-100">
-          <div class="card-header">No. of Projects this month</div>
+          <div class="card-header">No. of Projects (running currently)</div>
           <div class="card-body">
             <div class="row">
               <div class="col-md-4 border-right text-center">
@@ -164,7 +164,7 @@
     </div>
     <div class="col-lg-7">
       <div class="card shadow projectwise_health h-100">
-        <div class="card-header">Project Wise Health for this month</div>
+        <div class="card-header">Project Wise Health (Running Currently) </div>
         <div class="card-body">
           <div class="row">
             <div class="col-lg-7" ><div id="chartdiv" ></div></div>
@@ -230,10 +230,9 @@
 
 	<div class="sortby_showing mt-3">
        <div class="row align-items-center">
-          <div class="col-md-9 pull-right">
+          <div class="col-md-6 pull-right">
              <div class="sortby_row">
                  <div class="showing_page ">
-                     Projects nearing end date for {{month}}
                  </div>
              </div>
           </div>
@@ -242,6 +241,14 @@
                     <a class="nav-link" href="/show_all/?csm=all&name=hdfc&status=all">Show All</a>
                  {% else %}
                     <a class="nav-link" href="/show_all/?csm=all&name=all&status=all">Show All</a>
+                  {% endif %}
+
+          </div>
+           <div class="col-md-3" style="text-align: right;">
+                 {% if "hdfc" in request.user.email %}
+                    <a class="nav-link" href="/project_list/?name=hdfc&status=all&csm=all">Show Month</a>
+                 {% else %}
+                    <a class="nav-link" href="/project_list/?name=all&status=all&csm=all">Show Month</a>
                   {% endif %}
 
           </div>

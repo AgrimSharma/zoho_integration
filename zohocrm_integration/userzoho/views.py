@@ -2638,7 +2638,7 @@ def project_list_running(request):
                                              end_date__lte=end_date).count()
 
         month = datetime.datetime.strftime(today, "%B")
-        # project.sort(key=lambda hotel: hotel['end_date'])
+        project.sort(key=lambda hotel: hotel['color'])
         red, yellow, green = 0,0,0
         for pro in project:
             if pro['status'] in ["Active",
