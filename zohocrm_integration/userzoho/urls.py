@@ -55,6 +55,7 @@ urlpatterns = [
     url(r'^clients/', client_list,name="clients"),
     # url(r'^projects/', projects, name="projects"),
     url(r'^projects/', projects_types, name="projects"),
+    url(r'^projects_hdfc/', projects_types_hdfc, name="projects_hdfc"),
     url(r'^projects_grantt/', projects_grantt, name="projects_grantt"),
     url(r'^grant_view/', projects_grant, name="grant_view"),
     url(r'^login_user/', login_user, name='login_user'),

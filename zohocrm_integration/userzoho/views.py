@@ -2074,7 +2074,7 @@ def projects_types(request):
             #     except Exception:
             #         red.append(p)
             # else:
-                red.append(p)
+            #     red.append(p)
 
         if project_type == 'red':
             projects = project_filter_data(red)
@@ -2717,6 +2717,68 @@ def project_pie_hdfc(request):
             else:
                 green += 1
     return HttpResponse(json.dumps(dict(red=red, green=green, yellow=yellow)))
+
+
+def projects_types_hdfc(request):
+    user = request.user
+    if user.is_authenticated():
+        red, green, yellow = [],[],[]
+        name = request.GET.get("project_name")
+        today = datetime.datetime.now().date()
+        first, last = get_month_day_range(today)
+        project_type=request.GET.get("type")
+
+        first, last = get_month_day_range(today)
+        start = first - datetime.timedelta(days=90)
+        query = Q(name__icontains=name, start_date_format__gte=start) or Q(
+            name__icontains=name, end_date_format=None) or Q(
+            name__icontains=name, end_date_format_gte=first)
+        projects = Projects.objects.filter(query)
+        for p in projects:
+            today = datetime.datetime.now().date()
+            if p.status in ["Active",
+                              'active'] and p.end_date_format and p.end_date_format < today:
+                red.append(p)
+            elif p.status in ["Active",
+                                'active'] and p.end_date_format == None:
+                red.append(p)
+            elif p.status in ["closed",
+                                'Closed'] and p.end_date_format == None:
+                red.append(p)
+            elif p.status in ["Active", 'active',
+                                'In Progress'] and p.end_date_format and p.end_date_format > today:
+                yellow.append(p)
+            else:
+                green.append(p)
+
+        if project_type == 'red':
+            projects = project_filter_data(red)
+            status="Overdue Projects"
+            color="red"
+
+            # return render(request, "projects.html", {"project": projects})
+        elif project_type == 'yellow':
+            projects = project_filter_data(yellow)
+            status = "In-Progress Projects"
+            color="yellow"
+
+            # return render(request, "projects.html", {"project": projects})
+        else:
+            projects = project_filter_data(green)
+            status = "Completed Projects"
+            color="green"
+        week_day = today.weekday()
+        begin_date = datetime.datetime.now().date() - datetime.timedelta(
+            days=week_day)
+        end_date = datetime.datetime.now().date() + datetime.timedelta(
+            days=6 - week_day)
+        this_week = Tasks.objects.filter(end_date__gte=begin_date,end_date__lte=end_date).count()
+
+        return render(request, "zohouser/projects_hdfc.html", {"projects": projects,
+                                                      "status": status,
+                                                      "color": color,
+                                                      "this_week":this_week
+                                                      })
 
 
 def home(request):

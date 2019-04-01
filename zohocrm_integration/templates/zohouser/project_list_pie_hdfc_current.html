@@ -173,28 +173,28 @@
                   {% if "hdfc" in request.user.email %}
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val" style="color:red;">{% if task_open > 0 %}<a href="/projects/?project_name=hdfc&type=red">Overdue Projects {{ task_open }}</a>{% else %} Overdue Projects {{ task_open }}{% endif %}</label>
+                      <label class="lbl_val" style="color:red;">{% if task_open > 0 %}<a href="/projects_hdfc/?project_name=hdfc&type=red">Overdue Projects {{ task_open }}</a>{% else %} Overdue Projects {{ task_open }}{% endif %}</label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val">{% if task_inprogress > 0 %}<a href="/projects/?project_name=hdfc&type=yellow">Pending Projects {{ task_inprogress }}</a>{% else %} Pending Projects {{ task_inprogress }}{% endif %}</label>
+                      <label class="lbl_val">{% if task_inprogress > 0 %}<a href="/projects_hdfc/?project_name=hdfc&type=yellow">Pending Projects {{ task_inprogress }}</a>{% else %} Pending Projects {{ task_inprogress }}{% endif %}</label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val" style="color:green;">{% if task_closed > 0 %}<a href="/projects/?project_name=hdfc&type=green"> Closed Projects {{ task_closed }}</a>{% else %}Closed Projects {{ task_closed }}{% endif %}</label>
+                      <label class="lbl_val" style="color:green;">{% if task_closed > 0 %}<a href="/projects_hdfc/?project_name=hdfc&type=green"> Closed Projects {{ task_closed }}</a>{% else %}Closed Projects {{ task_closed }}{% endif %}</label>
                     </li>
                   {% else %}
                     <li class="overdue">
                       <span style="background-color: #fc021f"></span>
-                      <label class="lbl_val" style="color:red;">{% if task_open > 0 %}<a href="/projects/?project_name=all&type=red">Overdue Projects {{ task_open }}</a>{% else %} Overdue Projects {{ task_open }}{% endif %}</label>
+                      <label class="lbl_val" style="color:red;">{% if task_open > 0 %}<a href="/projects_hdfc/?project_name=all&type=red">Overdue Projects {{ task_open }}</a>{% else %} Overdue Projects {{ task_open }}{% endif %}</label>
                     </li>
                     <li class="pending">
                       <span style="background-color: #FBC02D"></span>
-                      <label class="lbl_val">{% if task_inprogress > 0 %}<a href="/projects/?project_name=all&type=yellow">Pending Projects {{ task_inprogress }}</a>{% else %} Pending Projects {{ task_inprogress }}{% endif %}</label>
+                      <label class="lbl_val">{% if task_inprogress > 0 %}<a href="/projects_hdfc/?project_name=all&type=yellow">Pending Projects {{ task_inprogress }}</a>{% else %} Pending Projects {{ task_inprogress }}{% endif %}</label>
                     </li>
                     <li class="ontrack">
                       <span style="background-color: #388E3C"></span>
-                      <label class="lbl_val" style="color:green;">{% if task_closed > 0 %}<a href="/projects/?project_name=all&type=green"> Closed Projects {{ task_closed }}</a>{% else %}Closed Projects {{ task_closed }}{% endif %}</label>
+                      <label class="lbl_val" style="color:green;">{% if task_closed > 0 %}<a href="/projects_hdfc/?project_name=all&type=green"> Closed Projects {{ task_closed }}</a>{% else %}Closed Projects {{ task_closed }}{% endif %}</label>
                     </li>
                   {% endif %}
               </ul>
