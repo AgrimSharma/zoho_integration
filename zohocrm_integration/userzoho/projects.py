@@ -1294,8 +1294,8 @@ def project_filter_data(projects):
 def project_list_view_running(name):
     today = datetime.datetime.now()
     first,last = get_month_day_range(today)
-    end = last + datetime.timedelta(days=60)
-    start = first - datetime.timedelta(days=90)
+    end = last + datetime.timedelta(days=30)
+    start = first - datetime.timedelta(days=300)
     query = Q(name__icontains=name,start_date_format__gte=start) or Q(name__icontains=name,end_date_format=None) or Q(name__icontains=name,end_date_format_gte=first)
     projects = Projects.objects.filter(query)
     response = []

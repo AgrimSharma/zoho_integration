@@ -2676,8 +2676,8 @@ def project_pie_hdfc(request):
     user = request.user
     today = datetime.datetime.now().date()
     first, last = get_month_day_range(today)
-    end = last + datetime.timedelta(days=60)
-    start = first - datetime.timedelta(days=90)
+    end = last + datetime.timedelta(days=30)
+    start = first - datetime.timedelta(days=300)
     projects = Projects.objects.filter(name__icontains='hdfc',start_date_format__gte=start)
     red, yellow, green = 0,0,0
     for pro in projects:
