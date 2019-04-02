@@ -62,6 +62,7 @@ def all_projects(user):
                 owner_name = p.get('owner_name', "")
             except Exception:
                 owner_name = None
+            print p.get('name',""), "===>", p.get("status",""), "===>", p.get('end_date',""), '===>', p.get('start_date',"")
             pro.owner_name = owner_name if owner_name else None
             pro.description = strip_tags(p.get('description', ""))
             pro.task_count_open = p.get('task_count', "").get('open', 0)
@@ -97,7 +98,7 @@ def all_projects(user):
             pro.end_date_format = datetime.datetime.strptime(end_time,
                                                              "%m-%d-%Y") if end_time else None
             pro.save()
-    return "success"
+    return len(projects_data)
 
 
 def project_data_id(project_id):
@@ -199,7 +200,7 @@ def all_projects_name(name):
         projects = projects.json()
         projects_data = projects['projects']
         for p in projects_data:
-            print p['name'], "====>", p['id']
+            print p['name'], "====>", p['id'], "====>", p['status']
             project_data_id(p['id'])
     return "success"
 
@@ -1293,13 +1294,14 @@ def project_filter_data(projects):
 def project_list_view_running(name):
     today = datetime.datetime.now()
     first,last = get_month_day_range(today)
+    end = last + datetime.timedelta(days=60)
     start = first - datetime.timedelta(days=90)
     query = Q(name__icontains=name,start_date_format__gte=start) or Q(name__icontains=name,end_date_format=None) or Q(name__icontains=name,end_date_format_gte=first)
     projects = Projects.objects.filter(query)
     response = []
     for pro in projects:
         today = datetime.datetime.now().date()
-        if pro.end_date_format == None or pro.end_date_format > first.date():
+        if pro.end_date_format == None or (pro.end_date_format > first.date() and pro.end_date_format <= end.date()):
             taks_open = pro.tasks_set.filter(
                 status__in=['Open', 'In Progress', 'open', 'in progress'])
             tasks_close = pro.tasks_set.filter(status__in=['Closed', 'closed'])

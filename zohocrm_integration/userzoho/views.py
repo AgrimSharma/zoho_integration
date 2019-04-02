@@ -843,7 +843,7 @@ def projects_pull(request):
             projects = all_projects(user)
 
             # return redirect("/tasks_pull/")
-        return HttpResponse("Success")
+        return HttpResponse(projects)
     else:
         return redirect("/")
 
@@ -2609,33 +2609,13 @@ def project_list_running(request):
         project = project_list_view_running(name)
         sorted(list(set(csm_list)))
         total_projects = len(project)
-        if name == "hdfc":
-            active = Projects.objects.filter(name__icontains=name, status__in=['active', 'Active'], end_date_format__range=[first, last]).count()
-            closed = Projects.objects.filter(name__icontains=name, status__in=['Completed', 'completed'], end_date_format__range=[first, last]).count()
-            date_today = datetime.datetime.now().date()
-            week_day = date_today.weekday()
-            begin_date = datetime.datetime.now().date() - datetime.timedelta(
-                days=week_day)
-            end_date = datetime.datetime.now().date() + datetime.timedelta(
-                days=4 - week_day)
-            this_week = Tasks.objects.filter(project__name__icontains=name, end_date__gte=begin_date, end_date__lte=end_date).count()
-
-        else:
-            active = Projects.objects.filter(status__in=['active', 'Active'],
-                                             end_date_format__range=[first,
-                                                                     last]).count()
-            closed = Projects.objects.filter(status__in=['Completed', 'completed'],
-                                             end_date_format__range=[first,
-                                                                     last]).count()
-
-            date_today = datetime.datetime.now().date()
-            week_day = date_today.weekday()
-            begin_date = datetime.datetime.now().date() - datetime.timedelta(
-                days=week_day)
-            end_date = datetime.datetime.now().date() + datetime.timedelta(
-                days=4 - week_day)
-            this_week = Tasks.objects.filter(end_date__gte=begin_date,
-                                             end_date__lte=end_date).count()
+        date_today = datetime.datetime.now().date()
+        week_day = date_today.weekday()
+        begin_date = datetime.datetime.now().date() - datetime.timedelta(
+            days=week_day)
+        end_date = datetime.datetime.now().date() + datetime.timedelta(
+            days=4 - week_day)
+        this_week = Tasks.objects.filter(project__name__icontains=name, end_date__gte=begin_date, end_date__lte=end_date).count()
 
         month = datetime.datetime.strftime(today, "%B")
         project.sort(key=lambda hotel: hotel['color'])
@@ -2696,11 +2676,12 @@ def project_pie_hdfc(request):
     user = request.user
     today = datetime.datetime.now().date()
     first, last = get_month_day_range(today)
+    end = last + datetime.timedelta(days=60)
     start = first - datetime.timedelta(days=90)
     projects = Projects.objects.filter(name__icontains='hdfc',start_date_format__gte=start)
     red, yellow, green = 0,0,0
     for pro in projects:
-        if pro.end_date_format == None or pro.end_date_format > first:
+        if pro.end_date_format == None or (pro.end_date_format > first and pro.end_date_format <= end):
 
             if pro.status in ["Active",
                               'active'] and pro.end_date_format and pro.end_date_format < today:
